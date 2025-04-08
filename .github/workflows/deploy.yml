@@ -17,9 +17,9 @@ jobs:
       - name: 📤 Deploy via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4
         with:
-          server: ${{ 77.222.62.31 }}
-          username: ${{ serpfotoya }}
-          password: ${{ Z18!u0M8 }}
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./               
           server-dir: /n1foto.com/public_html/
           exclude: |
