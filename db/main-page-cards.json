@@ -1,0 +1,281 @@
+{    
+    "main": [
+      {
+        "title": "ПОДАРКИ И СУВЕНИРЫ С ВАШИМ ИЗОБРАЖЕНИЕМ",
+        "nav_title": "Сувениры",
+        "content": [
+            {
+                "name": "Шары",
+                "img": "img/main-page/shar_ng-main.jpg",
+                "alt": "Ёлочные игрушки с фото",
+                "title": "Ёлочные игрушки",
+                "link": "shary.html"
+            },
+            {
+                "name": "Печать на холсте",
+                "img": "img/main-page/canvas-main.jpg",
+                "alt": "Печать фото на холсте",
+                "title": "Печать на холсте",
+                "link": "printcanvas.html"
+            },
+            {
+                "name": "Магниты",
+                "img": "img/main-page/acril_magnit-main.jpg",
+                "alt": "Магниты с фотографией",
+                "title": "Магниты",
+                "link": "magnity.html"
+            },           
+            {
+                "name": "Печать на кружках",
+                "img": "img/main-page/mug-main.jpg",
+                "alt": "Печать на кружках",
+                "title": "Кружки",
+                "link": "pechat-na-kruzhkah.html"
+            },
+            {
+                "name": "Печать на бутылках",
+                "img": "img/main-page/butylka-main.jpg",
+                "alt": "Печать на спортивных бутылках",
+                "title": "Спортивные бутылки",
+                "link": "butylki.html"
+            },
+            {
+                "name": "Печать на подушках",
+                "img": "img/main-page/pillow-main.jpg",
+                "alt": "Печать на подушках",
+                "title": "Подушки",
+                "link": "pechat-na-podushkah.html"
+            },
+            {
+                "name": "Печать на сумках",
+                "img": "img/main-page/bag-main.jpg",
+                "alt": "Печать на сумках, шопперах",
+                "title": "Сумки, шопперы",
+                "link": "pechat-na-sumkah.html"
+            },
+            {
+                "name": "Пазлы",
+                "img": "img/main-page/puzzle-main.jpg",
+                "alt": "Печать на пазлах",
+                "title": "Пазлы",
+                "link": "pazly.html"
+            },
+            {
+                "name": "Коврики для мыши",
+                "img": "img/main-page/kovrik-main.jpg",
+                "alt": "Печать на ковриках для мыши",
+                "title": "Коврики для мыши",
+                "link": "kovriki.html"
+            },
+            {
+                "name": "Блокноты с фотографией",
+                "img": "img/main-page/bloknot-main.jpg",
+                "alt": "Блокноты на заказ с фото",
+                "title": "Блокноты",
+                "link": "bloknoty.html"
+            },
+            {
+                "name": "Бейджи",
+                "img": "img/main-page/bage-main.jpg",
+                "alt": "Печать на бейджах",
+                "title": "Бейджи",
+                "link": "bage.html"
+            }
+        ]
+      },
+      {
+        "title": "ВЫШИВКА И ПЕЧАТЬ НА ТКАНИ",
+        "nav_title": "Нанесение на одежду",
+        "content": [
+            {
+                "name": "Печать на одежде",
+                "img": "img/main-page/t-shirt-main.jpg",
+                "alt": "Печать на одежде",
+                "title": "Печать на одежде",
+                "link": "pechat-na-odezhde.html"
+            },
+            {
+                "name": "Вышивка",
+                "img": "img/main-page/vyshivka-main.jpg",
+                "alt": "Вышивка машинная",
+                "title": "Вышивка на одежде",
+                "link": "vyshivka.html"
+            }
+        ]
+      },
+      {
+        "title": "ФОТО И КОПИРОВАЛЬНЫЕ УСЛУГИ",
+        "nav_title": "Копицентр",
+        "content": [
+            {
+                "name": "Срочное фото",
+                "img": "img/passport.jpg",
+                "alt": "Срочное фото на документы",
+                "title": "Фото на документы",
+                "link": "srochnoe-foto.html"
+            },
+            {
+                "name": "Печать фотографий",
+                "img": "img/main-page/photoprint-main.jpg",
+                "alt": "Печать фотографий",
+                "title": "Печать фото",
+                "link": "https://print.n1foto.com/"
+            },
+            {
+                "name": "Полароид",
+                "img": "img/main-page/polaroid-main.jpg",
+                "alt": "Печать фото в стиле Полароид",
+                "title": "Фото в стиле Полароид",
+                "link": "insta-pechat.html"
+            },
+            {
+                "name": "Коллажи, реставрация",
+                "img": "img/main-page/collage-main.jpg",
+                "alt": "Коллажи, реставрация",
+                "title": "Коллажи, реставрация",
+                "link": "sostavlenie-kollagey.html"
+            },
+            {
+                "name": "Печать и копирование",
+                "img": "img/main-page/pechat-main.jpg",
+                "alt": "Печать и копирование",
+                "title": "Печать и копирование",
+                "link": "pechat-i-kopirovanie.html"
+            },
+            {
+                "name": "Сканирование",
+                "img": "img/main-page/scan-main.jpg",
+                "alt": "Сканирование",
+                "title": "Сканирование",
+                "link": "skanirovanie.html"
+            },
+            {
+                "name": "Ламинирование",
+                "img": "img/main-page/laminirovanie-main.jpg",
+                "alt": "Ламинирование",
+                "title": "Ламинирование",
+                "link": "laminirovanie.html"
+            },
+            {
+                "name": "Брошюровка",
+                "img": "img/main-page/broshurovka-main.jpg",
+                "alt": "Брошюровка",
+                "title": "Брошюровка",
+                "link": "broshurovka.html"
+            },
+            {
+                "name": "Оцифровка видео",
+                "img": "img/main-page/vhs-main.jpg",
+                "alt": "Оцифровка видеокассет",
+                "title": "Оцифровка видеокассет",
+                "link": "ocifrovka-videokasset.html"
+            },
+            {
+                "name": "Печать чертежей",
+                "img": "img/main-page/chertezh-main.jpg",
+                "alt": "Печать чертежей",
+                "title": "Печать чертежей",
+                "link": "pechat-chertezhey.html"
+            },
+            {
+                "name": "Влагостойкие фоторамки",
+                "img": "img/main-page/ramka-main.jpg",
+                "alt": "Влагостойкие фоторамки",
+                "title": "Влагостойкие фоторамки",
+                "link": "vlagostoykie-ramki.html"
+            }
+        ]
+      },
+      {
+        "title": "ПОЛИГРАФИЯ, РЕКЛАМНАЯ И ПРОМО ПРОДУКЦИЯ",
+        "nav_title": "Полиграфия",
+        "content": [
+            {
+                "name": "Визитки",
+                "img": "img/main-page/vizitka-main.jpg",
+                "alt": "Печать визиток",
+                "title": "Визитки",
+                "link": "vizitki.html"
+            },
+            {
+                "name": "Листовки и флаеры",
+                "img": "img/main-page/listovka-main.jpg",
+                "alt": "Листовки и флаеры",
+                "title": "Листовки и флаеры",
+                "link": "listovki.html"
+            },
+            {
+                "name": "Буклеты",
+                "img": "img/main-page/buklet-main.jpg",
+                "alt": "Буклеты",
+                "title": "Буклеты",
+                "link": "buklety.html"
+            },
+            {
+                "name": "Сертификаты",
+                "img": "img/main-page/sertifikat-main.jpg",
+                "alt": "Сертификаты, дипломы",
+                "title": "Сертификаты, дипломы",
+                "link": "sertifikaty.html"
+            },
+            {
+                "name": "Карманные календарики",
+                "img": "img/main-page/kalendarik-main.jpg",
+                "alt": "Карманные календарики",
+                "title": "Карманные календарики",
+                "link": "karmannye-kalendariki.html"
+            },
+            {
+                "name": "Календари",
+                "img": "img/main-page/kalendar-main.jpg",
+                "alt": "Календари",
+                "title": "Календари",
+                "link": "kalendari.html"
+            },
+            {
+                "name": "Плоттерная резка",
+                "img": "img/main-page/plotterka-main.jpg",
+                "alt": "Плоттерная резка самоклейки",
+                "title": "Плоттерная резка",
+                "link": "plotternaya-rezka.html"
+            },
+            {
+                "name": "Наклейки",
+                "img": "img/main-page/nakleyka-main.jpg",
+                "alt": "Наклейки и стикеры",
+                "title": "Наклейки и стикеры",
+                "link": "nakleyki.html"
+            },
+            {
+                "name": "Баннеры",
+                "img": "img/main-page/banner-main.jpg",
+                "alt": "Баннеры",
+                "title": "Баннеры",
+                "link": "pechat-na-bannere.html"
+            },
+            {
+                "name": "Широкоформатная печать",
+                "img": "img/main-page/shirokoformatka-main.jpg",
+                "alt": "Широкоформатная печать",
+                "title": "Широкоформатная печать",
+                "link": "shirokofrmatnaya-pechat.html"
+            },
+            {
+                "name": "Ручки",
+                "img": "img/main-page/ruchki-main.jpg",
+                "alt": "Ручки с нанесением логотипа",
+                "title": "Ручки",
+                "link": "ruchki.html"
+            },
+            {
+                "name": "Печать на пластике",
+                "img": "img/main-page/tablichki-main.jpg",
+                "alt": "Печать на пластике",
+                "title": "Печать на пластике",
+                "link": "tablichki.html"
+            }
+        ]
+      }
+      
+    ]
+  }

@@ -1,0 +1,10 @@
+$table-color: $original-text; // цвет текста в таблице
+$table-bg: $light-purple; // цвет фона таблицы
+$table-striped-bg: $light-violet; // цвет фона полос в таблице
+$table-hover-color: $light-purple; // цвет текста при наведении
+$table-hover-bg: $primary; // цвет фона при наведении
+
+$table-cell-padding-y:        .2rem !default;
+$table-cell-padding-x:        .25rem !default;
+$table-cell-padding-y-sm:     .1rem !default;
+$table-cell-padding-x-sm:     .1rem !default;

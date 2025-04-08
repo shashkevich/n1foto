@@ -1,0 +1,53 @@
+
+<!DOCTYPE html>
+<html lang="ru" class="h-100" data-bs-theme="auto">
+<head>
+    <? include "php/blocks/head.php" ?>    
+</head>
+
+<body class="d-flex flex-column h-100">
+    
+    <? include "php/blocks/nav.php" ?>
+    
+    <section class="pt-2 text-center">
+        <div class="container text-center">
+            <h1><?php echo $link['name'] ?></h1>
+            <div class="row justify-content-md-center row-cols-2 row-cols-md-3 row-cols-lg-3 row-cols-xl-3 my-3 text-center pt-4">
+                <div class="col">
+                    <div class="card product-card card-white rounded-4 mb-4">
+                        <div class="card-body">
+                            <h5>Печать на пластике 3мм толщина</h5>
+                            <p>до 6м<sup>2</sup> - 3500 ₽/м<sup>2</sup></p>
+                            <p>более 6м<sup>2</sup> - 3100 ₽/м<sup>2</sup></p>
+                            <h5>Печать на пвх (таблички) 5мм толщина</h5>
+                            <p>до 6м<sup>2</sup> - 4300 ₽/м<sup>2</sup></p>
+                            <p>более 6м<sup>2</sup> - 3900 ₽/м<sup>2</sup></p>
+                        </div>
+                        
+                        
+                        <div class="card-footer bg-transparent border-secondary centered">
+                            <small>
+                                <p>Резка по внешнему контуру - 100 ₽ / погонный метр</p>
+                                <p> Минимальный заказ - 1000 ₽</p>
+                            </small>						
+                        </div>
+                    </div>
+                </div>                
+            </div>
+        </div>
+    </section>
+  
+    <section class="py-5 text-center">
+        <div class="container text-center">
+            <h2>Адресные таблички на дом</h2>
+            <h5>Цены указаны за таблички напечатанные на пластике толщиной 3мм</h5>
+            <h5>Печать таблички возможна в любом цвете</h5>
+            <div class="cardsField row justify-content-md-center row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 my-3 text-center" id="tablichki">
+            </div>
+        </div>
+    </section>
+
+    <? include "php/blocks/footer.php" ?>
+<script src="js/cardsBuilder.js"></script>
+</body>
+</html>

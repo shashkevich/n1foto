@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ru" class="h-100" data-bs-theme="auto">
+
+<head>
+	<? include "php/blocks/head.php" ?>
+	<title>Document</title>
+
+
+	<style>        
+
+        .gallery {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 20px;
+            justify-content: center;
+        }
+
+        .gallery-item {
+            width: 200px;
+            height: 150px;
+            overflow: hidden;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.05);
+        }
+
+        .gallery-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .lightbox-img {
+            max-width: 90%;
+            max-height: 90%;
+            border: 4px solid #fff;
+            border-radius: 10px;
+        }
+
+        .close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 30px;
+            color: #fff;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body class="d-flex flex-column h-100">
+
+	<? include "php/blocks/nav.php" ?>
+
+	<section class="py-4">
+		<div class="container mtb text-center" id="vizitki">
+			<h1 class="py-4"><?php echo $link['name'] ?></h1>
+			<h2>Офсетная печать</h2>
+			<h5>примерный срок изготовления - 7 дней</h5>
+            <div class="cardsField row justify-content-md-center row-cols-1 row-cols-md-1 row-cols-lg-2 row-cols-xl-2 my-3 text-center" id="listovki" name=""></div>
+			<h2>Цифровая печать</h2>
+			<h5>примерный срок изготовления - 1-3 дня</h5>
+			<div class="cardsField row justify-content-md-center row-cols-1 row-cols-md-1 row-cols-lg-2 row-cols-xl-2 my-3 text-center" id="listovki-cifra" name=""></div>
+		</div>
+	</section>
+
+	<? include "php/blocks/footer.php" ?>
+	<script src="js/copy-service-tables-builder.js"></script>
+	
+	<div class="gallery">
+        <div class="gallery-item">
+            <img src="img/main-page/canvas-main.jpg" alt="Work Sample 1" class="gallery-img">
+        </div>
+        <div class="gallery-item">
+            <img src="img/main-page/canvas-main.jpg" alt="Work Sample 2" class="gallery-img">
+        </div>
+        <div class="gallery-item">
+            <img src="img/main-page/canvas-main.jpg" alt="Work Sample 3" class="gallery-img">
+        </div>
+         Add more images as needed 
+    </div>
+
+    <div class="lightbox" id="lightbox">
+        <span class="close" id="close">&times;</span>
+        <img class="lightbox-img" id="lightbox-img" src="" alt="Enlarged Work">
+    </div>
+
+    <script>
+        // Получаем элементы галереи и lightbox
+        const galleryItems = document.querySelectorAll('.gallery-img');
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        const closeBtn = document.getElementById('close');
+
+        // Открыть изображение в lightbox
+        galleryItems.forEach(item => {
+            item.addEventListener('click', () => {
+                lightbox.style.display = 'flex';
+                lightboxImg.src = item.src;
+            });
+        });
+
+        // Закрыть lightbox
+        closeBtn.addEventListener('click', () => {
+            lightbox.style.display = 'none';
+        });
+
+        // Закрыть lightbox при клике вне изображения
+        lightbox.addEventListener('click', (e) => {
+            if (e.target !== lightboxImg) {
+                lightbox.style.display = 'none';
+            }
+        });
+    </script>
+
+
+</body>
+
+</html>

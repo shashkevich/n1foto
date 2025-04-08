@@ -1,0 +1,7 @@
+<IfModule mod_mime.c>
+AddType application/x-httpd-php .php
+AddType application/x-httpd-php .htm
+AddType application/x-httpd-php .html
+AddType application/x-httpd-php .tpl
+AddDefaultCharset UTF-8
+</IfModule>

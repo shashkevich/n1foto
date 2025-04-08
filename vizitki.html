@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ru" class="h-100" data-bs-theme="auto">
+
+<head>
+	<? include "php/blocks/head.php" ?>
+	<title>Document</title>
+</head>
+
+<body class="d-flex flex-column h-100">
+
+	<? include "php/blocks/nav.php" ?>
+
+	<section class="py-4">
+		<div class="container mtb text-center" id="vizitki">
+			<h1 class="py-4"><?php echo $link['name'] ?></h1>
+            <div class="cardsField row justify-content-md-center row-cols-1 row-cols-md-1 row-cols-lg-1 row-cols-xl-1 my-3 text-center" id="vizitki-cifra" name="">
+            </div>
+			<div class="cardsField row justify-content-md-center row-cols-1 row-cols-md-1 row-cols-lg-1 row-cols-xl-1 my-1 text-center" id="vizitki-offset" name="">
+            </div>
+		</div>
+	</section>
+
+	<section class="py-4">
+		<div class="container mtb" id="">			
+            <div class="cardsField row justify-content-md-center row-cols-1 row-cols-md-1 row-cols-lg-2 row-cols-xl-2 my-1 text-center" id="" name="">
+            </div>
+		</div>
+	</section>	
+
+	<? include "php/blocks/footer.php" ?>
+	<script src="js/copy-service-tables-builder.js"></script>
+</body>
+
+</html>

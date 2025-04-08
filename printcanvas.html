@@ -1,0 +1,142 @@
+
+<!DOCTYPE html>
+<html lang="ru" class="h-100" data-bs-theme="auto">
+<head>
+    <? include "php/blocks/head.php" ?>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    
+    
+</head>
+<body class="d-flex flex-column h-100">
+    
+    <? include "php/blocks/nav.php" ?>
+    
+    
+    <section class="pt-5 text-center">
+        <div class="container text-center">
+            <h1>
+                <?php echo $link['name'] ?>
+            </h1>
+    
+            <div class="row justify-content-center centered mt-5">
+                <div class="card product-card card-white rounded-4 mb-4">
+                    
+                <h4 class="text-center mt-3">Стандартные размеры:</h4>
+                <div class="table-wrap">
+                    <table class="table table-striped table-hover table-borderless">
+                        <thead>
+                            <tr>
+                                <th scope="col" rowspan="2">Размер</th>
+                            </tr>
+                            <tr>
+                                <th scope="col">20х30</th>
+                                <th scope="col">30х30</th>
+                                <th scope="col">30х40</th>
+                                <th scope="col">35х50</th>
+                                <th scope="col">40х50</th>
+                                <th scope="col">40х60</th>
+                                <th scope="col">50х50</th>
+    
+                                
+    
+                                <th scope="col">50х70</th>
+    
+                                
+    
+                                <th scope="col">60х80</th>
+                                <th scope="col">60х90</th>
+    
+                                
+    
+                                <th scope="col">80х120</th>
+                                <th scope="col">90х120</th>
+    
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="row">Цена</th>
+                                <td>1300 ₽</td>
+                                <td>1500 ₽</td>
+                                <td>2000 ₽</td>
+                                <td>2500 ₽</td>
+                                <td>2800 ₽</td>
+                                <td>3200 ₽</td>
+                                <td>3400 ₽</td>
+    
+                              
+    
+                                <td>4000 ₽</td>
+    
+                              
+    
+                                <td>5100 ₽</td>
+                                <td>5700 ₽</td>
+    
+                               
+    
+                                <td>8500 ₽</td>
+                                <td>9800 ₽</td>
+                            </tr>
+                        </tbody>
+                    </table>
+    
+                </div>
+                
+                <div class="row justify-content-center centered py-2">
+                    <h5>В стоимость входит:</h5>
+                
+                    <div class="col-lg-2">
+                        <h4><i class="bi bi-check-circle"></i></h4>
+                        <p>Экологичная печать на собственном оборудовании</p>
+                    </div>
+                
+                    <div class="col-lg-2">
+                        <h4><i class="bi bi-check-circle"></i></h4>
+                        <p>Срок выполнения заказа - 1-2 дня</p>
+                    </div>
+
+                    
+                    <div class="col-lg-2">
+                        <h4><i class="bi bi-check-circle"></i></h4>
+                        <p>Натуральный холст и деревянный подрамник</p>
+                    </div>
+
+                    <div class="col-lg-2">
+                        <h4><i class="bi bi-check-circle"></i></h4>
+                        <p>Галерейная натяжка холста на подрамник</p>
+                    </div>
+
+                    
+                    <div class="col-lg-2">
+                        <h4><i class="bi bi-check-circle"></i></h4>
+                        <p>Покрытие бесцветным защитным лаком</p>
+                    </div>
+
+                    <div class="col-lg-2">
+                        <h4><i class="bi bi-check-circle"></i></h4>
+                        <p>Настенный крепеж</p>
+                    </div>
+                </div>
+                
+                </div>
+            </div>
+    
+        </div>
+    </section>
+
+    <section class="pt-5 text-center">
+        <div class="container text-center">
+            <h2>Дополнительно можно заказать обработку фотографии:</h2>
+            <div class="cardsField row row-cols-2 row-cols-md-2 row-cols-lg-3 row-cols-xl-3 my-3 text-center" id="canvasStyles">
+    
+            </div>
+        </div>
+    </section>    
+   
+    <? include "php/blocks/footer.php" ?>
+<script src="js/cardsBuilder.js"></script>
+</body>
+</html>

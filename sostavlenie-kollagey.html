@@ -1,0 +1,30 @@
+
+<!DOCTYPE html>
+<html lang="ru" class="h-100" data-bs-theme="auto">
+<head>
+    <? include "php/blocks/head.php" ?>    
+    <title>Document</title>    
+</head>
+
+<body class="d-flex flex-column h-100">
+    
+    <? include "php/blocks/nav.php" ?>
+    
+    <section class="py-5 text-center">
+        <div class="container text-center">
+            <h1><?php echo $link['name'] ?></h1>
+            <div class="cardsField row justify-content-md-center row-cols-1 row-cols-md-2 row-cols-lg-2 row-cols-xl-2 my-3 text-center" id="kollagi" name="kollagi">
+                <!-- <div class="col d-flex align-items-center justify-content-center">
+                    
+                </div> -->
+            </div>
+            
+        </div>
+        
+        
+    </section>
+
+    <? include "php/blocks/footer.php" ?>
+<script src="js/cards-builder-table.js"></script>
+</body>
+</html>
