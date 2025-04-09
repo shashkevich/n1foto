@@ -206,6 +206,7 @@ a {
 }
 
 .lightbox {
+    display: flex;
     visibility: hidden;
     opacity: 0;
     pointer-events: none;
