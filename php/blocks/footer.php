@@ -28,6 +28,7 @@
     <script async="" src="//www.google-analytics.com/analytics.js"></script>
     <script type="text/javascript" async="" src="https://mc.yandex.ru/metrika/watch.js"></script>
     <script src="js/jquery-1.7.2.min.js"></script>
+    <script src="/js/gallery.js"></script>
 
     <!-- Yandex.Metrika informer -->
     <a href="https://metrika.yandex.ru/stat/?id=70007377&amp;from=informer" target="_blank" rel="nofollow"><img src="https://informer.yandex.ru/informer/70007377/3_1_FFFFFFFF_EFEFEFFF_0_pageviews" style="width:88px; height:31px; border:0;position: fixed;bottom: 0px" alt="Яндекс.Метрика" title="Яндекс.Метрика: данные за сегодня (просмотры, визиты и уникальные посетители)" class="ym-advanced-informer" data-cid="70007377" data-lang="ru" /></a>
