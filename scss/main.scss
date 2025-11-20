@@ -30,6 +30,8 @@
 body {
     background-color: $light-purple;
     color: $original-text;
+    overflow-x: hidden;
+    max-width: 100%;
 }
 
 @media (min-width: 576px) {
