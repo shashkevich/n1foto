@@ -212,11 +212,11 @@
                 "link": "buklety.html"
             },
             {
-                "name": "Сертификаты",
-                "img": "img/main-page/sertifikat-main.jpg",
-                "alt": "Сертификаты, дипломы",
-                "title": "Сертификаты, дипломы",
-                "link": "sertifikaty.html"
+                "name": "Мобильные стенды",
+                "img": "img/main-page/roll-up.jpg",
+                "alt": "Мобильные стенды rollup roll up",
+                "title": "Мобильные стенды",
+                "link": "rollup.html"
             },
             {
                 "name": "Карманные календарики",
