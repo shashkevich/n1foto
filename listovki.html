@@ -3,6 +3,7 @@
 
 <head>
 	<? include "php/blocks/head.php" ?>
+	<link rel="stylesheet" href="css/poligrafy.css?v=20260810-5">
 	
 	
 </head>
@@ -14,27 +15,14 @@
 	<section class="py-4">
 		<div class="container mtb text-center" id="vizitki">
 			<h1 class="py-4"><?php echo $link['name'] ?></h1>
-			<h2>Офсетная печать</h2>
-			<h5>примерный срок изготовления - 7 дней</h5>
             <span class="rounded-pill bg-success px-3">Указанные цены являются ориентировочными и могут быть скорректированы при подтверждении заказа. Точную стоимость вам сообщит менеджер после обработки заявки. Не нашли нужного тиража или формата изделия? Пришлите нам запрос на почту serp-foto@ya.ru</span>
-            <div class="cardsField row justify-content-md-center row-cols-1 row-cols-md-1 row-cols-lg-2 row-cols-xl-2 my-3 text-center" id="listovki" name=""></div>
-			<h2>Цифровая печать</h2>
-			<h5>примерный срок изготовления - 1-3 дня</h5>
-			<div class="cardsField row justify-content-md-center row-cols-1 row-cols-md-1 row-cols-lg-2 row-cols-xl-2 my-3 text-center" id="listovki-cifra" name=""></div>
-		</div>
-	</section>
-
-	<section class="py-4">
-		<div class="container mtb text-center">
-			<h2 class="py-4">Расчет стоимости листовок</h2>
-			<div class="row justify-content-center my-3 text-center" data-poligrafy-section="listovki"></div>
+            <div class="row justify-content-center align-items-start my-3 text-center" data-poligrafy-sections="listovki,listovki-cifra"></div>
 		</div>
 	</section>
     
-    <?php include 'php/blocks/gallery.php'; ?>
+	<?php include 'php/blocks/gallery.php'; ?>
 	<? include "php/blocks/footer.php" ?>
-	<script src="js/copy-service-tables-builder.js"></script>	
-	<script src="js/poligrafy-builder.js?v=20260806"></script>
+	<script src="js/poligrafy-builder.js?v=20260810-10"></script>
 
     
 

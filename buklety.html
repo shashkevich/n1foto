@@ -3,6 +3,7 @@
 
 <head>
 	<? include "php/blocks/head.php" ?>
+	<link rel="stylesheet" href="css/poligrafy.css?v=20260810-5">
 </head>
 
 <body class="d-flex flex-column h-100">
@@ -12,23 +13,13 @@
 	<section class="py-4">
 		<div class="container mtb text-center" id="vizitki">
 			<h1 class="py-4"><?php echo $link['name'] ?></h1>
-            <div class="cardsField row justify-content-md-center row-cols-1 row-cols-md-1 row-cols-lg-2 row-cols-xl-2 my-3 text-center" id="buklety" name="">
-            </div>
-			
-		</div>
-	</section>
-
-	<section class="py-4">
-		<div class="container mtb text-center">
-			<h2 class="py-4">Расчет стоимости буклетов</h2>
-			<div class="row justify-content-center my-3 text-center" data-poligrafy-section="buklety">
+			<div class="row justify-content-center align-items-start my-3 text-center" data-poligrafy-section="buklety">
 			</div>
 		</div>
 	</section>
 
 	<? include "php/blocks/footer.php" ?>
-	<script src="js/copy-service-tables-builder.js"></script>
-	<script src="js/poligrafy-builder.js?v=20260804-5"></script>
+	<script src="js/poligrafy-builder.js?v=20260810-10"></script>
 </body>
 
 </html>

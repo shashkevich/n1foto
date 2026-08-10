@@ -1,0 +1,101 @@
+.leaflet-card {
+  padding: 2rem !important;
+}
+
+.leaflet-card-column {
+  margin-bottom: 1.5rem;
+}
+
+.leaflet-card h4 {
+  margin-bottom: 0.65rem;
+}
+
+.leaflet-card__lead-time {
+  margin: -0.25rem 0 1rem;
+  color: rgba(0, 0, 0, 0.58);
+  font-size: 0.92rem;
+  font-weight: 500;
+}
+
+.leaflet-card__subtitle {
+  display: inline-flex;
+  justify-content: center;
+  margin: 0 auto 1.75rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  background: #f7f1fb;
+  color: #3d0075;
+  font-size: 0.98rem;
+  font-weight: 600;
+}
+
+.leaflet-calculator {
+  display: grid;
+  gap: 0.9rem;
+  margin-top: 0.25rem;
+  text-align: left;
+}
+
+.leaflet-calculator__row {
+  display: grid;
+  grid-template-columns: 86px minmax(0, 1fr);
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.leaflet-calculator__label {
+  margin: 0;
+  color: rgba(0, 0, 0, 0.72);
+  font-size: 0.96rem;
+  font-weight: 500;
+}
+
+.leaflet-calculator__control {
+  width: 100%;
+  min-width: 0;
+  min-height: 40px;
+  border-color: #ddd3e7;
+  border-radius: 8px;
+  color: rgba(0, 0, 0, 0.84);
+  font-size: 0.98rem;
+  font-weight: 500;
+}
+
+.leaflet-calculator__control:focus {
+  border-color: #cfa8ef;
+  box-shadow: 0 0 0 0.18rem rgba(61, 0, 117, 0.12);
+}
+
+.leaflet-calculator__price {
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  color: #3d0075;
+  font-size: 1.18rem;
+  font-weight: 800;
+}
+
+.leaflet-card__footer {
+  margin-top: 1.35rem;
+  padding-top: 1rem;
+  border-top: 1px solid #eee6f5;
+  color: rgba(0, 0, 0, 0.64);
+  font-size: 0.82rem;
+  line-height: 1.55;
+  text-align: left;
+}
+
+@media (max-width: 420px) {
+  .leaflet-card {
+    padding: 1.25rem !important;
+  }
+
+  .leaflet-calculator__row {
+    grid-template-columns: 72px minmax(0, 1fr);
+    gap: 0.6rem;
+  }
+
+  .leaflet-calculator__label {
+    font-size: 0.9rem;
+  }
+}
