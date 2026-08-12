@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  deploy:
+  deploy-site:
     runs-on: ubuntu-latest
 
 #steps
@@ -27,5 +27,26 @@ jobs:
             **/.vscode/**
             **/node_modules/**
             **/*.scss
+            admin-deploy/**
 
+  deploy-admin:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 📤 Deploy admin via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./admin-deploy/
+          server-dir: /admin.n1foto.com/public_html/
+          exclude: |
+            **/.git*
+            **/.vscode/**
+            **/node_modules/**
+            storage/sessions/**
 
