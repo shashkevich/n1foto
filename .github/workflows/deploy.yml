@@ -43,7 +43,7 @@ jobs:
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./admin-deploy/
-          server-dir: /admin.n1foto.com/public_html/
+          server-dir: /admin_n1foto_com/public_html/
           exclude: |
             **/.git*
             **/.vscode/**
