@@ -2,11 +2,12 @@
 declare(strict_types=1);
 
 require dirname(__DIR__) . '/includes/auth.php';
+require dirname(__DIR__) . '/includes/site-storage.php';
 adminRequireLogin();
 
 header('Content-Type: application/json; charset=utf-8');
 
-$jsonPath = dirname(__DIR__, 2) . '/db/poligrafy.json';
+$jsonPath = adminSiteFilePath('db/poligrafy.json');
 
 function adminJsonResponse(array $payload, int $status = 200): void
 {

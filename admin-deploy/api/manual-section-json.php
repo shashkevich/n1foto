@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 require dirname(__DIR__) . '/includes/auth.php';
 require dirname(__DIR__) . '/includes/pages.php';
+require dirname(__DIR__) . '/includes/site-storage.php';
 adminRequireLogin();
 
 header('Content-Type: application/json; charset=utf-8');
@@ -26,7 +27,7 @@ $source = (string) ($editor['source'] ?? '');
 $parts = explode('#', $source, 2);
 $relativePath = $parts[0] ?? '';
 $sectionIds = $editor['sections'];
-$jsonPath = dirname(__DIR__, 2) . '/' . ltrim($relativePath, '/');
+$jsonPath = adminSiteFilePath($relativePath);
 
 if (!is_file($jsonPath)) {
     adminManualJsonResponse(['ok' => false, 'error' => 'Файл данных не найден.'], 404);

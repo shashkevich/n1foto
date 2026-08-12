@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 require dirname(__DIR__) . '/includes/auth.php';
 require dirname(__DIR__) . '/includes/pages.php';
+require dirname(__DIR__) . '/includes/site-storage.php';
 adminRequireLogin();
 
 header('Content-Type: application/json; charset=utf-8');
@@ -22,7 +23,7 @@ if (!$sitePage || empty($sitePage['pageJson'])) {
 }
 
 $relativePath = ltrim((string) $sitePage['pageJson'], '/');
-$jsonPath = dirname(__DIR__, 2) . '/' . $relativePath;
+$jsonPath = adminSiteFilePath($relativePath);
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     if (!is_file($jsonPath)) {
