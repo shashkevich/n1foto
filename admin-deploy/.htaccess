@@ -1,0 +1,10 @@
+Options -Indexes
+DirectoryIndex index.php
+
+<IfModule mod_headers.c>
+  Header set X-Robots-Tag "noindex, nofollow, noarchive"
+</IfModule>
+
+<FilesMatch "^(\.ht|composer\.|package\.|webpack\.|vite\.)">
+  Require all denied
+</FilesMatch>
