@@ -165,7 +165,7 @@ function adminPublicSiteBaseUrl(): string
 {
     $host = strtolower((string) ($_SERVER['HTTP_HOST'] ?? ''));
 
-    if (str_contains($host, 'admin.n1foto.com')) {
+    if (strpos($host, 'admin.n1foto.com') !== false) {
         return 'https://n1foto.com';
     }
 
