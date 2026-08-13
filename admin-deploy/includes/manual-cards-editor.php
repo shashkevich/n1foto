@@ -22,6 +22,6 @@ function adminRenderManualCardsEditor(array $sitePage): void
       <div id="manualStatus" class="notice notice-muted">Загружаю текущие карточки...</div>
       <div id="manualCards" class="manual-cards"></div>
     </section>
-    <script src="/assets/manual-cards-admin.js?v=20260813-1"></script>
+    <script src="/assets/manual-cards-admin.js?v=20260813-2"></script>
     <?php
 }

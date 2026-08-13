@@ -463,12 +463,6 @@ textarea:focus {
   min-width: 130px;
 }
 
-.manual-unified-table__unavailable {
-  color: #98a2b3;
-  text-align: center;
-  background: #f8fafc;
-}
-
 .manual-price-input {
   min-width: 98px !important;
   padding: 8px !important;

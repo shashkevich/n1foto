@@ -293,12 +293,6 @@
                       ${rowIndex === 0 ? `<th class="manual-unified-table__print" rowspan="${rows.length}">${escapeHtml(getPrintSideLabel(card))}</th>` : ''}
                       <th class="manual-unified-table__paper">${escapeHtml(row[paperHeader] || '')}</th>
                       ${priceHeaders.map((header) => {
-                        const isAvailable = Object.prototype.hasOwnProperty.call(row, header);
-
-                        if (!isAvailable) {
-                          return '<td class="manual-unified-table__unavailable" aria-label="Этот тираж недоступен">—</td>';
-                        }
-
                         return `
                           <td>
                             <input

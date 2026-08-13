@@ -58,6 +58,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     const fillSelect = (select, options, selectedValue = '') => {
         select.replaceChildren();
+        select.disabled = options.length === 0;
 
         options.forEach((optionData) => {
             const option = document.createElement('option');
@@ -73,13 +74,20 @@ window.addEventListener('DOMContentLoaded', () => {
 
     const getMaterialKey = (rows) => Object.keys(rows[0] || {})[0];
 
+    const isPriceAvailable = (price) => {
+        const normalizedPrice = String(price || '').trim();
+
+        return normalizedPrice !== '' && normalizedPrice !== '-';
+    };
+
     const getAvailableTirages = (rowData) => {
         return Object.keys(rowData || {})
             .slice(1)
-            .filter((tirage) => {
-                const price = String(rowData[tirage] || '').trim();
-                return price && price !== '-';
-            });
+            .filter((tirage) => isPriceAvailable(rowData[tirage]));
+    };
+
+    const hasAvailablePrices = (card) => {
+        return (card.table || []).some((rowData) => getAvailableTirages(rowData).length > 0);
     };
 
     const getSectionTitle = (sectionName) => {
@@ -177,6 +185,7 @@ window.addEventListener('DOMContentLoaded', () => {
     };
 
     const makeGroupedPriceCalculator = (cards) => {
+        const availableCards = cards.filter(hasAvailablePrices);
         const calculator = document.createElement('div');
         calculator.classList.add('leaflet-calculator');
 
@@ -207,19 +216,19 @@ window.addEventListener('DOMContentLoaded', () => {
 
         priceCol.append(priceLabel, priceValue);
 
-        const productOptions = [...new Map(cards.map((card) => [card.productId || card.title, {
+        const productOptions = [...new Map(availableCards.map((card) => [card.productId || card.title, {
             value: card.productId || card.title,
             label: getProductLabel(card)
         }])).values()];
         const useProductSelect = productOptions.length > 1;
-        const useColorSelect = new Set(cards.map((card) => card.color).filter(Boolean)).size > 1;
+        const useColorSelect = new Set(availableCards.map((card) => card.color).filter(Boolean)).size > 1;
 
         const getCardsForProduct = () => {
             if (!useProductSelect) {
-                return cards;
+                return availableCards;
             }
 
-            return cards.filter((card) => (card.productId || card.title) === productSelect.value);
+            return availableCards.filter((card) => (card.productId || card.title) === productSelect.value);
         };
 
         const getCurrentCard = () => {
@@ -228,7 +237,7 @@ window.addEventListener('DOMContentLoaded', () => {
             return productCards.find((card) => card.format === formatSelect.value && card.color === colorSelect.value)
                 || productCards.find((card) => card.format === formatSelect.value)
                 || productCards[0]
-                || cards[0];
+                || availableCards[0];
         };
 
         const updateFormatOptions = () => {
@@ -256,12 +265,15 @@ window.addEventListener('DOMContentLoaded', () => {
         const updateMaterialOptions = () => {
             const currentMaterial = materialSelect.value;
             const card = getCurrentCard();
-            const rows = card.table || [];
+            const rows = card ? card.table || [] : [];
             const materialKey = getMaterialKey(rows);
-            const materialOptions = rows.map((rowData, index) => ({
-                value: String(index),
-                label: rowData[materialKey]
-            }));
+            const materialOptions = rows
+                .map((rowData, index) => ({ rowData, index }))
+                .filter(({ rowData }) => getAvailableTirages(rowData).length > 0)
+                .map(({ rowData, index }) => ({
+                    value: String(index),
+                    label: rowData[materialKey]
+                }));
 
             fillSelect(materialSelect, materialOptions, currentMaterial);
         };
@@ -269,7 +281,7 @@ window.addEventListener('DOMContentLoaded', () => {
         const updateTirageOptions = () => {
             const currentTirage = tirageSelect.value;
             const card = getCurrentCard();
-            const rows = card.table || [];
+            const rows = card ? card.table || [] : [];
             const rowData = rows[Number(materialSelect.value)] || rows[0] || {};
             const tirageOptions = getAvailableTirages(rowData).map((tirage) => ({
                 value: tirage,
@@ -281,7 +293,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
         const updatePrice = () => {
             const card = getCurrentCard();
-            const rows = card.table || [];
+            const rows = card ? card.table || [] : [];
             const rowData = rows[Number(materialSelect.value)] || rows[0] || {};
             priceValue.textContent = rowData[tirageSelect.value] || '-';
         };
