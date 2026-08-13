@@ -402,13 +402,20 @@
     }
   });
 
-  loadPageData()
-    .then(() => {
+  const initialize = async () => {
+    try {
+      await loadPageData();
       render();
       saveButton.disabled = true;
       setStatus('Данные загружены.', 'success');
-    })
-    .catch((error) => {
+    } catch (error) {
       setStatus(error.message, 'danger');
-    });
+    }
+  };
+
+  if (document.readyState === 'complete') {
+    initialize();
+  } else {
+    window.addEventListener('load', initialize, { once: true });
+  }
 })();
