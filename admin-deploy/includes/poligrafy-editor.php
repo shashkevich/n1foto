@@ -39,7 +39,7 @@ function adminRenderPoligrafyEditor(?array $sitePage = null): void
       <div class="section-heading">
         <div>
           <h2>Расчет цен</h2>
-          <p id="resultMeta">Нет загруженного прайса</p>
+          <p id="resultMeta">Загружаю текущие цены...</p>
         </div>
         <div class="action-row">
           <button class="button button-soft" id="saveInline" type="button" disabled>Сохранить правки</button>
@@ -79,7 +79,7 @@ function adminRenderPoligrafyEditor(?array $sitePage = null): void
           </thead>
           <tbody id="positionsBody">
             <tr>
-              <td colspan="9" class="empty-cell">Здесь появится таблица после импорта.</td>
+              <td colspan="9" class="empty-cell">Здесь появятся текущие цены или данные после импорта CSV.</td>
             </tr>
           </tbody>
         </table>

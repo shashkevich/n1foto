@@ -95,6 +95,7 @@
     cards: [],
     existingJson: null,
     csvName: '',
+    sourceMode: 'empty',
     selectedSection: initialSection,
     selectedProduct: 'eurobooklet_2fold'
   };
@@ -119,7 +120,7 @@
     return `${Math.round(value).toLocaleString('ru-RU').replace(/\u00a0/g, ' ')} ₽`;
   };
 
-  const parseDecimal = (value) => Number(String(value || '').replace(/\s/g, '').replace(',', '.')) || 0;
+  const parseDecimal = (value) => Number(String(value || '').replace(/[^\d,.-]/g, '').replace(',', '.')) || 0;
 
   const roundRetail = (value) => {
     const section = config[state.selectedSection];
@@ -250,6 +251,88 @@
     }
 
     state.existingJson = await response.json();
+  };
+
+  const getExistingProductCards = () => {
+    const sectionCards = Array.isArray(state.existingJson && state.existingJson[state.selectedSection])
+      ? state.existingJson[state.selectedSection]
+      : [];
+
+    return sectionCards.filter((card) => card.productId === state.selectedProduct);
+  };
+
+  const loadExistingProductPrices = async () => {
+    const cards = getExistingProductCards();
+
+    if (!cards.length) {
+      resetWork();
+      setStatus('Для выбранного типа изделия в poligrafy.json пока нет цен. Загрузите CSV.', 'muted');
+      return;
+    }
+
+    const headers = ['Материал', 'Цвет', 'Формат', 'Тираж', 'Служебное поле', 'Тип печати', 'Цена'];
+    const rows = [];
+
+    cards.forEach((card) => {
+      (card.table || []).forEach((tableRow) => {
+        const materialHeader = Object.keys(tableRow)[0];
+        const material = tableRow[materialHeader];
+
+        Object.keys(tableRow).slice(1).forEach((tirageHeader) => {
+          const priceText = String(tableRow[tirageHeader] || '').trim();
+
+          if (!priceText || priceText === '-') {
+            return;
+          }
+
+          rows.push({
+            [headers[MATERIAL_INDEX]]: material,
+            [headers[COLOR_INDEX]]: card.color || '',
+            [headers[FORMAT_INDEX]]: card.format || card.formatLabel || '',
+            [headers[TIRAGE_INDEX]]: tirageHeader,
+            [headers[PRINT_TYPE_INDEX]]: card.printType || '',
+            [headers[PRICE_INDEX]]: priceText
+          });
+        });
+      });
+    });
+
+    state.headers = headers;
+    state.rows = rows;
+    state.csvName = '';
+    state.sourceMode = 'json';
+    state.positions = await Promise.all(rows.map(async (row, rowIndex) => {
+      const material = row[headers[MATERIAL_INDEX]];
+      const color = row[headers[COLOR_INDEX]];
+      const format = row[headers[FORMAT_INDEX]];
+      const tirage = Number.parseInt(row[headers[TIRAGE_INDEX]], 10);
+      const printType = row[headers[PRINT_TYPE_INDEX]];
+      const retail = parseDecimal(row[headers[PRICE_INDEX]]);
+      const key = await sha1(makeKeySource(format, material, tirage, color, printType));
+
+      return {
+        rowIndex,
+        key,
+        format,
+        color,
+        printType,
+        material,
+        tirage,
+        cost: null,
+        autoMultiplier: null,
+        multiplier: null,
+        retail,
+        margin: null,
+        warnings: []
+      };
+    }));
+
+    buildCards();
+    updateFilters();
+    setEnabledState(true);
+    renderPositions();
+    resultMeta.textContent = `Текущие цены из poligrafy.json: позиций ${state.positions.length}, карточек ${state.cards.length}`;
+    setStatus('Текущие цены загружены. Их можно изменить в колонке «Цена» без загрузки CSV.', 'success');
   };
 
   const loadOverrides = () => {
@@ -431,7 +514,7 @@
   const updateWarnings = () => {
     state.positions.forEach((position) => {
       position.warnings = [];
-      position.margin = position.retail - position.cost;
+      position.margin = Number.isFinite(position.cost) ? position.retail - position.cost : null;
     });
 
     const groups = new Map();
@@ -477,9 +560,15 @@
       const printType = first[headers[PRINT_TYPE_INDEX]];
       const formatLabel = extractFormatLabel(format);
       const colorShort = getColorShortLabel(color);
+      const existingCard = getExistingProductCards().find((card) => (
+        card.format === format
+        && card.color === color
+        && card.printType === printType
+      ));
       const tirages = unique(rows.map((row) => Number.parseInt(row[headers[TIRAGE_INDEX]], 10))).sort((a, b) => a - b);
       const materials = unique(rows.map((row) => row[headers[MATERIAL_INDEX]]));
-      const materialHeader = `${headers[MATERIAL_INDEX]}\\${headers[TIRAGE_INDEX]}`;
+      const materialHeader = Object.keys((existingCard && existingCard.table && existingCard.table[0]) || {})[0]
+        || `${headers[MATERIAL_INDEX]}\\${headers[TIRAGE_INDEX]}`;
 
       const table = materials.map((material) => {
         const tableRow = { [materialHeader]: material };
@@ -500,14 +589,15 @@
       });
 
       return {
+        ...(existingCard || {}),
         productId: state.selectedProduct,
-        title: makeTitle(product, { format, formatLabel, color, colorShort }),
-        description: product.description,
+        title: existingCard ? existingCard.title : makeTitle(product, { format, formatLabel, color, colorShort }),
+        description: existingCard ? existingCard.description : product.description,
         format,
         formatLabel,
         color,
         printType,
-        img: product.image ? [product.image] : [],
+        img: existingCard ? (existingCard.img || []) : (product.image ? [product.image] : []),
         table
       };
     }).sort((a, b) => a.format.localeCompare(b.format, 'ru'));
@@ -685,10 +775,12 @@
         <td>${escapeHtml(getColorShortLabel(position.color))}</td>
         <td>${escapeHtml(position.material)}</td>
         <td>${position.tirage} шт</td>
-        <td>${formatRub(position.cost)}</td>
-        <td><input class="position-multiplier" inputmode="decimal" value="${position.multiplier}" data-key="${position.key}"></td>
+        <td>${Number.isFinite(position.cost) ? formatRub(position.cost) : '—'}</td>
+        <td>${Number.isFinite(position.cost)
+          ? `<input class="position-multiplier" inputmode="decimal" value="${position.multiplier}" data-key="${position.key}">`
+          : '<span class="muted-value" title="Себестоимость появится после импорта CSV">—</span>'}</td>
         <td><input class="position-retail" inputmode="numeric" value="${Math.round(position.retail)}" data-key="${position.key}"></td>
-        <td class="price-value">${formatRub(position.margin)}</td>
+        <td class="price-value">${Number.isFinite(position.margin) ? formatRub(position.margin) : '—'}</td>
         <td>${position.warnings.length ? `<span class="warn-text">${position.warnings.join(', ')}</span>` : ''}</td>
       </tr>
     `).join('');
@@ -704,10 +796,11 @@
     .replaceAll("'", '&#039;');
 
   const setEnabledState = (enabled) => {
-    [applyCoefficientsButton, saveInlineButton, saveJsonButton, formatFilter, colorFilter, tableSearch]
-      .forEach((element) => {
-        element.disabled = !enabled;
-      });
+    [saveJsonButton, formatFilter, colorFilter, tableSearch].forEach((element) => {
+      element.disabled = !enabled;
+    });
+    applyCoefficientsButton.disabled = !enabled || state.sourceMode !== 'csv';
+    saveInlineButton.disabled = !enabled || state.sourceMode !== 'csv';
 
     resultPanel.classList.toggle('is-empty', !enabled);
     previewPanel.classList.toggle('is-empty', !enabled);
@@ -774,6 +867,7 @@
     state.headers = parsed.headers;
     state.rows = parsed.rows;
     state.csvName = csvInput.files[0].name;
+    state.sourceMode = 'csv';
 
     await makePositions();
     buildCards();
@@ -792,16 +886,17 @@
     state.positions = [];
     state.cards = [];
     state.csvName = '';
+    state.sourceMode = 'empty';
     csvInput.value = '';
     formatFilter.value = '';
     colorFilter.value = '';
     tableSearch.value = '';
-    resultMeta.textContent = 'Нет загруженного прайса';
+    resultMeta.textContent = 'Нет загруженных цен';
     cardsMeta.textContent = 'Карточки пока не сформированы';
-    positionsBody.innerHTML = '<tr><td colspan="9" class="empty-cell">Здесь появится таблица после импорта.</td></tr>';
+    positionsBody.innerHTML = '<tr><td colspan="9" class="empty-cell">Здесь появятся текущие цены или данные после импорта CSV.</td></tr>';
     cardPreview.replaceChildren();
     setEnabledState(false);
-    setStatus('Загрузите CSV и нажмите «Построить».');
+    setStatus('Для загрузки нового прайса выберите CSV и нажмите «Построить».');
   };
 
   if (sectionSelect) {
@@ -813,9 +908,9 @@
     });
   }
 
-  productSelect.addEventListener('change', () => {
+  productSelect.addEventListener('change', async () => {
     state.selectedProduct = productSelect.value;
-    resetWork();
+    await loadExistingProductPrices();
   });
 
   buildPreviewButton.addEventListener('click', async () => {
@@ -884,7 +979,7 @@
       }
     } else {
       position.retail = Math.round(parseDecimal(input.value));
-      position.multiplier = position.cost > 0 ? Number((position.retail / position.cost).toFixed(3)) : 1;
+      position.multiplier = position.cost > 0 ? Number((position.retail / position.cost).toFixed(3)) : null;
       const multiplierInput = input.closest('tr').querySelector('.position-multiplier');
 
       if (multiplierInput) {
@@ -892,11 +987,11 @@
       }
     }
 
-    position.margin = position.retail - position.cost;
+    position.margin = Number.isFinite(position.cost) ? position.retail - position.cost : null;
     const marginCell = input.closest('tr').querySelector('.price-value');
 
     if (marginCell) {
-      marginCell.textContent = formatRub(position.margin);
+      marginCell.textContent = Number.isFinite(position.margin) ? formatRub(position.margin) : '—';
     }
 
     buildCards();
@@ -931,8 +1026,8 @@
   renderCoefficientInputs();
   setEnabledState(false);
   loadCurrentJson()
-    .then(() => {
-      setStatus('Текущий poligrafy.json загружен автоматически. Загрузите CSV и нажмите «Построить».', 'success');
+    .then(async () => {
+      await loadExistingProductPrices();
     })
     .catch((error) => {
       setStatus(error.message, 'danger');
