@@ -394,6 +394,10 @@ window.addEventListener('DOMContentLoaded', () => {
         const column = document.createElement('div');
         column.classList.add('col-12', 'col-lg-6', 'leaflet-card-column');
 
+        if (sectionName === 'buklety') {
+            column.classList.add('col-xl-5', 'booklet-card-column');
+        }
+
         const card = document.createElement('div');
         card.classList.add('card', 'product-card', 'card-white', 'leaflet-card', 'rounded-4', 'p-4', 'mb-5');
 
