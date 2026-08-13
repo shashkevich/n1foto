@@ -414,6 +414,68 @@ textarea:focus {
   font-weight: 700;
 }
 
+.manual-unified {
+  min-width: 0;
+  padding: 20px;
+}
+
+.manual-unified__heading {
+  margin-bottom: 14px;
+}
+
+.manual-unified__table-wrap {
+  max-height: 70vh;
+}
+
+.manual-unified-table {
+  min-width: 1120px;
+}
+
+.manual-unified-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  white-space: nowrap;
+}
+
+.manual-unified-table th,
+.manual-unified-table td {
+  vertical-align: middle;
+}
+
+.manual-unified-table__format,
+.manual-unified-table__print,
+.manual-unified-table__paper {
+  text-align: left;
+  white-space: nowrap;
+  background: #fff;
+}
+
+.manual-unified-table__format {
+  min-width: 150px;
+}
+
+.manual-unified-table__print {
+  min-width: 104px;
+}
+
+.manual-unified-table__paper {
+  min-width: 130px;
+}
+
+.manual-unified-table__unavailable {
+  color: #98a2b3;
+  text-align: center;
+  background: #f8fafc;
+}
+
+.manual-price-input {
+  min-width: 98px !important;
+  padding: 8px !important;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
 .icon-text-button {
   min-height: auto;
   padding: 4px 7px;

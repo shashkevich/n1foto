@@ -60,6 +60,29 @@
 
   const getHeaders = (rows) => Object.keys(rows[0] || {});
 
+  const getPriceHeaders = (cards) => {
+    const headers = new Set();
+
+    cards.forEach((card) => {
+      (card.table || []).forEach((row) => {
+        Object.keys(row).slice(1).forEach((header) => headers.add(header));
+      });
+    });
+
+    return Array.from(headers).sort((left, right) => {
+      const leftNumber = Number.parseInt(left.replace(/\D/g, ''), 10);
+      const rightNumber = Number.parseInt(right.replace(/\D/g, ''), 10);
+
+      return leftNumber - rightNumber;
+    });
+  };
+
+  const getPrintSideLabel = (card) => {
+    const color = String(card.color || '').toLowerCase();
+
+    return color.includes('двух') ? '2 стороны' : '1 сторона';
+  };
+
   const syncInputValue = (input) => {
     const section = pageData.sections[Number(input.dataset.sectionIndex)];
     const card = section.cards[Number(input.dataset.cardIndex)];
@@ -231,10 +254,85 @@
     `;
   };
 
+  const renderDigitalLeafletTable = (section, sectionIndex) => {
+    const cards = section.cards || [];
+    const priceHeaders = getPriceHeaders(cards);
+
+    if (!cards.length || !priceHeaders.length) {
+      return '<div class="notice notice-muted">Таблица цифровых листовок пустая.</div>';
+    }
+
+    return `
+      <section class="manual-unified panel">
+        <div class="section-heading manual-unified__heading">
+          <div>
+            <h2>Цены цифровой печати</h2>
+            <p>Каждая строка — сочетание формата, печати и бумаги. Цены можно менять прямо в таблице.</p>
+          </div>
+        </div>
+        <div class="table-wrap manual-unified__table-wrap">
+          <table class="manual-edit-table manual-unified-table">
+            <thead>
+              <tr>
+                <th>Формат</th>
+                <th>Печать</th>
+                <th>Бумага</th>
+                ${priceHeaders.map((header) => `<th>${escapeHtml(header)}</th>`).join('')}
+              </tr>
+            </thead>
+            <tbody>
+              ${cards.map((card, cardIndex) => {
+                const rows = card.table || [];
+
+                return rows.map((row, rowIndex) => {
+                  const paperHeader = Object.keys(row)[0] || '';
+
+                  return `
+                    <tr>
+                      ${rowIndex === 0 ? `<th class="manual-unified-table__format" rowspan="${rows.length}">${escapeHtml(card.formatLabel || card.format || '')}</th>` : ''}
+                      ${rowIndex === 0 ? `<th class="manual-unified-table__print" rowspan="${rows.length}">${escapeHtml(getPrintSideLabel(card))}</th>` : ''}
+                      <th class="manual-unified-table__paper">${escapeHtml(row[paperHeader] || '')}</th>
+                      ${priceHeaders.map((header) => {
+                        const isAvailable = Object.prototype.hasOwnProperty.call(row, header);
+
+                        if (!isAvailable) {
+                          return '<td class="manual-unified-table__unavailable" aria-label="Этот тираж недоступен">—</td>';
+                        }
+
+                        return `
+                          <td>
+                            <input
+                              class="manual-price-input"
+                              value="${escapeHtml(row[header] || '')}"
+                              aria-label="${escapeHtml(`${card.formatLabel || card.format}, ${getPrintSideLabel(card)}, ${row[paperHeader] || ''}, ${header}`)}"
+                              data-field="cell"
+                              data-section-index="${sectionIndex}"
+                              data-card-index="${cardIndex}"
+                              data-row-index="${rowIndex}"
+                              data-header="${escapeHtml(header)}"
+                            >
+                          </td>
+                        `;
+                      }).join('')}
+                    </tr>
+                  `;
+                }).join('');
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    `;
+  };
+
   const render = () => {
     const sections = pageData && Array.isArray(pageData.sections) ? pageData.sections : [];
 
     cardsRoot.innerHTML = sections.map((section, sectionIndex) => {
+      if (section.id === 'listovki-cifra') {
+        return renderDigitalLeafletTable(section, sectionIndex);
+      }
+
       return `
         <section class="manual-section">
           <div class="section-heading">
@@ -293,7 +391,7 @@
       setStatus('Загружаю текущие карточки...');
       await loadPageData();
       render();
-      setStatus('Карточки загружены.', 'success');
+      setStatus('Данные загружены.', 'success');
     } catch (error) {
       setStatus(error.message, 'danger');
     }
@@ -314,7 +412,7 @@
     .then(() => {
       render();
       saveButton.disabled = true;
-      setStatus('Карточки загружены.', 'success');
+      setStatus('Данные загружены.', 'success');
     })
     .catch((error) => {
       setStatus(error.message, 'danger');
