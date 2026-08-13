@@ -26,6 +26,10 @@
   const cardsMeta = document.getElementById('cardsMeta');
   const cardPreview = document.getElementById('cardPreview');
   const editorRoot = document.querySelector('[data-poligrafy-editor]');
+  const productImageInput = document.getElementById('productImageInput');
+  const uploadProductImageButton = document.getElementById('uploadProductImage');
+  const productImagePreview = document.getElementById('productImagePreview');
+  const productImagePreviewImg = document.getElementById('productImagePreviewImg');
 
   const config = {
     buklety: {
@@ -41,23 +45,17 @@
         { from: 40000.01, multiplier: 1.3 }
       ],
       products: {
-        eurobooklet_2fold: {
-          name: 'Евробуклет (1 сгиб)',
-          titleTemplate: 'Евробуклет {format} (1 сгиб)',
-          description: 'Цветная печать с двух сторон, офсет',
-          image: 'img/buklety/buklet_eu.jpg'
-        },
         booklet_1fold: {
           name: 'Буклет с одним сгибом',
           titleTemplate: 'Буклет {format}, 1 сгиб',
           description: 'Цветная печать с двух сторон, офсет',
           image: 'img/buklety/buklet_A4-A5.jpg'
         },
-        booklet_3fold: {
-          name: 'Буклет с тремя сгибами',
-          titleTemplate: 'Буклет {format}, 3 сгиба',
+        eurobooklet_2fold: {
+          name: 'Буклет с двумя сгибами (евробуклет)',
+          titleTemplate: 'Буклет с двумя сгибами (евробуклет) {format}',
           description: 'Цветная печать с двух сторон, офсет',
-          image: 'img/buklety/buklet_garm.jpg'
+          image: 'img/buklety/buklet_eu.jpg'
         }
       }
     },
@@ -97,7 +95,7 @@
     csvName: '',
     sourceMode: 'empty',
     selectedSection: initialSection,
-    selectedProduct: 'eurobooklet_2fold'
+    selectedProduct: 'booklet_1fold'
   };
 
   const coefficientLimits = [
@@ -267,11 +265,34 @@
     return sectionCards.filter((card) => card.productId === state.selectedProduct);
   };
 
+  const renderProductImage = (cacheBust = false) => {
+    if (!productImagePreview || !productImagePreviewImg) {
+      return;
+    }
+
+    const cards = getExistingProductCards();
+    const imagePath = cards.flatMap((card) => card.img || []).find(Boolean) || '';
+
+    if (!imagePath) {
+      productImagePreview.classList.add('is-empty');
+      productImagePreviewImg.removeAttribute('src');
+      productImagePreviewImg.alt = '';
+      return;
+    }
+
+    const publicBase = String(editorRoot.dataset.publicSiteBase || '').replace(/\/$/, '');
+    const imageUrl = `${publicBase}/${String(imagePath).replace(/^\//, '')}${cacheBust ? `?v=${Date.now()}` : ''}`;
+    productImagePreviewImg.src = imageUrl;
+    productImagePreviewImg.alt = config[state.selectedSection].products[state.selectedProduct].name;
+    productImagePreview.classList.remove('is-empty');
+  };
+
   const loadExistingProductPrices = async () => {
     const cards = getExistingProductCards();
 
     if (!cards.length) {
       resetWork();
+      renderProductImage();
       setStatus('Для выбранного типа изделия в poligrafy.json пока нет цен. Загрузите CSV.', 'muted');
       return;
     }
@@ -333,6 +354,7 @@
     updateFilters();
     setEnabledState(true);
     renderPositions();
+    renderProductImage();
     resultMeta.textContent = `Текущие цены из poligrafy.json: позиций ${state.positions.length}, карточек ${state.cards.length}`;
     setStatus('Текущие цены загружены. Их можно изменить в колонке «Цена» без загрузки CSV.', 'success');
   };
@@ -916,6 +938,52 @@
     state.selectedProduct = productSelect.value;
     await loadExistingProductPrices();
   });
+
+  if (productImageInput && uploadProductImageButton) {
+    productImageInput.addEventListener('change', () => {
+      uploadProductImageButton.disabled = !productImageInput.files.length;
+    });
+
+    uploadProductImageButton.addEventListener('click', async () => {
+      if (!productImageInput.files.length) {
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('section', state.selectedSection);
+      formData.append('productId', state.selectedProduct);
+      formData.append('image', productImageInput.files[0]);
+
+      try {
+        uploadProductImageButton.disabled = true;
+        setStatus('Загружаю изображение...');
+
+        const response = await fetch('/api/poligrafy-image.php', {
+          method: 'POST',
+          credentials: 'same-origin',
+          body: formData
+        });
+        const payload = await response.json().catch(() => ({}));
+
+        if (!response.ok || !payload.ok) {
+          throw new Error(payload.error || `Не удалось загрузить изображение: ${response.status}`);
+        }
+
+        getExistingProductCards().forEach((card) => {
+          card.img = [payload.path];
+        });
+        buildCards();
+        renderCardsPreview();
+        renderProductImage(true);
+        productImageInput.value = '';
+        setStatus(`Изображение загружено и применено к карточке: ${payload.path}`, 'success');
+      } catch (error) {
+        setStatus(error.message, 'danger');
+      } finally {
+        uploadProductImageButton.disabled = !productImageInput.files.length;
+      }
+    });
+  }
 
   buildPreviewButton.addEventListener('click', async () => {
     try {

@@ -3,8 +3,9 @@ declare(strict_types=1);
 
 function adminRenderPoligrafyEditor(?array $sitePage = null): void
 {
+    $isBooklets = ($sitePage['id'] ?? '') === 'buklety';
     ?>
-    <section class="layout-grid poligrafy-editor" data-poligrafy-editor="<?= adminEscape((string) ($sitePage['id'] ?? '')) ?>">
+    <section class="layout-grid poligrafy-editor" data-poligrafy-editor="<?= adminEscape((string) ($sitePage['id'] ?? '')) ?>" data-public-site-base="<?= adminEscape(adminPublicSiteBaseUrl()) ?>">
       <aside class="panel control-panel">
         <h2>Импорт</h2>
 
@@ -12,6 +13,19 @@ function adminRenderPoligrafyEditor(?array $sitePage = null): void
           <span>Тип изделия</span>
           <select id="productSelect"></select>
         </label>
+
+        <?php if ($isBooklets): ?>
+          <section class="product-image-control">
+            <div class="product-image-preview" id="productImagePreview">
+              <img id="productImagePreviewImg" alt="">
+            </div>
+            <label class="field">
+              <span>Изображение карточки</span>
+              <input id="productImageInput" type="file" accept="image/jpeg,image/png,.jpg,.jpeg,.png">
+            </label>
+            <button class="button button-soft" id="uploadProductImage" type="button" disabled>Загрузить изображение</button>
+          </section>
+        <?php endif; ?>
 
         <label class="field">
           <span>CSV прайс партнера</span>

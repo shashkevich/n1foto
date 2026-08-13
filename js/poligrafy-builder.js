@@ -104,9 +104,8 @@ window.addEventListener('DOMContentLoaded', () => {
 
     const getProductLabel = (cardData) => {
         const productLabels = {
-            eurobooklet_2fold: 'Евробуклет (1 сгиб)',
-            booklet_1fold: 'Буклет, 1 сгиб',
-            booklet_3fold: 'Буклет, 3 сгиба',
+            booklet_1fold: 'Буклет с одним сгибом',
+            eurobooklet_2fold: 'Буклет с двумя сгибами (евробуклет)',
             leaflet: 'Листовки',
             leaflet_digital: 'Цифровые листовки'
         };
@@ -398,7 +397,9 @@ window.addEventListener('DOMContentLoaded', () => {
         const card = document.createElement('div');
         card.classList.add('card', 'product-card', 'card-white', 'leaflet-card', 'rounded-4', 'p-4', 'mb-5');
 
-        const titleText = getSectionTitle(sectionName);
+        const titleText = sectionName === 'buklety'
+            ? getProductLabel(firstCard)
+            : getSectionTitle(sectionName);
 
         if (titleText) {
             const title = document.createElement('h4');
@@ -413,6 +414,20 @@ window.addEventListener('DOMContentLoaded', () => {
             leadTime.classList.add('leaflet-card__lead-time');
             leadTime.textContent = leadTimeText;
             card.append(leadTime);
+        }
+
+        const imagePath = (firstCard.img || []).find(Boolean);
+
+        if (imagePath) {
+            const imageWrap = document.createElement('div');
+            imageWrap.classList.add('poligrafy-card__image');
+
+            const image = document.createElement('img');
+            image.src = imagePath;
+            image.alt = titleText || firstCard.title || '';
+            image.loading = 'lazy';
+            imageWrap.append(image);
+            card.append(imageWrap);
         }
 
         const subtitle = document.createElement('p');
@@ -440,7 +455,18 @@ window.addEventListener('DOMContentLoaded', () => {
         }
 
         if (sectionName === 'buklety') {
-            return cards.length ? [renderGroupedCard(sectionName, cards)] : [];
+            const productOrder = ['booklet_1fold', 'eurobooklet_2fold'];
+            const groups = new Map();
+
+            cards
+                .filter((card) => productOrder.includes(card.productId))
+                .forEach((card) => {
+                    groups.set(card.productId, [...(groups.get(card.productId) || []), card]);
+                });
+
+            return productOrder
+                .filter((productId) => groups.has(productId))
+                .map((productId) => renderGroupedCard(sectionName, groups.get(productId)));
         }
 
         const groups = new Map();
