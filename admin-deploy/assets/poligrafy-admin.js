@@ -122,6 +122,12 @@
 
   const parseDecimal = (value) => Number(String(value || '').replace(/[^\d,.-]/g, '').replace(',', '.')) || 0;
 
+  const parseOptionalPrice = (value) => {
+    const normalizedValue = String(value || '').trim();
+
+    return !normalizedValue || normalizedValue === '-' ? null : parseDecimal(normalizedValue);
+  };
+
   const roundRetail = (value) => {
     const section = config[state.selectedSection];
     const roundTo = Number(section.roundTo || 1);
@@ -281,10 +287,6 @@
         Object.keys(tableRow).slice(1).forEach((tirageHeader) => {
           const priceText = String(tableRow[tirageHeader] || '').trim();
 
-          if (!priceText || priceText === '-') {
-            return;
-          }
-
           rows.push({
             [headers[MATERIAL_INDEX]]: material,
             [headers[COLOR_INDEX]]: card.color || '',
@@ -307,7 +309,7 @@
       const format = row[headers[FORMAT_INDEX]];
       const tirage = Number.parseInt(row[headers[TIRAGE_INDEX]], 10);
       const printType = row[headers[PRINT_TYPE_INDEX]];
-      const retail = parseDecimal(row[headers[PRICE_INDEX]]);
+      const retail = parseOptionalPrice(row[headers[PRICE_INDEX]]);
       const key = await sha1(makeKeySource(format, material, tirage, color, printType));
 
       return {
@@ -514,7 +516,9 @@
   const updateWarnings = () => {
     state.positions.forEach((position) => {
       position.warnings = [];
-      position.margin = Number.isFinite(position.cost) ? position.retail - position.cost : null;
+      position.margin = Number.isFinite(position.cost) && Number.isFinite(position.retail)
+        ? position.retail - position.cost
+        : null;
     });
 
     const groups = new Map();
@@ -528,7 +532,7 @@
       positions.sort((a, b) => a.tirage - b.tirage);
       let previous = null;
 
-      positions.forEach((position) => {
+      positions.filter((position) => Number.isFinite(position.retail)).forEach((position) => {
         if (previous && position.retail < previous.retail) {
           position.warnings.push('ниже предыдущего тиража');
         }
@@ -582,7 +586,7 @@
             && item.tirage === tirage
           ));
 
-          tableRow[`${tirage} шт`] = position ? formatRub(position.retail) : '-';
+          tableRow[`${tirage} шт`] = position && Number.isFinite(position.retail) ? formatRub(position.retail) : '-';
         });
 
         return tableRow;
@@ -779,7 +783,7 @@
         <td>${Number.isFinite(position.cost)
           ? `<input class="position-multiplier" inputmode="decimal" value="${position.multiplier}" data-key="${position.key}">`
           : '<span class="muted-value" title="Себестоимость появится после импорта CSV">—</span>'}</td>
-        <td><input class="position-retail" inputmode="numeric" value="${Math.round(position.retail)}" data-key="${position.key}"></td>
+        <td><input class="position-retail" inputmode="numeric" value="${Number.isFinite(position.retail) ? Math.round(position.retail) : '-'}" data-key="${position.key}"></td>
         <td class="price-value">${Number.isFinite(position.margin) ? formatRub(position.margin) : '—'}</td>
         <td>${position.warnings.length ? `<span class="warn-text">${position.warnings.join(', ')}</span>` : ''}</td>
       </tr>
@@ -978,8 +982,11 @@
         retailInput.value = Math.round(position.retail);
       }
     } else {
-      position.retail = Math.round(parseDecimal(input.value));
-      position.multiplier = position.cost > 0 ? Number((position.retail / position.cost).toFixed(3)) : null;
+      const retail = parseOptionalPrice(input.value);
+      position.retail = Number.isFinite(retail) ? Math.round(retail) : null;
+      position.multiplier = position.cost > 0 && Number.isFinite(position.retail)
+        ? Number((position.retail / position.cost).toFixed(3))
+        : null;
       const multiplierInput = input.closest('tr').querySelector('.position-multiplier');
 
       if (multiplierInput) {
@@ -987,7 +994,9 @@
       }
     }
 
-    position.margin = Number.isFinite(position.cost) ? position.retail - position.cost : null;
+    position.margin = Number.isFinite(position.cost) && Number.isFinite(position.retail)
+      ? position.retail - position.cost
+      : null;
     const marginCell = input.closest('tr').querySelector('.price-value');
 
     if (marginCell) {
