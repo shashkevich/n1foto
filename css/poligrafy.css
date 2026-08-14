@@ -45,15 +45,19 @@
   object-fit: contain;
 }
 
-.booklet-card-column .poligrafy-card__image {
-  width: min(100%, 280px);
+.leaflet-card-column .poligrafy-card__image {
+  width: min(100%, 240px);
   aspect-ratio: 1;
   margin-right: auto;
   margin-left: auto;
 }
 
-.booklet-card-column .poligrafy-card__image img {
+.leaflet-card-column .poligrafy-card__image img {
   object-fit: cover;
+}
+
+.booklet-card-column .poligrafy-card__image {
+  width: min(100%, 280px);
 }
 
 .leaflet-calculator {

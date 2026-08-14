@@ -20,10 +20,24 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $section = preg_replace('/[^a-z0-9_-]/', '', (string) ($_POST['section'] ?? ''));
 $productId = preg_replace('/[^a-z0-9_-]/', '', (string) ($_POST['productId'] ?? ''));
-$allowedProducts = ['booklet_1fold', 'eurobooklet_2fold'];
+$allowedTargets = [
+    'buklety' => [
+        'products' => ['booklet_1fold', 'eurobooklet_2fold'],
+        'directory' => 'img/buklety/uploads',
+    ],
+    'listovki' => [
+        'products' => ['leaflet'],
+        'directory' => 'img/listovki/uploads',
+    ],
+    'listovki-cifra' => [
+        'products' => ['leaflet_digital'],
+        'directory' => 'img/listovki/uploads',
+    ],
+];
+$target = $allowedTargets[$section] ?? null;
 
-if ($section !== 'buklety' || !in_array($productId, $allowedProducts, true)) {
-    adminImageResponse(['ok' => false, 'error' => 'Неизвестный тип буклета.'], 400);
+if (!$target || !in_array($productId, $target['products'], true)) {
+    adminImageResponse(['ok' => false, 'error' => 'Неизвестный тип изделия.'], 400);
 }
 
 if (!isset($_FILES['image']) || !is_array($_FILES['image'])) {
@@ -51,7 +65,7 @@ if (!isset($extensions[$mime])) {
     adminImageResponse(['ok' => false, 'error' => 'Разрешены только изображения JPG и PNG.'], 400);
 }
 
-$relativeDirectory = 'img/buklety/uploads';
+$relativeDirectory = $target['directory'];
 $targetDirectory = adminSiteFilePath($relativeDirectory);
 
 if (!is_dir($targetDirectory) && !mkdir($targetDirectory, 0755, true) && !is_dir($targetDirectory)) {
@@ -71,7 +85,7 @@ $data = json_decode((string) file_get_contents($jsonPath), true);
 
 if (!is_array($data) || !isset($data[$section]) || !is_array($data[$section])) {
     @unlink($targetPath);
-    adminImageResponse(['ok' => false, 'error' => 'Не удалось прочитать данные буклетов.'], 500);
+    adminImageResponse(['ok' => false, 'error' => 'Не удалось прочитать данные полиграфии.'], 500);
 }
 
 $updatedCards = 0;
@@ -86,7 +100,7 @@ unset($card);
 
 if ($updatedCards === 0) {
     @unlink($targetPath);
-    adminImageResponse(['ok' => false, 'error' => 'Карточки выбранного буклета не найдены.'], 404);
+    adminImageResponse(['ok' => false, 'error' => 'Карточки выбранного изделия не найдены.'], 404);
 }
 
 $data['meta']['generatedAt'] = date('Y-m-d H:i:s');

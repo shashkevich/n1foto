@@ -420,7 +420,11 @@ window.addEventListener('DOMContentLoaded', () => {
             card.append(leadTime);
         }
 
-        const imagePath = (firstCard.img || []).find(Boolean);
+        const defaultImages = {
+            listovki: 'img/listovki/fly_a5.jpg',
+            'listovki-cifra': 'img/listovki/fly_a5.jpg'
+        };
+        const imagePath = (firstCard.img || []).find(Boolean) || defaultImages[sectionName] || '';
 
         if (imagePath) {
             const imageWrap = document.createElement('div');

@@ -10,6 +10,10 @@
   const status = document.getElementById('manualStatus');
   const saveButton = document.getElementById('manualSave');
   const reloadButton = document.getElementById('manualReload');
+  const digitalImagePreview = document.getElementById('digitalLeafletImagePreview');
+  const digitalImagePreviewImg = document.getElementById('digitalLeafletImagePreviewImg');
+  const digitalImageInput = document.getElementById('digitalLeafletImageInput');
+  const uploadDigitalImageButton = document.getElementById('uploadDigitalLeafletImage');
 
   let pageData = null;
 
@@ -26,6 +30,31 @@
   };
 
   const getApiUrl = () => root.dataset.manualApi || `/api/page-json.php?page=${encodeURIComponent(pageId)}`;
+
+  const getDigitalLeafletSection = () => (pageData && Array.isArray(pageData.sections)
+    ? pageData.sections.find((section) => section.id === 'listovki-cifra')
+    : null);
+
+  const renderDigitalLeafletImage = (cacheBust = false) => {
+    if (!digitalImagePreview || !digitalImagePreviewImg) {
+      return;
+    }
+
+    const section = getDigitalLeafletSection();
+    const imagePath = section
+      ? section.cards.flatMap((card) => card.img || []).find(Boolean) || 'img/listovki/fly_a5.jpg'
+      : '';
+
+    if (!imagePath) {
+      digitalImagePreview.classList.add('is-empty');
+      digitalImagePreviewImg.removeAttribute('src');
+      return;
+    }
+
+    const publicBase = String(root.dataset.publicSiteBase || '').replace(/\/$/, '');
+    digitalImagePreviewImg.src = `${publicBase}/${String(imagePath).replace(/^\//, '')}${cacheBust ? `?v=${Date.now()}` : ''}`;
+    digitalImagePreview.classList.remove('is-empty');
+  };
 
   const loadPageData = async () => {
     const response = await fetch(getApiUrl(), {
@@ -339,6 +368,8 @@
         </section>
       `;
     }).join('');
+
+    renderDigitalLeafletImage();
   };
 
   cardsRoot.addEventListener('input', (event) => {
@@ -401,6 +432,55 @@
       saveButton.disabled = false;
     }
   });
+
+  if (digitalImageInput && uploadDigitalImageButton) {
+    digitalImageInput.addEventListener('change', () => {
+      uploadDigitalImageButton.disabled = !digitalImageInput.files.length;
+    });
+
+    uploadDigitalImageButton.addEventListener('click', async () => {
+      if (!digitalImageInput.files.length) {
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('section', 'listovki-cifra');
+      formData.append('productId', 'leaflet_digital');
+      formData.append('image', digitalImageInput.files[0]);
+
+      try {
+        uploadDigitalImageButton.disabled = true;
+        setStatus('Загружаю изображение цифровой печати...');
+
+        const response = await fetch('/api/poligrafy-image.php', {
+          method: 'POST',
+          credentials: 'same-origin',
+          body: formData
+        });
+        const payload = await response.json().catch(() => ({}));
+
+        if (!response.ok || !payload.ok) {
+          throw new Error(payload.error || `Не удалось загрузить изображение: ${response.status}`);
+        }
+
+        const section = getDigitalLeafletSection();
+
+        if (section) {
+          section.cards.forEach((card) => {
+            card.img = [payload.path];
+          });
+        }
+
+        renderDigitalLeafletImage(true);
+        digitalImageInput.value = '';
+        setStatus('Изображение цифровой печати загружено.', 'success');
+      } catch (error) {
+        setStatus(error.message, 'danger');
+      } finally {
+        uploadDigitalImageButton.disabled = !digitalImageInput.files.length;
+      }
+    });
+  }
 
   const initialize = async () => {
     try {

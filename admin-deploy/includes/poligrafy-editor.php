@@ -3,7 +3,8 @@ declare(strict_types=1);
 
 function adminRenderPoligrafyEditor(?array $sitePage = null): void
 {
-    $isBooklets = ($sitePage['id'] ?? '') === 'buklety';
+    $pageId = (string) ($sitePage['id'] ?? '');
+    $supportsProductImages = in_array($pageId, ['buklety', 'listovki'], true);
     ?>
     <section class="layout-grid poligrafy-editor" data-poligrafy-editor="<?= adminEscape((string) ($sitePage['id'] ?? '')) ?>" data-public-site-base="<?= adminEscape(adminPublicSiteBaseUrl()) ?>">
       <aside class="panel control-panel">
@@ -36,12 +37,12 @@ function adminRenderPoligrafyEditor(?array $sitePage = null): void
       </section>
     </section>
 
-    <?php if ($isBooklets): ?>
+    <?php if ($supportsProductImages): ?>
       <section class="panel product-image-editor">
         <div class="section-heading">
           <div>
             <h2>Изображение карточки</h2>
-            <p>Изображение применяется к выбранному выше типу буклета.</p>
+            <p>Изображение применяется к выбранному выше типу изделия.</p>
           </div>
         </div>
         <div class="product-image-editor__layout">

@@ -77,7 +77,7 @@
           name: 'Листовки',
           titleTemplate: 'Листовки {format}, {colorShort}',
           description: 'Цветная печать, офсет',
-          image: ''
+          image: 'img/listovki/fly_a5.jpg'
         }
       }
     }

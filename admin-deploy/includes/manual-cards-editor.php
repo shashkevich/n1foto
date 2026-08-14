@@ -7,7 +7,7 @@ function adminRenderManualCardsEditor(array $sitePage): void
     $api = $sitePage['manualEditor']['api'] ?? ('/api/page-json.php?page=' . rawurlencode((string) $sitePage['id']));
     $isDigitalLeaflets = $sitePage['id'] === 'listovki';
     ?>
-    <section class="manual-editor" id="manual-cards-editor" data-manual-api="<?= adminEscape($api) ?>" data-manual-sections="<?= adminEscape(implode(',', $sections)) ?>">
+    <section class="manual-editor" id="manual-cards-editor" data-manual-api="<?= adminEscape($api) ?>" data-manual-sections="<?= adminEscape(implode(',', $sections)) ?>" data-public-site-base="<?= adminEscape(adminPublicSiteBaseUrl()) ?>">
       <div class="manual-editor__toolbar panel">
         <div>
           <h2><?= $isDigitalLeaflets ? 'Цифровая печать' : 'Карточки и ручные цены' ?></h2>
@@ -20,8 +20,33 @@ function adminRenderManualCardsEditor(array $sitePage): void
       </div>
 
       <div id="manualStatus" class="notice notice-muted">Загружаю данные...</div>
+
+      <?php if ($isDigitalLeaflets): ?>
+        <section class="panel product-image-editor manual-product-image-editor">
+          <div class="section-heading">
+            <div>
+              <h2>Изображение цифровой печати</h2>
+              <p>Одно изображение используется во всей карточке цифровых листовок.</p>
+            </div>
+          </div>
+          <div class="product-image-editor__layout">
+            <div class="product-image-preview" id="digitalLeafletImagePreview">
+              <img id="digitalLeafletImagePreviewImg" alt="Цифровая печать">
+            </div>
+            <div class="product-image-editor__controls">
+              <strong>Цифровая печать</strong>
+              <label class="field">
+                <span>Файл JPG или PNG</span>
+                <input id="digitalLeafletImageInput" type="file" accept="image/jpeg,image/png,.jpg,.jpeg,.png">
+              </label>
+              <button class="button button-primary" id="uploadDigitalLeafletImage" type="button" disabled>Загрузить изображение</button>
+            </div>
+          </div>
+        </section>
+      <?php endif; ?>
+
       <div id="manualCards" class="manual-cards"></div>
     </section>
-    <script src="/assets/manual-cards-admin.js?v=20260813-3"></script>
+    <script src="/assets/manual-cards-admin.js?v=20260814-1"></script>
     <?php
 }
