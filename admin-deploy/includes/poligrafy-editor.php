@@ -14,19 +14,6 @@ function adminRenderPoligrafyEditor(?array $sitePage = null): void
           <select id="productSelect"></select>
         </label>
 
-        <?php if ($isBooklets): ?>
-          <section class="product-image-control">
-            <div class="product-image-preview" id="productImagePreview">
-              <img id="productImagePreviewImg" alt="">
-            </div>
-            <label class="field">
-              <span>Изображение карточки</span>
-              <input id="productImageInput" type="file" accept="image/jpeg,image/png,.jpg,.jpeg,.png">
-            </label>
-            <button class="button button-soft" id="uploadProductImage" type="button" disabled>Загрузить изображение</button>
-          </section>
-        <?php endif; ?>
-
         <label class="field">
           <span>CSV прайс партнера</span>
           <input id="csvInput" type="file" accept=".csv,text/csv">
@@ -48,6 +35,30 @@ function adminRenderPoligrafyEditor(?array $sitePage = null): void
         <div id="coefficientsGrid" class="coefficients-grid"></div>
       </section>
     </section>
+
+    <?php if ($isBooklets): ?>
+      <section class="panel product-image-editor">
+        <div class="section-heading">
+          <div>
+            <h2>Изображение карточки</h2>
+            <p>Изображение применяется к выбранному выше типу буклета.</p>
+          </div>
+        </div>
+        <div class="product-image-editor__layout">
+          <div class="product-image-preview" id="productImagePreview">
+            <img id="productImagePreviewImg" alt="">
+          </div>
+          <div class="product-image-editor__controls">
+            <strong id="productImageProductName"></strong>
+            <label class="field">
+              <span>Файл JPG или PNG</span>
+              <input id="productImageInput" type="file" accept="image/jpeg,image/png,.jpg,.jpeg,.png">
+            </label>
+            <button class="button button-primary" id="uploadProductImage" type="button" disabled>Загрузить изображение</button>
+          </div>
+        </div>
+      </section>
+    <?php endif; ?>
 
     <section class="panel result-panel is-empty" id="resultPanel">
       <div class="section-heading">

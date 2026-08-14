@@ -52,6 +52,10 @@
   margin-left: auto;
 }
 
+.booklet-card-column .poligrafy-card__image img {
+  object-fit: cover;
+}
+
 .leaflet-calculator {
   display: grid;
   gap: 0.9rem;

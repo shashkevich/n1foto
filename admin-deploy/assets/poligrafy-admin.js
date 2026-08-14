@@ -30,6 +30,7 @@
   const uploadProductImageButton = document.getElementById('uploadProductImage');
   const productImagePreview = document.getElementById('productImagePreview');
   const productImagePreviewImg = document.getElementById('productImagePreviewImg');
+  const productImageProductName = document.getElementById('productImageProductName');
 
   const config = {
     buklety: {
@@ -270,6 +271,12 @@
       return;
     }
 
+    const productName = config[state.selectedSection].products[state.selectedProduct].name;
+
+    if (productImageProductName) {
+      productImageProductName.textContent = productName;
+    }
+
     const cards = getExistingProductCards();
     const imagePath = cards.flatMap((card) => card.img || []).find(Boolean) || '';
 
@@ -283,7 +290,7 @@
     const publicBase = String(editorRoot.dataset.publicSiteBase || '').replace(/\/$/, '');
     const imageUrl = `${publicBase}/${String(imagePath).replace(/^\//, '')}${cacheBust ? `?v=${Date.now()}` : ''}`;
     productImagePreviewImg.src = imageUrl;
-    productImagePreviewImg.alt = config[state.selectedSection].products[state.selectedProduct].name;
+    productImagePreviewImg.alt = productName;
     productImagePreview.classList.remove('is-empty');
   };
 
