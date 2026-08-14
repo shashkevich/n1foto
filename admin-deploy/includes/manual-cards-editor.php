@@ -6,6 +6,8 @@ function adminRenderManualCardsEditor(array $sitePage): void
     $sections = $sitePage['manualSections'] ?? [];
     $api = $sitePage['manualEditor']['api'] ?? ('/api/page-json.php?page=' . rawurlencode((string) $sitePage['id']));
     $isDigitalLeaflets = $sitePage['id'] === 'listovki';
+    $isProduction = adminPublicSiteBaseUrl() === 'https://n1foto.com';
+    $publishButtonLabel = $isProduction ? 'Опубликовать на n1foto.com' : 'Сохранить на тестовый сайт';
     ?>
     <section class="manual-editor" id="manual-cards-editor" data-manual-api="<?= adminEscape($api) ?>" data-manual-sections="<?= adminEscape(implode(',', $sections)) ?>" data-public-site-base="<?= adminEscape(adminPublicSiteBaseUrl()) ?>">
       <div class="manual-editor__toolbar panel">
@@ -15,7 +17,7 @@ function adminRenderManualCardsEditor(array $sitePage): void
         </div>
         <div class="action-row">
           <button class="button button-soft" id="manualReload" type="button">Обновить</button>
-          <button class="button button-primary" id="manualSave" type="button" disabled>Сохранить в тестовый сайт</button>
+          <button class="button button-primary" id="manualSave" type="button" disabled><?= adminEscape($publishButtonLabel) ?></button>
         </div>
       </div>
 
@@ -47,6 +49,6 @@ function adminRenderManualCardsEditor(array $sitePage): void
 
       <div id="manualCards" class="manual-cards"></div>
     </section>
-    <script src="/assets/manual-cards-admin.js?v=20260814-1"></script>
+    <script src="/assets/manual-cards-admin.js?v=20260814-2"></script>
     <?php
 }

@@ -28,6 +28,10 @@ jobs:
             **/node_modules/**
             **/*.scss
             admin-deploy/**
+            db/poligrafy.json
+            db/pages/vizitki.json
+            img/buklety/uploads/**
+            img/listovki/uploads/**
 
   deploy-admin:
     runs-on: ubuntu-latest

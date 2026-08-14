@@ -14,6 +14,7 @@
   const digitalImagePreviewImg = document.getElementById('digitalLeafletImagePreviewImg');
   const digitalImageInput = document.getElementById('digitalLeafletImageInput');
   const uploadDigitalImageButton = document.getElementById('uploadDigitalLeafletImage');
+  const isProduction = String(root.dataset.publicSiteBase || '').replace(/\/$/, '') === 'https://n1foto.com';
 
   let pageData = null;
 
@@ -84,7 +85,10 @@
       throw new Error(payload.error || `Не удалось сохранить JSON: ${response.status}`);
     }
 
-    setStatus(`Сохранено в тестовый сайт: ${payload.path}. Проверьте страницу и затем сделайте коммит.`, 'success');
+    const message = isProduction
+      ? `Опубликовано на n1foto.com: ${payload.path}.`
+      : `Сохранено только на тестовый сайт: ${payload.path}.`;
+    setStatus(message, 'success');
   };
 
   const getHeaders = (rows) => Object.keys(rows[0] || {});

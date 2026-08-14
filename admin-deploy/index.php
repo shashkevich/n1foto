@@ -122,7 +122,7 @@ adminRenderShellStart($sitePage['title'], $sitePage['id']);
           </div>
           <?php adminRenderPoligrafyEditor($sitePage); ?>
         </section>
-        <script src="/assets/poligrafy-admin.js?v=20260814-2"></script>
+        <script src="/assets/poligrafy-admin.js?v=20260814-3"></script>
       <?php endif; ?>
       <?php if (in_array($sitePage['id'], ['vizitki', 'listovki'], true)): ?>
         <section class="embedded-module" id="manual-prices-editor">

@@ -6,7 +6,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     const getData = async (url) => {
-        const response = await fetch(url);
+        const response = await fetch(url, { cache: 'no-store' });
 
         if (!response.ok) {
             throw new Error(`Could not fetch ${url}, status: ${response.status}`);

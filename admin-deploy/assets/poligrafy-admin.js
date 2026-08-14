@@ -31,6 +31,7 @@
   const productImagePreview = document.getElementById('productImagePreview');
   const productImagePreviewImg = document.getElementById('productImagePreviewImg');
   const productImageProductName = document.getElementById('productImageProductName');
+  const isProduction = String(editorRoot.dataset.publicSiteBase || '').replace(/\/$/, '') === 'https://n1foto.com';
 
   const config = {
     buklety: {
@@ -684,7 +685,10 @@
     }
 
     state.existingJson = output;
-    setStatus(`Цены сохранены в тестовый сайт: ${payload.path}. После проверки сделайте коммит и пуш.`, 'success');
+    const message = isProduction
+      ? `Цены опубликованы на n1foto.com: ${payload.path}.`
+      : `Цены сохранены только на тестовый сайт: ${payload.path}.`;
+    setStatus(message, 'success');
   };
 
   const fillSelect = (select, options, selectedValue = '') => {
@@ -910,7 +914,12 @@
     resultMeta.textContent = `${state.csvName}: строк ${state.positions.length}, карточек ${state.cards.length}`;
     setEnabledState(true);
 
-    setStatus('Прайс разобран. Проверьте таблицу, при необходимости поправьте цены и сохраните в тестовый сайт.', 'success');
+    setStatus(
+      isProduction
+        ? 'Прайс разобран. Проверьте таблицу, при необходимости поправьте цены и опубликуйте на n1foto.com.'
+        : 'Прайс разобран. Проверьте таблицу, при необходимости поправьте цены и сохраните на тестовый сайт.',
+      'success'
+    );
   };
 
   const resetWork = () => {

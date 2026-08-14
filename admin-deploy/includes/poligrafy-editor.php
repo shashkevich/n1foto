@@ -5,6 +5,8 @@ function adminRenderPoligrafyEditor(?array $sitePage = null): void
 {
     $pageId = (string) ($sitePage['id'] ?? '');
     $supportsProductImages = in_array($pageId, ['buklety', 'listovki'], true);
+    $isProduction = adminPublicSiteBaseUrl() === 'https://n1foto.com';
+    $publishButtonLabel = $isProduction ? 'Опубликовать на n1foto.com' : 'Сохранить на тестовый сайт';
     ?>
     <section class="layout-grid poligrafy-editor" data-poligrafy-editor="<?= adminEscape((string) ($sitePage['id'] ?? '')) ?>" data-public-site-base="<?= adminEscape(adminPublicSiteBaseUrl()) ?>">
       <aside class="panel control-panel">
@@ -69,7 +71,7 @@ function adminRenderPoligrafyEditor(?array $sitePage = null): void
         </div>
         <div class="action-row">
           <button class="button button-soft" id="saveInline" type="button" disabled>Сохранить правки</button>
-          <button class="button button-primary" id="saveJson" type="button" disabled>Сохранить в тестовый сайт</button>
+          <button class="button button-primary" id="saveJson" type="button" disabled><?= adminEscape($publishButtonLabel) ?></button>
         </div>
       </div>
 
