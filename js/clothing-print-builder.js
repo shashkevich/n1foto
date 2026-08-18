@@ -38,87 +38,237 @@ window.addEventListener('DOMContentLoaded', () => {
     return wrap;
   };
 
-  const makeSelectRow = (labelText, select) => {
+  const formatMoney = (value) => `${Math.round(value).toLocaleString('ru-RU')} ₽`;
+
+  const makeOrderSummary = () => {
+    const summary = document.createElement('div');
+    summary.className = 'print-order-summary';
+    summary.hidden = true;
+    summary.innerHTML = `
+      <div class="print-order-summary__table-wrap">
+        <table class="print-order-summary__table">
+          <thead>
+            <tr>
+              <th>Формат</th>
+              <th>Кол-во</th>
+              <th>Стоимость</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="print-order-summary__total">
+        <span>Итого</span>
+        <strong></strong>
+      </div>
+      <p class="print-order-summary__note" hidden></p>
+    `;
+    return summary;
+  };
+
+  const renderOrderSummary = (summary, items, total, note = '') => {
+    const body = summary.querySelector('tbody');
+    body.replaceChildren(...items.map((item) => {
+      const row = document.createElement('tr');
+      const format = document.createElement('td');
+      const quantity = document.createElement('td');
+      const cost = document.createElement('td');
+      format.textContent = item.name;
+      if (item.details && item.details.length) {
+        const details = document.createElement('small');
+        details.textContent = item.details.join(', ');
+        format.append(details);
+      }
+      quantity.textContent = `${item.qty} шт`;
+      cost.textContent = item.total === null ? 'по запросу' : formatMoney(item.total);
+      row.append(format, quantity, cost);
+      return row;
+    }));
+
+    summary.querySelector('.print-order-summary__total strong').textContent = total === null
+      ? 'по запросу'
+      : formatMoney(total);
+    const noteElement = summary.querySelector('.print-order-summary__note');
+    noteElement.textContent = note;
+    noteElement.hidden = !note;
+    summary.hidden = false;
+  };
+
+  const makeRemoveButton = (list, row) => {
+    const remove = document.createElement('button');
+    remove.className = 'print-format-remove';
+    remove.type = 'button';
+    remove.title = 'Удалить формат';
+    remove.setAttribute('aria-label', 'Удалить формат');
+    remove.textContent = '×';
+    remove.addEventListener('click', () => {
+      if (list.children.length > 1) {
+        row.remove();
+      }
+    });
+    return remove;
+  };
+
+  const makeExtras = (extras) => {
+    if (!Array.isArray(extras) || !extras.length) {
+      return null;
+    }
+
+    const fieldset = document.createElement('fieldset');
+    fieldset.className = 'print-format-extras';
+    const legend = document.createElement('legend');
+    legend.textContent = 'Дополнительно';
+    fieldset.append(legend);
+
+    extras.forEach((extra) => {
+      const label = document.createElement('label');
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.value = extra.id || extra.label;
+      checkbox.dataset.label = extra.label || 'Доплата';
+      checkbox.dataset.percent = String(extra.percent || 0);
+      const text = document.createElement('span');
+      text.textContent = `${extra.label} +${extra.percent}%`;
+      label.append(checkbox, text);
+      fieldset.append(label);
+    });
+
+    return fieldset;
+  };
+
+  const makeMatrixFormatRow = (list, formats, extras) => {
     const row = document.createElement('div');
-    row.className = 'clothing-calculator__row';
-    const label = document.createElement('label');
-    label.textContent = labelText;
-    label.htmlFor = select.id;
-    row.append(label, select);
+    row.className = 'matrix-format-row';
+    const formatLabel = document.createElement('label');
+    formatLabel.textContent = 'Формат';
+    const formatSelect = document.createElement('select');
+    formatSelect.className = 'form-select';
+
+    formats.forEach((format) => {
+      const option = document.createElement('option');
+      option.value = format;
+      option.textContent = format;
+      formatSelect.append(option);
+    });
+    formatLabel.append(formatSelect);
+
+    const quantityLabel = document.createElement('label');
+    quantityLabel.textContent = 'Количество';
+    const quantityInput = document.createElement('input');
+    quantityInput.className = 'form-control';
+    quantityInput.type = 'number';
+    quantityInput.name = 'qty';
+    quantityInput.min = '1';
+    quantityInput.value = '1';
+    quantityInput.required = true;
+    quantityLabel.append(quantityInput);
+    row.append(formatLabel, quantityLabel, makeRemoveButton(list, row));
+    const extraControls = makeExtras(extras);
+    if (extraControls) row.append(extraControls);
     return row;
   };
 
-  const makeMatrixCalculator = (card, cardIndex) => {
+  const tierMatchesQuantity = (label, quantity) => {
+    const normalized = String(label || '').replace(/[–—]/g, '-').replace(/\s/g, '');
+    const range = normalized.match(/^(\d+)-(\d+)$/);
+    const plus = normalized.match(/^(\d+)\+$/);
+    const exact = normalized.match(/^\d+$/);
+
+    if (range) return quantity >= Number(range[1]) && quantity <= Number(range[2]);
+    if (plus) return quantity >= Number(plus[1]);
+    if (exact) return quantity === Number(normalized);
+    return false;
+  };
+
+  const makeMatrixCalculator = (card) => {
     const rows = Array.isArray(card.table) ? card.table : [];
     const headers = Object.keys(rows[0] || {});
     const tierHeader = headers[0] || 'Тираж';
-    const calculator = document.createElement('div');
-    calculator.className = 'clothing-calculator';
+    const formats = headers.slice(1);
+    const calculator = document.createElement('form');
+    calculator.className = 'clothing-calculator clothing-calculator--multi';
 
-    if (!rows.length || headers.length < 2) {
+    if (!rows.length || !formats.length) {
       calculator.textContent = 'Стоимость по запросу';
       return calculator;
     }
 
-    const tierSelect = document.createElement('select');
-    tierSelect.className = 'form-select';
-    tierSelect.id = `clothing-tier-${cardIndex}`;
-    rows.forEach((row, index) => {
-      const option = document.createElement('option');
-      option.value = String(index);
-      option.textContent = row[tierHeader] || `Вариант ${index + 1}`;
-      tierSelect.append(option);
+    const list = document.createElement('div');
+    list.className = 'print-format-list';
+    list.append(makeMatrixFormatRow(list, formats, card.extras));
+
+    const actions = document.createElement('div');
+    actions.className = 'print-calculator-actions';
+    const add = document.createElement('button');
+    add.className = 'btn btn-outline-primary';
+    add.type = 'button';
+    add.textContent = 'Добавить формат';
+    const calculate = document.createElement('button');
+    calculate.className = 'btn btn-primary';
+    calculate.type = 'submit';
+    calculate.textContent = 'Рассчитать';
+    actions.append(add, calculate);
+
+    const summary = makeOrderSummary();
+
+    add.addEventListener('click', () => {
+      list.append(makeMatrixFormatRow(list, formats, card.extras));
     });
 
-    const formatSelect = document.createElement('select');
-    formatSelect.className = 'form-select';
-    formatSelect.id = `clothing-format-${cardIndex}`;
+    calculator.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const selections = [...list.querySelectorAll('.matrix-format-row')].map((row) => {
+        const selectedExtras = [...row.querySelectorAll('.print-format-extras input:checked')].map((input) => ({
+          label: input.dataset.label,
+          percent: parseNumber(input.dataset.percent)
+        }));
 
-    const priceRow = document.createElement('div');
-    priceRow.className = 'clothing-calculator__row clothing-calculator__price-row';
-    const priceLabel = document.createElement('div');
-    priceLabel.className = 'clothing-calculator__label';
-    priceLabel.textContent = 'Цена';
-    const price = document.createElement('div');
-    price.className = 'clothing-calculator__price';
-    priceRow.append(priceLabel, price);
-
-    const updateFormats = () => {
-      const row = rows[Number(tierSelect.value)] || rows[0];
-      const previous = formatSelect.value;
-      formatSelect.replaceChildren();
-
-      headers.slice(1).forEach((header) => {
-        if (isUnavailable(row[header])) {
-          return;
-        }
-
-        const option = document.createElement('option');
-        option.value = header;
-        option.textContent = header;
-        formatSelect.append(option);
+        return {
+          name: row.querySelector('select').value,
+          qty: Math.max(1, Math.round(Number(row.querySelector('[name="qty"]').value) || 1)),
+          extras: selectedExtras
+        };
       });
+      const totalQty = selections.reduce((sum, item) => sum + item.qty, 0);
+      const tier = rows.find((priceRow) => tierMatchesQuantity(priceRow[tierHeader], totalQty));
+      const items = selections.map(({ name, qty, extras }) => {
+        const rawPrice = tier ? tier[name] : '';
+        const baseUnitPrice = isUnavailable(rawPrice) || String(rawPrice).toLowerCase().includes('запрос')
+          ? null
+          : parseNumber(rawPrice, NaN);
+        const extraPercent = extras.reduce((sum, extra) => sum + extra.percent, 0);
+        const unitPrice = Number.isFinite(baseUnitPrice) && extraPercent > 0
+          ? Math.ceil((baseUnitPrice * (1 + extraPercent / 100)) / 10) * 10
+          : baseUnitPrice;
 
-      if ([...formatSelect.options].some((option) => option.value === previous)) {
-        formatSelect.value = previous;
-      }
-
-      const selectedRow = rows[Number(tierSelect.value)] || rows[0];
-      price.textContent = formatSelect.value ? selectedRow[formatSelect.value] : 'по запросу';
-    };
-
-    tierSelect.addEventListener('change', updateFormats);
-    formatSelect.addEventListener('change', () => {
-      const row = rows[Number(tierSelect.value)] || rows[0];
-      price.textContent = row[formatSelect.value] || 'по запросу';
+        return {
+          name,
+          qty,
+          details: extras.map((extra) => `${extra.label} +${extra.percent}%`),
+          total: Number.isFinite(unitPrice) ? unitPrice * qty : null
+        };
+      });
+      const hasRequestPrice = items.some((item) => item.total === null);
+      const calculatedTotal = hasRequestPrice ? null : items.reduce((sum, item) => sum + item.total, 0);
+      const minimumOrder = parseNumber(card.minimumOrder);
+      const minimumApplied = calculatedTotal !== null && minimumOrder > 0 && calculatedTotal < minimumOrder;
+      const total = minimumApplied ? minimumOrder : calculatedTotal;
+      const notes = [hasRequestPrice
+        ? `Общее количество нанесений — ${totalQty} шт. Для этого количества стоимость уточняется индивидуально.`
+        : `Цена рассчитана по общему количеству нанесений: ${totalQty} шт.`];
+      if (minimumApplied) notes.push(`Применена минимальная стоимость заказа — ${formatMoney(minimumOrder)}.`);
+      const note = notes.join(' ');
+      renderOrderSummary(summary, items, total, note);
     });
 
-    calculator.append(
-      makeSelectRow(tierHeader, tierSelect),
-      makeSelectRow('Размер', formatSelect),
-      priceRow
-    );
-    updateFormats();
+    calculator.append(list, actions, summary);
+    const minimumOrder = parseNumber(card.minimumOrder);
+    if (minimumOrder > 0) {
+      const minimumNotice = document.createElement('p');
+      minimumNotice.className = 'print-calculator-minimum';
+      minimumNotice.textContent = `Минимальный заказ — ${formatMoney(minimumOrder)}`;
+      calculator.append(minimumNotice);
+    }
     return calculator;
   };
 
@@ -220,39 +370,27 @@ window.addEventListener('DOMContentLoaded', () => {
     const widthField = makeNumberField('Ширина, см', 'width', 7, 1);
     const heightField = makeNumberField('Высота, см', 'height', 10, 1);
     const qtyField = makeNumberField('Количество', 'qty', 1, 1);
-    const remove = document.createElement('button');
-    remove.className = 'dtf-remove-button';
-    remove.type = 'button';
-    remove.title = 'Удалить формат';
-    remove.setAttribute('aria-label', 'Удалить формат');
-    remove.textContent = '×';
-
     select.addEventListener('change', () => {
       const [width, height] = select.value.split(',');
       widthField.querySelector('input').value = width;
       heightField.querySelector('input').value = height;
     });
-    remove.addEventListener('click', () => {
-      if (list.children.length > 1) {
-        row.remove();
-      }
-    });
 
-    row.append(formatLabel, widthField, heightField, qtyField, remove);
+    row.append(formatLabel, widthField, heightField, qtyField, makeRemoveButton(list, row));
     return row;
   };
 
   const makeDtfCalculator = (card) => {
     const rates = getDtfRates(card);
     const calculator = document.createElement('form');
-    calculator.className = 'clothing-calculator';
+    calculator.className = 'clothing-calculator clothing-calculator--multi';
     const list = document.createElement('div');
-    list.className = 'dtf-format-list';
+    list.className = 'print-format-list dtf-format-list';
     let rowId = 0;
     list.append(makeDtfFormatRow(list, rowId));
 
     const actions = document.createElement('div');
-    actions.className = 'dtf-actions';
+    actions.className = 'print-calculator-actions';
     const add = document.createElement('button');
     add.className = 'btn btn-outline-primary';
     add.type = 'button';
@@ -263,15 +401,7 @@ window.addEventListener('DOMContentLoaded', () => {
     calculate.textContent = 'Рассчитать';
     actions.append(add, calculate);
 
-    const result = document.createElement('div');
-    result.className = 'dtf-result';
-    result.hidden = true;
-    result.innerHTML = `
-      <div><span>Всего принтов</span><strong data-result="count"></strong></div>
-      <div><span>Цена за один</span><strong data-result="unit"></strong></div>
-      <div><span>Общая цена</span><strong data-result="total"></strong></div>
-      <p class="dtf-minimum" data-result="minimum" hidden>Действует минимальная стоимость заказа.</p>
-    `;
+    const summary = makeOrderSummary();
 
     add.addEventListener('click', () => {
       rowId += 1;
@@ -280,11 +410,19 @@ window.addEventListener('DOMContentLoaded', () => {
 
     calculator.addEventListener('submit', (event) => {
       event.preventDefault();
-      const items = [...list.querySelectorAll('.dtf-format-row')].map((row) => ({
-        width: parseNumber(row.querySelector('[name="width"]').value),
-        height: parseNumber(row.querySelector('[name="height"]').value),
-        qty: Math.max(1, Math.round(parseNumber(row.querySelector('[name="qty"]').value, 1)))
-      })).filter((item) => item.width > 0 && item.height > 0);
+      const items = [...list.querySelectorAll('.dtf-format-row')].map((row) => {
+        const width = parseNumber(row.querySelector('[name="width"]').value);
+        const height = parseNumber(row.querySelector('[name="height"]').value);
+        const qty = Math.max(1, Math.round(parseNumber(row.querySelector('[name="qty"]').value, 1)));
+        const selectedName = row.querySelector('select').selectedOptions[0]?.textContent || '';
+
+        return {
+          width,
+          height,
+          qty,
+          name: selectedName === 'Свой формат' ? `${width}×${height} см` : selectedName
+        };
+      }).filter((item) => item.width > 0 && item.height > 0);
       const totalQty = items.reduce((sum, item) => sum + item.qty, 0);
 
       if (!totalQty) {
@@ -297,20 +435,23 @@ window.addEventListener('DOMContentLoaded', () => {
       const materialCost = Math.ceil(length * materialRate);
       const costPerUnit = (materialCost + rates.delivery) / totalQty;
       const unitPrice = Math.ceil((costPerUnit * rates.markup + applicationRate) / 10) * 10;
-      const total = unitPrice * totalQty;
+      const calculatedTotal = unitPrice * totalQty;
+      const total = Math.max(calculatedTotal, rates.minimum);
 
-      result.querySelector('[data-result="count"]').textContent = `${totalQty} шт`;
-      result.querySelector('[data-result="unit"]').textContent = `${unitPrice} ₽`;
-      result.querySelector('[data-result="total"]').textContent = `${total.toLocaleString('ru-RU')} ₽`;
-      result.querySelector('[data-result="minimum"]').hidden = total >= rates.minimum;
-      result.hidden = false;
+      const summaryItems = items.map((item) => ({
+        name: item.name,
+        qty: item.qty,
+        total: unitPrice * item.qty
+      }));
+      const note = calculatedTotal < rates.minimum ? `Применена минимальная стоимость заказа — ${formatMoney(rates.minimum)}.` : '';
+      renderOrderSummary(summary, summaryItems, total, note);
     });
 
-    calculator.append(list, actions, result);
+    calculator.append(list, actions, summary);
     return calculator;
   };
 
-  const renderCard = (card, index) => {
+  const renderCard = (card) => {
     const article = document.createElement('article');
     article.className = 'clothing-method-card';
 
@@ -346,7 +487,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     article.append(card.calculatorType === 'dtf'
       ? makeDtfCalculator(card)
-      : makeMatrixCalculator(card, index));
+      : makeMatrixCalculator(card));
 
     if (card.footer) {
       const footer = document.createElement('div');

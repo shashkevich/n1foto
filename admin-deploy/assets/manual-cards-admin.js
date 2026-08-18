@@ -144,6 +144,12 @@
       card.description = value;
     } else if (input.dataset.field === 'notice') {
       card.notice = value;
+    } else if (input.dataset.field === 'minimum-order') {
+      card.minimumOrder = value;
+    } else if (input.dataset.field === 'extra-label') {
+      card.extras[Number(input.dataset.extraIndex)].label = value;
+    } else if (input.dataset.field === 'extra-percent') {
+      card.extras[Number(input.dataset.extraIndex)].percent = value;
     } else if (input.dataset.field === 'cell') {
       const row = card.table[Number(input.dataset.rowIndex)];
       const header = input.dataset.header;
@@ -220,6 +226,25 @@
     render();
   };
 
+  const addExtra = (sectionIndex, cardIndex) => {
+    const card = pageData.sections[sectionIndex].cards[cardIndex];
+    card.extras = Array.isArray(card.extras) ? card.extras : [];
+    card.extras.push({
+      id: `extra-${Date.now()}-${card.extras.length + 1}`,
+      label: 'Новая доплата',
+      percent: 0
+    });
+    saveButton.disabled = false;
+    render();
+  };
+
+  const removeExtra = (sectionIndex, cardIndex, extraIndex) => {
+    const card = pageData.sections[sectionIndex].cards[cardIndex];
+    card.extras.splice(extraIndex, 1);
+    saveButton.disabled = false;
+    render();
+  };
+
   const renderTableEditor = (section, sectionIndex, card, cardIndex) => {
     const rows = card.table || [];
     const headers = getHeaders(rows);
@@ -291,6 +316,50 @@
     `;
   };
 
+  const renderExtrasEditor = (sectionIndex, card, cardIndex) => {
+    const hasExtras = Array.isArray(card.extras);
+    const hasMinimumOrder = Object.prototype.hasOwnProperty.call(card, 'minimumOrder');
+
+    if (!hasExtras && !hasMinimumOrder) {
+      return '';
+    }
+
+    return `
+      <section class="manual-extras-editor">
+        <div class="manual-extras-editor__heading">
+          <div>
+            <strong>Доплаты калькулятора</strong>
+            <p>Проценты складываются и применяются к базовой цене.</p>
+          </div>
+          ${hasExtras ? `<button class="button button-soft" type="button" data-action="add-extra" data-section-index="${sectionIndex}" data-card-index="${cardIndex}">Добавить доплату</button>` : ''}
+        </div>
+        ${hasExtras ? `
+          <div class="manual-extras-list">
+            ${card.extras.map((extra, extraIndex) => `
+              <div class="manual-extra-row">
+                <label class="field">
+                  <span>Название</span>
+                  <input value="${escapeHtml(extra.label || '')}" data-field="extra-label" data-section-index="${sectionIndex}" data-card-index="${cardIndex}" data-extra-index="${extraIndex}">
+                </label>
+                <label class="field manual-extra-percent">
+                  <span>Процент</span>
+                  <input type="number" min="0" step="1" value="${escapeHtml(extra.percent ?? 0)}" data-field="extra-percent" data-section-index="${sectionIndex}" data-card-index="${cardIndex}" data-extra-index="${extraIndex}">
+                </label>
+                <button class="icon-text-button" type="button" data-action="remove-extra" data-section-index="${sectionIndex}" data-card-index="${cardIndex}" data-extra-index="${extraIndex}">Удалить</button>
+              </div>
+            `).join('')}
+          </div>
+        ` : ''}
+        ${hasMinimumOrder ? `
+          <label class="field manual-minimum-order">
+            <span>Минимальная стоимость заказа, ₽</span>
+            <input type="number" min="0" step="10" value="${escapeHtml(card.minimumOrder ?? 0)}" data-field="minimum-order" data-section-index="${sectionIndex}" data-card-index="${cardIndex}">
+          </label>
+        ` : ''}
+      </section>
+    `;
+  };
+
   const renderCard = (section, sectionIndex, card, cardIndex) => {
     return `
       <article class="manual-card panel">
@@ -337,6 +406,8 @@
             <textarea rows="4" data-field="footer" data-section-index="${sectionIndex}" data-card-index="${cardIndex}">${escapeHtml(card.footer || '')}</textarea>
           </label>
         </div>
+
+        ${renderExtrasEditor(sectionIndex, card, cardIndex)}
 
         ${renderTableEditor(section, sectionIndex, card, cardIndex)}
       </article>
@@ -512,6 +583,10 @@
 
     if (button.dataset.action === 'upload-page-image') {
       await uploadPageImage(sectionIndex, cardIndex, button);
+    } else if (button.dataset.action === 'add-extra') {
+      addExtra(sectionIndex, cardIndex);
+    } else if (button.dataset.action === 'remove-extra') {
+      removeExtra(sectionIndex, cardIndex, Number(button.dataset.extraIndex));
     } else if (button.dataset.action === 'add-row') {
       addRow(sectionIndex, cardIndex);
     } else if (button.dataset.action === 'remove-row') {
