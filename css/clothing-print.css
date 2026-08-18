@@ -1,0 +1,233 @@
+.clothing-methods-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  align-items: start;
+}
+
+.clothing-method-card {
+  min-width: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 8px;
+  padding: 24px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(40, 24, 56, 0.1);
+  text-align: left;
+}
+
+.clothing-method-card--dtf {
+  grid-column: 1 / -1;
+}
+
+.clothing-method-card__title {
+  margin: 0 0 14px;
+  font-size: 24px;
+  text-align: center;
+}
+
+.clothing-method-card__image {
+  width: min(100%, 260px);
+  aspect-ratio: 1;
+  margin: 0 auto 18px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #f5f5f7;
+}
+
+.clothing-method-card__image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.clothing-method-card__notice {
+  margin: 0 0 18px;
+  padding: 10px 12px;
+  border-left: 4px solid #3d0075;
+  background: #f7f1fb;
+  color: #3d0075;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.clothing-method-card__details {
+  margin-bottom: 18px;
+  color: rgba(0, 0, 0, 0.72);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.clothing-method-card__details summary {
+  color: rgba(0, 0, 0, 0.82);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.clothing-method-card__details p {
+  margin: 10px 0 0;
+}
+
+.clothing-calculator {
+  display: grid;
+  gap: 12px;
+}
+
+.clothing-calculator__row {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+}
+
+.clothing-calculator__row label,
+.clothing-calculator__label {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.clothing-calculator select,
+.clothing-calculator input {
+  min-width: 0;
+  min-height: 42px;
+  border-color: #ddd3e7;
+  border-radius: 7px;
+}
+
+.clothing-calculator__price-row {
+  margin-top: 2px;
+  padding-top: 14px;
+  border-top: 1px solid #eee6f5;
+}
+
+.clothing-calculator__price {
+  color: #3d0075;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.clothing-method-card__footer {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid #eee6f5;
+  color: rgba(0, 0, 0, 0.68);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.dtf-format-list {
+  display: grid;
+  gap: 10px;
+}
+
+.dtf-format-row {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) 90px 90px 90px 40px;
+  align-items: end;
+  gap: 8px;
+}
+
+.dtf-format-row label {
+  display: grid;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.dtf-remove-button {
+  width: 40px;
+  height: 42px;
+  border: 0;
+  border-radius: 7px;
+  color: #8b1e2d;
+  background: #fff0f1;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.dtf-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.dtf-result {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 4px;
+  padding-top: 16px;
+  border-top: 1px solid #eee6f5;
+}
+
+.dtf-result div {
+  min-width: 0;
+}
+
+.dtf-result span {
+  display: block;
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 12px;
+}
+
+.dtf-result strong {
+  display: block;
+  margin-top: 4px;
+  color: #3d0075;
+  font-size: 20px;
+}
+
+.dtf-minimum {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: #8a5700;
+  font-size: 13px;
+}
+
+@media (max-width: 900px) {
+  .clothing-methods-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .clothing-method-card--dtf {
+    grid-column: auto;
+  }
+
+  .dtf-format-row {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) 40px;
+  }
+
+  .dtf-format-row label:first-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 560px) {
+  .clothing-method-card {
+    padding: 18px;
+  }
+
+  .clothing-method-card__title {
+    font-size: 21px;
+  }
+
+  .clothing-calculator__row {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .dtf-format-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) 40px;
+  }
+
+  .dtf-format-row label:first-child,
+  .dtf-format-row label:nth-child(4) {
+    grid-column: 1 / -1;
+  }
+
+  .dtf-result {
+    grid-template-columns: 1fr;
+  }
+}

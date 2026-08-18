@@ -20,7 +20,7 @@ $authorized = adminIsAuthorized();
   <meta name="robots" content="noindex, nofollow, noarchive">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Вход | N1 Foto Admin</title>
-  <link rel="stylesheet" href="/assets/admin.css?v=20260814-1">
+  <link rel="stylesheet" href="/assets/admin.css?v=20260818-1">
 </head>
 <body>
   <main class="auth-shell">
@@ -124,7 +124,7 @@ adminRenderShellStart($sitePage['title'], $sitePage['id']);
         </section>
         <script src="/assets/poligrafy-admin.js?v=20260814-3"></script>
       <?php endif; ?>
-      <?php if (in_array($sitePage['id'], ['vizitki', 'listovki'], true)): ?>
+      <?php if (!empty($sitePage['pageJson']) || !empty($sitePage['manualEditor'])): ?>
         <section class="embedded-module" id="manual-prices-editor">
           <?php adminRenderManualCardsEditor($sitePage); ?>
         </section>
