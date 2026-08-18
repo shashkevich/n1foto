@@ -131,43 +131,6 @@ function adminSitePages(): array
                 ],
             ],
         ],
-        [
-            'id' => 'pechat-na-odezhde',
-            'title' => 'Печать на одежде',
-            'path' => '/pechat-na-odezhde.html',
-            'group' => 'Одежда и текстиль',
-            'pageJson' => 'db/pages/pechat-na-odezhde.json',
-            'manualSections' => ['print-methods'],
-            'imageUpload' => [
-                'directory' => 'img/odezhda/uploads',
-                'sections' => ['print-methods'],
-            ],
-            'data' => [
-                'prices' => 'db/pages/pechat-na-odezhde.json#print-methods',
-                'seo' => 'php/seo.php#/pechat-na-odezhde.html',
-                'template' => 'pechat-na-odezhde.html',
-            ],
-            'modules' => [
-                [
-                    'id' => 'seo',
-                    'title' => 'SEO и заголовок',
-                    'description' => 'Title, description, keywords и H1 из php/seo.php',
-                    'status' => 'planned',
-                ],
-                [
-                    'id' => 'manual-copy-prices',
-                    'title' => 'Методы печати и цены',
-                    'description' => 'Ручное редактирование карточек, калькуляторов, изображений и примечаний',
-                    'status' => 'active',
-                ],
-                [
-                    'id' => 'preview',
-                    'title' => 'Предпросмотр страницы',
-                    'description' => 'Открыть текущую страницу сайта и проверить калькуляторы',
-                    'status' => 'active',
-                ],
-            ],
-        ],
     ];
 }
 

@@ -30,10 +30,8 @@ jobs:
             admin-deploy/**
             db/poligrafy.json
             db/pages/vizitki.json
-            db/pages/pechat-na-odezhde.json
             img/buklety/uploads/**
             img/listovki/uploads/**
-            img/odezhda/uploads/**
 
   deploy-admin:
     runs-on: ubuntu-latest

@@ -15,7 +15,6 @@
   const digitalImageInput = document.getElementById('digitalLeafletImageInput');
   const uploadDigitalImageButton = document.getElementById('uploadDigitalLeafletImage');
   const isProduction = String(root.dataset.publicSiteBase || '').replace(/\/$/, '') === 'https://n1foto.com';
-  const supportsImageUpload = root.dataset.imageUpload === '1';
 
   let pageData = null;
 
@@ -32,13 +31,6 @@
   };
 
   const getApiUrl = () => root.dataset.manualApi || `/api/page-json.php?page=${encodeURIComponent(pageId)}`;
-
-  const getPublicImageUrl = (path, cacheBust = false) => {
-    const publicBase = String(root.dataset.publicSiteBase || '').replace(/\/$/, '');
-    const normalizedPath = String(path || '').replace(/^\//, '');
-
-    return normalizedPath ? `${publicBase}/${normalizedPath}${cacheBust ? `?v=${Date.now()}` : ''}` : '';
-  };
 
   const getDigitalLeafletSection = () => (pageData && Array.isArray(pageData.sections)
     ? pageData.sections.find((section) => section.id === 'listovki-cifra')
@@ -140,10 +132,6 @@
       card.footer = value;
     } else if (input.dataset.field === 'price_title') {
       card.price_title = value;
-    } else if (input.dataset.field === 'description') {
-      card.description = value;
-    } else if (input.dataset.field === 'notice') {
-      card.notice = value;
     } else if (input.dataset.field === 'cell') {
       const row = card.table[Number(input.dataset.rowIndex)];
       const header = input.dataset.header;
@@ -265,40 +253,12 @@
     `;
   };
 
-  const renderCardImageEditor = (sectionIndex, card, cardIndex) => {
-    if (!supportsImageUpload) {
-      return '';
-    }
-
-    const imagePath = (card.img || []).find(Boolean) || '';
-    const imageUrl = getPublicImageUrl(imagePath);
-
-    return `
-      <div class="manual-card-image-editor">
-        <div class="manual-card-image-preview${imageUrl ? '' : ' is-empty'}">
-          ${imageUrl ? `<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(card.title || 'Изображение карточки')}">` : '<span>Нет изображения</span>'}
-        </div>
-        <div class="manual-card-image-controls">
-          <strong>Изображение карточки</strong>
-          <p>${imagePath ? escapeHtml(imagePath) : 'Загрузите квадратное изображение JPG или PNG.'}</p>
-          <label class="field">
-            <span>Файл JPG или PNG</span>
-            <input type="file" accept="image/jpeg,image/png,.jpg,.jpeg,.png" data-action="page-image-input" data-section-index="${sectionIndex}" data-card-index="${cardIndex}">
-          </label>
-          <button class="button button-primary" type="button" data-action="upload-page-image" data-section-index="${sectionIndex}" data-card-index="${cardIndex}" disabled>Загрузить изображение</button>
-        </div>
-      </div>
-    `;
-  };
-
   const renderCard = (section, sectionIndex, card, cardIndex) => {
     return `
       <article class="manual-card panel">
         <div class="manual-card__heading">
-          <h3>${escapeHtml(card.title || `${section.title} · карточка ${cardIndex + 1}`)}</h3>
+          <h3>${escapeHtml(section.title)} · карточка ${cardIndex + 1}</h3>
         </div>
-
-        ${renderCardImageEditor(sectionIndex, card, cardIndex)}
 
         <div class="manual-card-grid">
           <label class="field">
@@ -306,26 +266,10 @@
             <textarea rows="2" data-field="title" data-section-index="${sectionIndex}" data-card-index="${cardIndex}">${escapeHtml(card.title || '')}</textarea>
           </label>
 
-          ${supportsImageUpload ? '' : `
-            <label class="field">
-              <span>Картинки, по одной на строку</span>
-              <textarea rows="2" data-field="images" data-section-index="${sectionIndex}" data-card-index="${cardIndex}">${escapeHtml((card.img || []).join('\n'))}</textarea>
-            </label>
-          `}
-
-          ${'description' in card ? `
-            <label class="field">
-              <span>Описание метода</span>
-              <textarea rows="4" data-field="description" data-section-index="${sectionIndex}" data-card-index="${cardIndex}">${escapeHtml(card.description || '')}</textarea>
-            </label>
-          ` : ''}
-
-          ${'notice' in card ? `
-            <label class="field">
-              <span>Короткая подсказка</span>
-              <textarea rows="3" data-field="notice" data-section-index="${sectionIndex}" data-card-index="${cardIndex}">${escapeHtml(card.notice || '')}</textarea>
-            </label>
-          ` : ''}
+          <label class="field">
+            <span>Картинки, по одной на строку</span>
+            <textarea rows="2" data-field="images" data-section-index="${sectionIndex}" data-card-index="${cardIndex}">${escapeHtml((card.img || []).join('\n'))}</textarea>
+          </label>
 
           <label class="field">
             <span>Подпись перед таблицей</span>
@@ -432,45 +376,6 @@
     renderDigitalLeafletImage();
   };
 
-  const uploadPageImage = async (sectionIndex, cardIndex, button) => {
-    const section = pageData.sections[sectionIndex];
-    const card = section.cards[cardIndex];
-    const input = cardsRoot.querySelector(`input[data-action="page-image-input"][data-section-index="${sectionIndex}"][data-card-index="${cardIndex}"]`);
-
-    if (!input || !input.files.length) {
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append('page', pageId);
-    formData.append('sectionId', section.id);
-    formData.append('cardId', card.id || '');
-    formData.append('image', input.files[0]);
-
-    try {
-      button.disabled = true;
-      setStatus(`Загружаю изображение для карточки «${card.title || card.id}»...`);
-
-      const response = await fetch('/api/page-image.php', {
-        method: 'POST',
-        credentials: 'same-origin',
-        body: formData
-      });
-      const payload = await response.json().catch(() => ({}));
-
-      if (!response.ok || !payload.ok) {
-        throw new Error(payload.error || `Не удалось загрузить изображение: ${response.status}`);
-      }
-
-      card.img = [payload.path];
-      render();
-      setStatus('Изображение загружено и опубликовано на сайте.', 'success');
-    } catch (error) {
-      setStatus(error.message, 'danger');
-      button.disabled = false;
-    }
-  };
-
   cardsRoot.addEventListener('input', (event) => {
     if (event.target.matches('input[data-field], textarea[data-field]')) {
       syncInputValue(event.target);
@@ -478,18 +383,6 @@
   });
 
   cardsRoot.addEventListener('change', (event) => {
-    if (event.target.matches('input[data-action="page-image-input"]')) {
-      const sectionIndex = event.target.dataset.sectionIndex;
-      const cardIndex = event.target.dataset.cardIndex;
-      const uploadButton = cardsRoot.querySelector(`button[data-action="upload-page-image"][data-section-index="${sectionIndex}"][data-card-index="${cardIndex}"]`);
-
-      if (uploadButton) {
-        uploadButton.disabled = !event.target.files.length;
-      }
-
-      return;
-    }
-
     if (event.target.matches('[data-action="rename-header"]')) {
       renameHeader(
         Number(event.target.dataset.sectionIndex),
@@ -500,7 +393,7 @@
     }
   });
 
-  cardsRoot.addEventListener('click', async (event) => {
+  cardsRoot.addEventListener('click', (event) => {
     const button = event.target.closest('button[data-action]');
 
     if (!button) {
@@ -510,9 +403,7 @@
     const sectionIndex = Number(button.dataset.sectionIndex);
     const cardIndex = Number(button.dataset.cardIndex);
 
-    if (button.dataset.action === 'upload-page-image') {
-      await uploadPageImage(sectionIndex, cardIndex, button);
-    } else if (button.dataset.action === 'add-row') {
+    if (button.dataset.action === 'add-row') {
       addRow(sectionIndex, cardIndex);
     } else if (button.dataset.action === 'remove-row') {
       removeRow(sectionIndex, cardIndex, Number(button.dataset.rowIndex));

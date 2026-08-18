@@ -355,51 +355,6 @@ p {
   font-size: 18px;
 }
 
-.manual-card-image-editor {
-  display: grid;
-  grid-template-columns: 136px minmax(0, 1fr);
-  align-items: center;
-  gap: 18px;
-  margin-bottom: 18px;
-  padding-bottom: 18px;
-  border-bottom: 1px solid var(--line);
-}
-
-.manual-card-image-preview {
-  display: grid;
-  width: 136px;
-  aspect-ratio: 1;
-  place-items: center;
-  overflow: hidden;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  color: var(--muted);
-  background: #f8fafc;
-  font-size: 12px;
-  text-align: center;
-}
-
-.manual-card-image-preview img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.manual-card-image-controls {
-  display: grid;
-  justify-items: start;
-  gap: 10px;
-}
-
-.manual-card-image-controls .field {
-  width: min(100%, 520px);
-}
-
-.manual-card-image-controls p {
-  overflow-wrap: anywhere;
-  font-size: 13px;
-}
-
 .manual-card-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -958,14 +913,6 @@ button:disabled {
   .manual-card-grid,
   .product-image-editor__layout {
     grid-template-columns: 1fr;
-  }
-
-  .manual-card-image-editor {
-    grid-template-columns: 1fr;
-  }
-
-  .manual-card-image-preview {
-    width: min(100%, 180px);
   }
 
   .product-image-preview {

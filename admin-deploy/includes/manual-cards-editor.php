@@ -9,7 +9,7 @@ function adminRenderManualCardsEditor(array $sitePage): void
     $isProduction = adminPublicSiteBaseUrl() === 'https://n1foto.com';
     $publishButtonLabel = $isProduction ? 'Опубликовать на n1foto.com' : 'Сохранить на тестовый сайт';
     ?>
-    <section class="manual-editor" id="manual-cards-editor" data-manual-api="<?= adminEscape($api) ?>" data-manual-sections="<?= adminEscape(implode(',', $sections)) ?>" data-public-site-base="<?= adminEscape(adminPublicSiteBaseUrl()) ?>" data-image-upload="<?= !empty($sitePage['imageUpload']) ? '1' : '0' ?>">
+    <section class="manual-editor" id="manual-cards-editor" data-manual-api="<?= adminEscape($api) ?>" data-manual-sections="<?= adminEscape(implode(',', $sections)) ?>" data-public-site-base="<?= adminEscape(adminPublicSiteBaseUrl()) ?>">
       <div class="manual-editor__toolbar panel">
         <div>
           <h2><?= $isDigitalLeaflets ? 'Цифровая печать' : 'Карточки и ручные цены' ?></h2>
@@ -49,6 +49,6 @@ function adminRenderManualCardsEditor(array $sitePage): void
 
       <div id="manualCards" class="manual-cards"></div>
     </section>
-    <script src="/assets/manual-cards-admin.js?v=20260818-1"></script>
+    <script src="/assets/manual-cards-admin.js?v=20260814-2"></script>
     <?php
 }

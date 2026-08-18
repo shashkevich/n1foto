@@ -13,7 +13,7 @@ function adminRenderShellStart(string $pageTitle, string $activePageId = ''): vo
   <meta name="robots" content="noindex, nofollow, noarchive">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title><?= adminEscape($pageTitle) ?> | N1 Foto Admin</title>
-  <link rel="stylesheet" href="/assets/admin.css?v=20260818-1">
+  <link rel="stylesheet" href="/assets/admin.css?v=20260814-1">
 </head>
 <body>
   <div class="admin-layout">
