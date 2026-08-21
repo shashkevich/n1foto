@@ -2,7 +2,8 @@
 <!DOCTYPE html>
 <html lang="ru" class="h-100" data-bs-theme="auto">
 <head>
-    <? include "php/blocks/head.php" ?>    
+    <? include "php/blocks/head.php" ?>
+    <link rel="stylesheet" href="css/plastic-sign-calculator.css?v=20260821-6">
 </head>
 
 <body class="d-flex flex-column h-100">
@@ -12,33 +13,61 @@
     <section class="pt-2 text-center">
         <div class="container text-center">
             <h1><?php echo $link['name'] ?></h1>
-            <div class="row justify-content-md-center row-cols-2 row-cols-md-3 row-cols-lg-3 row-cols-xl-3 my-3 text-center pt-4">
-                <div class="col">
-                    <div class="card product-card card-white rounded-4 mb-4">
-                        <div class="card-body">
-                            <h5>Печать на пластике 3мм толщина</h5>
-                            <p>до 6м<sup>2</sup> - 5000 ₽/м<sup>2</sup></p>
-                            <p>более 6м<sup>2</sup> - 4500 ₽/м<sup>2</sup></p>
-                            <h5>Печать на пвх (таблички) 5мм толщина</h5>
-                            <p>до 6м<sup>2</sup> - 6000 ₽/м<sup>2</sup></p>
-                            <p>более 6м<sup>2</sup> - 5000 ₽/м<sup>2</sup></p>
-                        </div>                        
-                        
-                        <div class="card-footer bg-transparent border-secondary centered">
-                            <small>
-                                <p>Резка по внешнему контуру - 100 ₽ / погонный метр</p>
-                                <p> Минимальный заказ - 1000 ₽</p>
-                            </small>						
+            <div class="plastic-calculator-wrap my-3 pt-4">
+                <div class="card product-card card-white plastic-calculator" id="plasticSignCalculator">
+                    <div class="card-body">
+                        <div class="plastic-calculator__header">
+                            <div class="plastic-calculator__image" id="plasticCalculatorImage" hidden>
+                                <img id="plasticCalculatorImageElement" alt="">
+                            </div>
+                            <div class="plastic-calculator__heading">
+                                <h2 class="plastic-calculator__title" id="plasticCalculatorTitle">Расчет стоимости таблички</h2>
+                                <p class="plastic-calculator__intro" id="plasticCalculatorDescription">Загружаем параметры расчета...</p>
+                            </div>
                         </div>
+
+                        <div class="plastic-calculator__positions">
+                            <div class="plastic-calculator__positions-head" aria-hidden="true">
+                                <span>Материал</span>
+                                <span>Ширина, см</span>
+                                <span>Высота, см</span>
+                                <span>Кол-во</span>
+                                <span>Резка</span>
+                                <span>Сумма</span>
+                                <span></span>
+                            </div>
+                            <div class="plastic-calculator__rows" id="plasticCalculatorRows"></div>
+                            <div class="plastic-calculator__positions-footer">
+                                <button class="plastic-calculator__add" id="plasticAddRow" type="button" disabled>Добавить табличку</button>
+                                <small id="plasticCutDescription">Резка по внешнему контуру</small>
+                            </div>
+                        </div>
+
+                        <div class="plastic-calculator__summary" aria-live="polite">
+                            <dl>
+                                <div>
+                                    <dt>Общая площадь</dt>
+                                    <dd id="plasticArea">—</dd>
+                                </div>
+                            </dl>
+
+                            <div class="plastic-calculator__total">
+                                <span>Стоимость заказа</span>
+                                <strong id="plasticTotal">—</strong>
+                            </div>
+                            <p class="plastic-calculator__minimum" id="plasticMinimum" hidden></p>
+                            <p class="plastic-calculator__footer" id="plasticCalculatorFooter" hidden></p>
+                        </div>
+                        <p class="plastic-calculator__status" id="plasticCalculatorStatus">Загружаем цены...</p>
                     </div>
-                </div>                
+                </div>
             </div>
         </div>
     </section>
   
     <section class="py-5 text-center">
         <div class="container text-center">
-            <h2>Адресные таблички на дом</h2>
+            <h2>Адресные таблички</h2>
             <h5>Цены указаны за таблички напечатанные на пластике толщиной 3мм</h5>
             <h5>Печать таблички возможна в любом цвете</h5>
             <div class="cardsField row justify-content-md-center row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 my-3 text-center" id="tablichki">
@@ -48,5 +77,6 @@
 
     <? include "php/blocks/footer.php" ?>
 <script src="js/cardsBuilder.js"></script>
+<script src="js/plastic-sign-calculator.js?v=20260821-4"></script>
 </body>
 </html>

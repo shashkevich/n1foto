@@ -144,6 +144,18 @@
       card.description = value;
     } else if (input.dataset.field === 'notice') {
       card.notice = value;
+    } else if (input.dataset.field === 'cut-label') {
+      card.cutLabel = value;
+    } else if (input.dataset.field === 'area-threshold') {
+      card.areaThreshold = value;
+    } else if (input.dataset.field === 'cut-price') {
+      card.cutPrice = value;
+    } else if (input.dataset.field === 'material-label') {
+      card.materials[Number(input.dataset.materialIndex)].label = value;
+    } else if (input.dataset.field === 'material-price-small') {
+      card.materials[Number(input.dataset.materialIndex)].priceUpToThreshold = value;
+    } else if (input.dataset.field === 'material-price-large') {
+      card.materials[Number(input.dataset.materialIndex)].priceAboveThreshold = value;
     } else if (input.dataset.field === 'minimum-order') {
       card.minimumOrder = value;
     } else if (input.dataset.field === 'extra-label') {
@@ -360,7 +372,98 @@
     `;
   };
 
+  const renderPlasticSignSettings = (sectionIndex, card, cardIndex) => {
+    const materials = Array.isArray(card.materials) ? card.materials : [];
+    const threshold = card.areaThreshold ?? 6;
+
+    return `
+      <section class="manual-calculator-settings">
+        <div class="manual-calculator-settings__heading">
+          <div>
+            <strong>Параметры расчета</strong>
+            <p>Цены применяются к общей площади всего тиража.</p>
+          </div>
+        </div>
+
+        <div class="manual-calculator-base-grid">
+          <label class="field">
+            <span>Порог площади, м²</span>
+            <input type="number" min="0.01" step="0.01" value="${escapeHtml(threshold)}" data-field="area-threshold" data-section-index="${sectionIndex}" data-card-index="${cardIndex}">
+          </label>
+          <label class="field">
+            <span>Резка, ₽/пог. м</span>
+            <input type="number" min="0" step="1" value="${escapeHtml(card.cutPrice ?? 0)}" data-field="cut-price" data-section-index="${sectionIndex}" data-card-index="${cardIndex}">
+          </label>
+          <label class="field">
+            <span>Минимальный заказ, ₽</span>
+            <input type="number" min="0" step="10" value="${escapeHtml(card.minimumOrder ?? 0)}" data-field="minimum-order" data-section-index="${sectionIndex}" data-card-index="${cardIndex}">
+          </label>
+        </div>
+
+        <div class="manual-materials-list">
+          ${materials.map((item, materialIndex) => `
+            <article class="manual-material-row">
+              <label class="field manual-material-name">
+                <span>Материал</span>
+                <input value="${escapeHtml(item.label || '')}" data-field="material-label" data-section-index="${sectionIndex}" data-card-index="${cardIndex}" data-material-index="${materialIndex}">
+              </label>
+              <label class="field">
+                <span>До ${escapeHtml(threshold)} м², ₽/м²</span>
+                <input type="number" min="0" step="1" value="${escapeHtml(item.priceUpToThreshold ?? 0)}" data-field="material-price-small" data-section-index="${sectionIndex}" data-card-index="${cardIndex}" data-material-index="${materialIndex}">
+              </label>
+              <label class="field">
+                <span>Свыше ${escapeHtml(threshold)} м², ₽/м²</span>
+                <input type="number" min="0" step="1" value="${escapeHtml(item.priceAboveThreshold ?? 0)}" data-field="material-price-large" data-section-index="${sectionIndex}" data-card-index="${cardIndex}" data-material-index="${materialIndex}">
+              </label>
+            </article>
+          `).join('')}
+        </div>
+      </section>
+    `;
+  };
+
+  const renderPlasticSignCard = (section, sectionIndex, card, cardIndex) => {
+    return `
+      <article class="manual-card panel">
+        <div class="manual-card__heading">
+          <h3>${escapeHtml(card.title || 'Калькулятор печати на пластике')}</h3>
+        </div>
+
+        ${renderCardImageEditor(sectionIndex, card, cardIndex)}
+
+        <div class="manual-card-grid">
+          <label class="field">
+            <span>Заголовок карточки</span>
+            <textarea rows="2" data-field="title" data-section-index="${sectionIndex}" data-card-index="${cardIndex}">${escapeHtml(card.title || '')}</textarea>
+          </label>
+          <label class="field">
+            <span>Текст под заголовком</span>
+            <textarea rows="2" data-field="description" data-section-index="${sectionIndex}" data-card-index="${cardIndex}">${escapeHtml(card.description || '')}</textarea>
+          </label>
+          <label class="field">
+            <span>Название опции резки</span>
+            <textarea rows="2" data-field="cut-label" data-section-index="${sectionIndex}" data-card-index="${cardIndex}">${escapeHtml(card.cutLabel || '')}</textarea>
+          </label>
+          <label class="field">
+            <span>Пояснение к резке</span>
+            <textarea rows="2" data-field="notice" data-section-index="${sectionIndex}" data-card-index="${cardIndex}">${escapeHtml(card.notice || '')}</textarea>
+          </label>
+          <label class="field manual-card-grid__wide">
+            <span>Примечание под калькулятором</span>
+            <textarea rows="3" data-field="footer" data-section-index="${sectionIndex}" data-card-index="${cardIndex}">${escapeHtml(card.footer || '')}</textarea>
+          </label>
+        </div>
+
+        ${renderPlasticSignSettings(sectionIndex, card, cardIndex)}
+      </article>
+    `;
+  };
+
   const renderCard = (section, sectionIndex, card, cardIndex) => {
+    if (card.calculatorType === 'plastic-sign') {
+      return renderPlasticSignCard(section, sectionIndex, card, cardIndex);
+    }
+
     return `
       <article class="manual-card panel">
         <div class="manual-card__heading">

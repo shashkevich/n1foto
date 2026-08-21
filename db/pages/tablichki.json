@@ -1,0 +1,43 @@
+{
+  "meta": {
+    "page": "tablichki",
+    "createdAt": "2026-08-21 18:30:00"
+  },
+  "sections": [
+    {
+      "id": "plastic-sign",
+      "title": "Печать на пластике",
+      "cards": [
+        {
+          "id": "plastic-sign-calculator",
+          "calculatorType": "plastic-sign",
+          "title": "Расчет стоимости таблички",
+          "img": [
+            "img/main-page/tablichki-main.jpg"
+          ],
+          "description": "Укажите материал, размер готового изделия и количество.",
+          "cutLabel": "Резка по внешнему контуру",
+          "notice": "Для табличек нестандартной формы",
+          "footer": "Минимальная стоимость заказа применяется автоматически.",
+          "areaThreshold": 6,
+          "cutPrice": 100,
+          "minimumOrder": 1000,
+          "materials": [
+            {
+              "id": "plastic-3",
+              "label": "ПВХ, 3 мм",
+              "priceUpToThreshold": 5000,
+              "priceAboveThreshold": 4500
+            },
+            {
+              "id": "pvc-5",
+              "label": "ПВХ, 5 мм",
+              "priceUpToThreshold": 6000,
+              "priceAboveThreshold": 5000
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

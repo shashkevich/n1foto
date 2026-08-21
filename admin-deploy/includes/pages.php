@@ -132,6 +132,43 @@ function adminSitePages(): array
             ],
         ],
         [
+            'id' => 'tablichki',
+            'title' => 'Печать на пластике',
+            'path' => '/tablichki.html',
+            'group' => 'Реклама и оформление',
+            'pageJson' => 'db/pages/tablichki.json',
+            'manualSections' => ['plastic-sign'],
+            'imageUpload' => [
+                'directory' => 'img/tablichki/uploads',
+                'sections' => ['plastic-sign'],
+            ],
+            'data' => [
+                'prices' => 'db/pages/tablichki.json#plastic-sign',
+                'seo' => 'php/seo.php#/tablichki.html',
+                'template' => 'tablichki.html',
+            ],
+            'modules' => [
+                [
+                    'id' => 'manual-copy-prices',
+                    'title' => 'Калькулятор и цены',
+                    'description' => 'Материалы, цены за м², резка, минимальный заказ, тексты и изображение карточки',
+                    'status' => 'active',
+                ],
+                [
+                    'id' => 'seo',
+                    'title' => 'SEO и заголовок страницы',
+                    'description' => 'Title, description, keywords и H1 из php/seo.php',
+                    'status' => 'planned',
+                ],
+                [
+                    'id' => 'preview',
+                    'title' => 'Предпросмотр страницы',
+                    'description' => 'Открыть страницу печати на пластике и проверить расчет',
+                    'status' => 'active',
+                ],
+            ],
+        ],
+        [
             'id' => 'pechat-na-odezhde',
             'title' => 'Печать на одежде',
             'path' => '/pechat-na-odezhde.html',

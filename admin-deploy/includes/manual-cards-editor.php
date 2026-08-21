@@ -49,6 +49,6 @@ function adminRenderManualCardsEditor(array $sitePage): void
 
       <div id="manualCards" class="manual-cards"></div>
     </section>
-    <script src="/assets/manual-cards-admin.js?v=20260818-2"></script>
+    <script src="/assets/manual-cards-admin.js?v=20260821-1"></script>
     <?php
 }
