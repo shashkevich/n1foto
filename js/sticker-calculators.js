@@ -173,6 +173,9 @@
 
   const renderPlotterCalculator = (card) => {
     const rows = Array.isArray(card.table) ? card.table : [];
+    const extras = Array.isArray(card.extras) && card.extras.length
+      ? card.extras
+      : [{ id: 'complex-selection', label: 'Сложная выборка', percent: 50 }];
     const element = document.createElement('article');
     element.className = 'sticker-card sticker-card--plotter';
     element.innerHTML = `
@@ -198,6 +201,14 @@
           <input data-role="quantity" type="number" min="1" step="1" value="1" inputmode="numeric">
         </label>
       </div>
+      <div class="sticker-options">
+        ${extras.map((extra, index) => `
+          <label>
+            <input type="checkbox" data-role="extra" data-extra-index="${index}">
+            <span>${escapeHtml(extra.label || '')} +${escapeHtml(extra.percent ?? 0)}%</span>
+          </label>
+        `).join('')}
+      </div>
       <p class="sticker-card__validation" data-role="validation" hidden></p>
       <div class="sticker-card__result">
         <div><span>Общая площадь</span><strong data-role="area">—</strong></div>
@@ -212,6 +223,8 @@
       const height = Math.max(0, toNumber(element.querySelector('[data-role="height"]').value));
       const quantity = Math.max(1, Math.floor(toNumber(element.querySelector('[data-role="quantity"]').value)));
       const area = width * height * quantity / 10000;
+      const extraPercent = Array.from(element.querySelectorAll('[data-role="extra"]:checked'))
+        .reduce((sum, input) => sum + Math.max(0, toNumber(extras[Number(input.dataset.extraIndex)]?.percent)), 0);
       const validation = element.querySelector('[data-role="validation"]');
       let totalText = '—';
 
@@ -227,7 +240,8 @@
           : area <= 5
             ? toNumber(row['От 1 до 5 м²'])
             : toNumber(row['От 5 до 10 м²']);
-        totalText = formatMoney(Math.max(area * rate, toNumber(row['Минимум, ₽'])));
+        const baseTotal = Math.max(area * rate, toNumber(row['Минимум, ₽']));
+        totalText = formatMoney(baseTotal * (1 + extraPercent / 100));
       }
 
       element.querySelector('[data-role="area"]').textContent = area > 0 ? formatArea(area) : '—';

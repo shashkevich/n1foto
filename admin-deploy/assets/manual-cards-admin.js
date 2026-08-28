@@ -76,6 +76,18 @@
     }
 
     pageData = await response.json();
+
+    (pageData.sections || []).forEach((section) => {
+      (section.cards || []).forEach((card) => {
+        if (card.calculatorType === 'plotter-stickers' && !Array.isArray(card.extras)) {
+          card.extras = [{
+            id: 'complex-selection',
+            label: 'Сложная выборка',
+            percent: 50
+          }];
+        }
+      });
+    });
   };
 
   const savePageData = async () => {
