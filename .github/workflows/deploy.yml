@@ -32,10 +32,12 @@ jobs:
             db/pages/vizitki.json
             db/pages/pechat-na-odezhde.json
             db/pages/tablichki.json
+            db/pages/nakleyki.json
             img/buklety/uploads/**
             img/listovki/uploads/**
             img/odezhda/uploads/**
             img/tablichki/uploads/**
+            img/nakleyki/uploads/**
 
   deploy-admin:
     runs-on: ubuntu-latest
