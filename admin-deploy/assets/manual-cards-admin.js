@@ -131,6 +131,8 @@
 
     if (input.dataset.field === 'title') {
       card.title = value;
+    } else if (input.dataset.field === 'subtitle') {
+      card.subtitle = value;
     } else if (input.dataset.field === 'images') {
       card.img = value
         .split('\n')
@@ -487,8 +489,15 @@
 
           ${'description' in card ? `
             <label class="field">
-              <span>Описание метода</span>
+              <span>${pageId === 'nakleyki' ? 'Краткое описание материала' : 'Описание метода'}</span>
               <textarea rows="4" data-field="description" data-section-index="${sectionIndex}" data-card-index="${cardIndex}">${escapeHtml(card.description || '')}</textarea>
+            </label>
+          ` : ''}
+
+          ${'subtitle' in card ? `
+            <label class="field">
+              <span>Способ печати или обработки</span>
+              <textarea rows="2" data-field="subtitle" data-section-index="${sectionIndex}" data-card-index="${cardIndex}">${escapeHtml(card.subtitle || '')}</textarea>
             </label>
           ` : ''}
 

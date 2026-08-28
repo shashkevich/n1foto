@@ -169,6 +169,43 @@ function adminSitePages(): array
             ],
         ],
         [
+            'id' => 'nakleyki',
+            'title' => 'Наклейки',
+            'path' => '/nakleyki.html',
+            'group' => 'Реклама и оформление',
+            'pageJson' => 'db/pages/nakleyki.json',
+            'manualSections' => ['stickers'],
+            'imageUpload' => [
+                'directory' => 'img/nakleyki/uploads',
+                'sections' => ['stickers'],
+            ],
+            'data' => [
+                'prices' => 'db/pages/nakleyki.json#stickers',
+                'seo' => 'php/seo.php#/nakleyki.html',
+                'template' => 'nakleyki.html',
+            ],
+            'modules' => [
+                [
+                    'id' => 'manual-copy-prices',
+                    'title' => 'Материалы, калькуляторы и цены',
+                    'description' => 'Тексты, прайсы, минимальные заказы и изображения всех материалов',
+                    'status' => 'active',
+                ],
+                [
+                    'id' => 'seo',
+                    'title' => 'SEO и заголовок страницы',
+                    'description' => 'Title, description, keywords и H1 из php/seo.php',
+                    'status' => 'planned',
+                ],
+                [
+                    'id' => 'preview',
+                    'title' => 'Предпросмотр страницы',
+                    'description' => 'Открыть страницу наклеек и проверить расчеты',
+                    'status' => 'active',
+                ],
+            ],
+        ],
+        [
             'id' => 'pechat-na-odezhde',
             'title' => 'Печать на одежде',
             'path' => '/pechat-na-odezhde.html',

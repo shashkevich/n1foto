@@ -20,7 +20,7 @@ $authorized = adminIsAuthorized();
   <meta name="robots" content="noindex, nofollow, noarchive">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Вход | N1 Foto Admin</title>
-  <link rel="stylesheet" href="/assets/admin.css?v=20260821-1">
+  <link rel="stylesheet" href="/assets/admin.css?v=20260828-1">
 </head>
 <body>
   <main class="auth-shell">
