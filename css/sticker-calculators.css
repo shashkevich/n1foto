@@ -13,6 +13,15 @@
     text-align: left;
 }
 
+.sticker-calculators[data-card-id] {
+    display: flex;
+    justify-content: center;
+}
+
+.sticker-calculators[data-card-id] .sticker-card {
+    width: min(100%, 720px);
+}
+
 .sticker-card {
     display: flex;
     grid-column: span 2;

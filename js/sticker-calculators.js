@@ -5,6 +5,8 @@
     return;
   }
 
+  const requestedCardId = root.dataset.cardId || '';
+
   const formatMoney = (value) => `${Math.round(value).toLocaleString('ru-RU')} ₽`;
   const formatArea = (value) => `${value.toLocaleString('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 3 })} м²`;
   const toNumber = (value) => {
@@ -259,7 +261,9 @@
       return response.json();
     })
     .then((data) => {
-      const cards = (data.sections || []).flatMap((section) => section.cards || []);
+      const cards = (data.sections || [])
+        .flatMap((section) => section.cards || [])
+        .filter((card) => !requestedCardId || card.id === requestedCardId);
       const fragment = document.createDocumentFragment();
 
       cards.forEach((card) => {
@@ -270,6 +274,10 @@
       });
 
       root.replaceChildren(fragment);
+
+      if (requestedCardId && !cards.length) {
+        throw new Error('Карточка плоттерной резки не найдена.');
+      }
     })
     .catch((error) => {
       root.innerHTML = `<p class="sticker-calculators__error">${escapeHtml(error.message)}</p>`;

@@ -3,6 +3,7 @@
 
 <head>
 	<? include "php/blocks/head.php" ?>
+	<link rel="stylesheet" href="css/sticker-calculators.css?v=20260828-2">
 </head>
 
 <body class="d-flex flex-column h-100">
@@ -10,16 +11,14 @@
 	<? include "php/blocks/nav.php" ?>
 
 	<section class="py-4">
-		<div class="container mtb text-center" id="vizitki">
+		<div class="container mtb text-center">
 			<h1 class="py-4"><?php echo $link['name'] ?></h1>
-            <div class="cardsField row justify-content-md-center row-cols-1 row-cols-md-1 row-cols-lg-2 row-cols-xl-2 my-3 text-center" id="plotternaya-rezka" name="">
-            </div>
-			
+			<div class="sticker-calculators" id="stickerCalculators" data-card-id="vinyl-plotter-cutting" aria-live="polite"></div>
 		</div>
 	</section>
 
 	<? include "php/blocks/footer.php" ?>
-	<script src="js/copy-service-tables-builder.js"></script>
+	<script src="js/sticker-calculators.js?v=20260828-2"></script>
 </body>
 
 </html>

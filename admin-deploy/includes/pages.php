@@ -206,6 +206,44 @@ function adminSitePages(): array
             ],
         ],
         [
+            'id' => 'plotternaya-rezka',
+            'title' => 'Плоттерная резка',
+            'path' => '/plotternaya-rezka.html',
+            'group' => 'Реклама и оформление',
+            'data' => [
+                'calculator' => 'db/pages/nakleyki.json#stickers/vinyl-plotter-cutting',
+                'seo' => 'php/seo.php#/plotternaya-rezka.html',
+                'template' => 'plotternaya-rezka.html',
+            ],
+            'modules' => [
+                [
+                    'id' => 'shared-sticker-calculator',
+                    'title' => 'Карточка плоттерной резки',
+                    'description' => 'Общая карточка с разделом «Наклейки». Цены, текст и изображение редактируются на странице «Наклейки».',
+                    'status' => 'active',
+                    'href' => '/?page=nakleyki#manual-prices-editor',
+                ],
+                [
+                    'id' => 'seo',
+                    'title' => 'SEO и заголовок страницы',
+                    'description' => 'Остальные настройки этой страницы будут редактироваться здесь независимо от общей карточки.',
+                    'status' => 'planned',
+                ],
+                [
+                    'id' => 'content',
+                    'title' => 'Контент страницы',
+                    'description' => 'Тексты и дополнительные блоки, которые относятся только к странице плоттерной резки.',
+                    'status' => 'planned',
+                ],
+                [
+                    'id' => 'preview',
+                    'title' => 'Предпросмотр страницы',
+                    'description' => 'Открыть страницу плоттерной резки и проверить общую карточку',
+                    'status' => 'active',
+                ],
+            ],
+        ],
+        [
             'id' => 'pechat-na-odezhde',
             'title' => 'Печать на одежде',
             'path' => '/pechat-na-odezhde.html',
