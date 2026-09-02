@@ -11929,6 +11929,10 @@ body {
   border-radius: 10px;
 }
 
+.cardsField > .col > .card.card-white > img:not(.img-fluid) {
+  margin-top: 10%;
+}
+
 .card-light {
   box-shadow: 4px 4px 10px #dad1e6, -4px -4px 10px #f9f9f9;
   background: #ede7f1;
@@ -11948,7 +11952,6 @@ body {
 
 .card-white img {
   width: 80%;
-  margin-top: 10%;
   align-self: center;
 }
 

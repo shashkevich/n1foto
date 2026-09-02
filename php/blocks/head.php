@@ -18,4 +18,5 @@ $link = $title_arr[$_SERVER["SCRIPT_NAME"]]?>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 <link href="https://fonts.googleapis.com/css2?family=Geologica:wght@300;400;500;700&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" href="css/main.min.css?v=20260821-1">
+<link rel="stylesheet" href="css/main.min.css?v=20260902-1">
+<link rel="stylesheet" href="css/legacy-cards.css?v=20260902-1">

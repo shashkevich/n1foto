@@ -1,0 +1,3 @@
+.cardsField > .col > .card.card-white > img:not(.img-fluid) {
+  margin-top: 10%;
+}

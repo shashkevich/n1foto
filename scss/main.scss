@@ -88,6 +88,11 @@ body {
     border-radius: 10px;
 }
 
+// Отступ нужен только старым карточкам из cardsBuilder.js.
+.cardsField > .col > .card.card-white > img:not(.img-fluid) {
+    margin-top: 10%;
+}
+
 .card-light {
     box-shadow: 4px 4px 10px #dad1e6, -4px -4px 10px #f9f9f9;
     background: $light-purple;
