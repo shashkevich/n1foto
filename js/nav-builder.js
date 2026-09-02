@@ -9,7 +9,7 @@ const main = document.querySelector('#main');
 
 // функция по получению данных из базы данных json
 const getData = async (url) => {
-    const price = await fetch(url);
+    const price = await fetch(url, { cache: 'no-store' });
 
     if (!price.ok) { // проверяем правильно ли обработан запрос
         throw new Error(`Could not fetch ${url}, status: ${price.status}`); // прописываем действия на случай ошибки
@@ -21,12 +21,10 @@ const getData = async (url) => {
 // вызываем функ-ю получения данных из json и обрабатываем
 getData('db/main-page-cards.json')
     .then(data => {
-        // console.log(data);
-        for (let key in data) { // перебираем объект полученный от json
-            let arr = data[key];            
-
-            for (let subkey in arr) {
-                let obj = arr[subkey]; // создаем новую переменную для упрощения
+        (Array.isArray(data.main) ? data.main : []).forEach((obj) => {
+                if (!obj || !Array.isArray(obj.content)) {
+                    return;
+                }
 
                 // navbar
                 const navElement = document.createElement('li');
@@ -44,9 +42,13 @@ getData('db/main-page-cards.json')
                 dropdownMenu.classList.add('dropdown-menu');
                 navElement.append(dropdownMenu);
 
-                obj.content.forEach(elem => {                    
+                obj.content.forEach(elem => {
                     const dropdownItem = document.createElement('li');
-                    dropdownItem.innerHTML = `<a class="dropdown-item" href="${elem.link}">${elem.name}</a>`;
+                    const dropdownLink = document.createElement('a');
+                    dropdownLink.classList.add('dropdown-item');
+                    dropdownLink.href = elem.link || '#';
+                    dropdownLink.textContent = elem.name || elem.title || '';
+                    dropdownItem.append(dropdownLink);
                     dropdownMenu.append(dropdownItem);
                 });
 
@@ -78,8 +80,10 @@ getData('db/main-page-cards.json')
                 //     breadcrumbs.appendChild(pageBreadcrumb);
                 // });
                 
-            }            
-        }        
+        });
+    })
+    .catch((error) => {
+        console.error('Не удалось построить верхнее меню:', error);
     });
 
 

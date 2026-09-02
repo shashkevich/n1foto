@@ -66,4 +66,4 @@ var s = document.createElement('script'); s.type = 'text/javascript'; s.async = 
 <!-- {/literal} END JIVOSITE CODE -->
 
 <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.js"></script>
-<script src="js/nav-builder.js"></script>
+<script src="js/nav-builder.js?v=20260902-1"></script>
