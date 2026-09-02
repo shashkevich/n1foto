@@ -22,5 +22,5 @@ $pageTitle = $sitePage ? 'Цены: ' . $sitePage['title'] : 'Цены поли�
     <?php endif; ?>
 
     <?php adminRenderPoligrafyEditor($sitePage); ?>
-    <script src="/assets/poligrafy-admin.js?v=20260814-3"></script>
+    <script src="/assets/poligrafy-admin.js?v=20260901-1"></script>
 <?php adminRenderShellEnd(); ?>

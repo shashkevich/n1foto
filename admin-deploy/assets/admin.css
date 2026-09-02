@@ -836,7 +836,8 @@ button:disabled {
   gap: 16px;
 }
 
-.product-image-editor {
+.product-image-editor,
+.product-extras-editor {
   margin-bottom: 18px;
   padding: 22px;
 }

@@ -4,7 +4,8 @@ declare(strict_types=1);
 function adminRenderPoligrafyEditor(?array $sitePage = null): void
 {
     $pageId = (string) ($sitePage['id'] ?? '');
-    $supportsProductImages = in_array($pageId, ['buklety', 'listovki'], true);
+    $supportsProductImages = in_array($pageId, ['buklety', 'listovki', 'karmannye-kalendariki'], true);
+    $supportsProductExtras = $pageId === 'karmannye-kalendariki';
     $isProduction = adminPublicSiteBaseUrl() === 'https://n1foto.com';
     $publishButtonLabel = $isProduction ? 'Опубликовать на n1foto.com' : 'Сохранить на тестовый сайт';
     ?>
@@ -60,6 +61,18 @@ function adminRenderPoligrafyEditor(?array $sitePage = null): void
             <button class="button button-primary" id="uploadProductImage" type="button" disabled>Загрузить изображение</button>
           </div>
         </div>
+      </section>
+    <?php endif; ?>
+
+    <?php if ($supportsProductExtras): ?>
+      <section class="panel product-extras-editor">
+        <div class="section-heading">
+          <div>
+            <h2>Доплаты в калькуляторе</h2>
+            <p>Проценты выбранных опций складываются и применяются к базовой цене.</p>
+          </div>
+        </div>
+        <div class="manual-extras-list" id="productExtrasGrid"></div>
       </section>
     <?php endif; ?>
 

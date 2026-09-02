@@ -20,7 +20,7 @@ $authorized = adminIsAuthorized();
   <meta name="robots" content="noindex, nofollow, noarchive">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Вход | N1 Foto Admin</title>
-  <link rel="stylesheet" href="/assets/admin.css?v=20260828-1">
+  <link rel="stylesheet" href="/assets/admin.css?v=20260901-1">
 </head>
 <body>
   <main class="auth-shell">
@@ -112,7 +112,7 @@ adminRenderShellStart($sitePage['title'], $sitePage['id']);
           <?php endforeach; ?>
         </section>
       </section>
-      <?php if (in_array($sitePage['id'], ['listovki', 'buklety'], true)): ?>
+      <?php if (in_array($sitePage['id'], ['listovki', 'buklety', 'karmannye-kalendariki'], true)): ?>
         <section class="embedded-module" id="poligrafy-editor">
           <div class="section-heading embedded-heading">
             <div>
@@ -122,7 +122,7 @@ adminRenderShellStart($sitePage['title'], $sitePage['id']);
           </div>
           <?php adminRenderPoligrafyEditor($sitePage); ?>
         </section>
-        <script src="/assets/poligrafy-admin.js?v=20260814-3"></script>
+        <script src="/assets/poligrafy-admin.js?v=20260901-1"></script>
       <?php endif; ?>
       <?php if (!empty($sitePage['pageJson']) || !empty($sitePage['manualEditor'])): ?>
         <section class="embedded-module" id="manual-prices-editor">

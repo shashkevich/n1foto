@@ -3,6 +3,7 @@
 
 <head>
 	<? include "php/blocks/head.php" ?>
+	<link rel="stylesheet" href="css/poligrafy.css?v=20260901-1">
 </head>
 
 <body class="d-flex flex-column h-100">
@@ -10,16 +11,15 @@
 	<? include "php/blocks/nav.php" ?>
 
 	<section class="py-4">
-		<div class="container mtb text-center" id="vizitki">
+		<div class="container mtb text-center">
 			<h1 class="py-4"><?php echo $link['name'] ?></h1>
-            <div class="cardsField row justify-content-md-center row-cols-1 row-cols-md-1 row-cols-lg-1 row-cols-xl-1 my-3 text-center" id="karmannye-kalendariki" name="">
+            <div class="row justify-content-center align-items-start my-3 text-center" data-poligrafy-section="karmannye-kalendariki">
             </div>
-			
 		</div>
 	</section>
 
 	<? include "php/blocks/footer.php" ?>
-	<script src="js/copy-service-tables-builder.js"></script>
+	<script src="js/poligrafy-builder.js?v=20260901-1"></script>
 </body>
 
 </html>

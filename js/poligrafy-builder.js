@@ -15,6 +15,10 @@ window.addEventListener('DOMContentLoaded', () => {
         return response.json();
     };
 
+    const parsePrice = (value) => Number(String(value || '').replace(/[^\d,.-]/g, '').replace(',', '.')) || 0;
+
+    const formatPrice = (value) => `${Math.round(value).toLocaleString('ru-RU').replace(/\u00a0/g, ' ')} ₽`;
+
     const getColorShortLabel = (color) => {
         const lowerColor = String(color || '').toLowerCase();
 
@@ -99,6 +103,10 @@ window.addEventListener('DOMContentLoaded', () => {
             return 'Офсетная печать';
         }
 
+        if (sectionName === 'karmannye-kalendariki') {
+            return 'Карманные календарики';
+        }
+
         return '';
     };
 
@@ -107,7 +115,8 @@ window.addEventListener('DOMContentLoaded', () => {
             booklet_1fold: 'Буклет с одним сгибом',
             eurobooklet_2fold: 'Буклет с двумя сгибами (евробуклет)',
             leaflet: 'Листовки',
-            leaflet_digital: 'Цифровые листовки'
+            leaflet_digital: 'Цифровые листовки',
+            pocket_calendar: 'Карманные календарики'
         };
 
         return productLabels[cardData.productId] || cardData.productId || cardData.title;
@@ -120,6 +129,10 @@ window.addEventListener('DOMContentLoaded', () => {
 
         if (sectionName === 'listovki') {
             return 'примерный срок изготовления - 7 дней';
+        }
+
+        if (sectionName === 'karmannye-kalendariki') {
+            return 'примерный срок изготовления - 2 рабочих дня';
         }
 
         return '';
@@ -185,6 +198,9 @@ window.addEventListener('DOMContentLoaded', () => {
 
     const makeGroupedPriceCalculator = (cards) => {
         const availableCards = cards.filter(hasAvailablePrices);
+        const extras = Array.isArray(availableCards[0] && availableCards[0].extras)
+            ? availableCards[0].extras
+            : [];
         const calculator = document.createElement('div');
         calculator.classList.add('leaflet-calculator');
 
@@ -220,7 +236,28 @@ window.addEventListener('DOMContentLoaded', () => {
             label: getProductLabel(card)
         }])).values()];
         const useProductSelect = productOptions.length > 1;
+        const useFormatSelect = new Set(availableCards.map((card) => card.format).filter(Boolean)).size > 1;
         const useColorSelect = new Set(availableCards.map((card) => card.color).filter(Boolean)).size > 1;
+        const useMaterialSelect = new Set(availableCards.flatMap((card) => {
+            const rows = card.table || [];
+            const materialKey = getMaterialKey(rows);
+            return rows.map((row) => row[materialKey]);
+        }).filter(Boolean)).size > 1;
+
+        const extrasWrap = document.createElement('div');
+        extrasWrap.classList.add('leaflet-calculator__extras');
+
+        extras.forEach((extra, index) => {
+            const label = document.createElement('label');
+            const input = document.createElement('input');
+            const text = document.createElement('span');
+
+            input.type = 'checkbox';
+            input.dataset.extraIndex = index;
+            text.textContent = `${extra.label || ''} +${Number(extra.percent) || 0}%`;
+            label.append(input, text);
+            extrasWrap.append(label);
+        });
 
         const getCardsForProduct = () => {
             if (!useProductSelect) {
@@ -294,7 +331,14 @@ window.addEventListener('DOMContentLoaded', () => {
             const card = getCurrentCard();
             const rows = card ? card.table || [] : [];
             const rowData = rows[Number(materialSelect.value)] || rows[0] || {};
-            priceValue.textContent = rowData[tirageSelect.value] || '-';
+            const sourcePrice = rowData[tirageSelect.value] || '-';
+            const basePrice = parsePrice(sourcePrice);
+            const extraPercent = [...extrasWrap.querySelectorAll('input:checked')]
+                .reduce((sum, input) => sum + (Number(extras[Number(input.dataset.extraIndex)]?.percent) || 0), 0);
+
+            priceValue.textContent = basePrice > 0 && extraPercent > 0
+                ? formatPrice(Math.ceil((basePrice * (1 + extraPercent / 100)) / 10) * 10)
+                : sourcePrice;
         };
 
         const updateByFormat = () => {
@@ -328,22 +372,31 @@ window.addEventListener('DOMContentLoaded', () => {
         colorSelect.addEventListener('change', updateByColor);
         materialSelect.addEventListener('change', updateByMaterial);
         tirageSelect.addEventListener('change', updatePrice);
+        extrasWrap.addEventListener('change', updatePrice);
 
         if (useProductSelect) {
             calculator.append(makeLeafletSelectRow('Тип', productSelect));
         }
 
-        calculator.append(makeLeafletSelectRow('Формат', formatSelect));
+        if (useFormatSelect) {
+            calculator.append(makeLeafletSelectRow('Формат', formatSelect));
+        }
 
         if (useColorSelect) {
             calculator.append(makeLeafletSelectRow('Печать', colorSelect));
         }
 
-        calculator.append(
-            makeLeafletSelectRow('Бумага', materialSelect),
-            makeLeafletSelectRow('Тираж', tirageSelect),
-            priceCol
-        );
+        if (useMaterialSelect) {
+            calculator.append(makeLeafletSelectRow('Бумага', materialSelect));
+        }
+
+        calculator.append(makeLeafletSelectRow('Тираж', tirageSelect));
+
+        if (extras.length) {
+            calculator.append(extrasWrap);
+        }
+
+        calculator.append(priceCol);
 
         return calculator;
     };
@@ -398,17 +451,25 @@ window.addEventListener('DOMContentLoaded', () => {
             column.classList.add('col-xl-5', 'booklet-card-column');
         }
 
+        if (sectionName === 'karmannye-kalendariki') {
+            column.classList.add('col-xl-5', 'calendar-card-column');
+        }
+
         const card = document.createElement('div');
-        card.classList.add('card', 'product-card', 'card-white', 'leaflet-card', 'rounded-4', 'p-4', 'mb-5');
+        card.classList.add('card', 'product-card', 'card-white', 'leaflet-card', 'rounded-4', 'p-4', 'mb-3');
 
         const titleText = sectionName === 'buklety'
             ? getProductLabel(firstCard)
             : getSectionTitle(sectionName);
 
+        const header = document.createElement('div');
+        header.classList.add('leaflet-card__header');
+        const heading = document.createElement('div');
+
         if (titleText) {
             const title = document.createElement('h4');
             title.textContent = titleText;
-            card.append(title);
+            heading.append(title);
         }
 
         const leadTimeText = getSectionLeadTime(sectionName);
@@ -417,7 +478,7 @@ window.addEventListener('DOMContentLoaded', () => {
             const leadTime = document.createElement('p');
             leadTime.classList.add('leaflet-card__lead-time');
             leadTime.textContent = leadTimeText;
-            card.append(leadTime);
+            heading.append(leadTime);
         }
 
         const defaultImages = {
@@ -429,14 +490,18 @@ window.addEventListener('DOMContentLoaded', () => {
         if (imagePath) {
             const imageWrap = document.createElement('div');
             imageWrap.classList.add('poligrafy-card__image');
+            header.classList.add('has-image');
 
             const image = document.createElement('img');
             image.src = imagePath;
             image.alt = titleText || firstCard.title || '';
             image.loading = 'lazy';
             imageWrap.append(image);
-            card.append(imageWrap);
+            header.append(imageWrap);
         }
+
+        header.append(heading);
+        card.append(header);
 
         const subtitle = document.createElement('p');
         subtitle.classList.add('leaflet-card__subtitle');
@@ -458,7 +523,7 @@ window.addEventListener('DOMContentLoaded', () => {
     };
 
     const renderSectionCards = (sectionName, cards) => {
-        if (!['listovki', 'listovki-cifra', 'buklety'].includes(sectionName)) {
+        if (!['listovki', 'listovki-cifra', 'buklety', 'karmannye-kalendariki'].includes(sectionName)) {
             return cards.map(renderCard);
         }
 
@@ -485,7 +550,9 @@ window.addEventListener('DOMContentLoaded', () => {
         });
 
         return [...groups.values()].map((groupCards) => {
-            return groupCards.length > 1 ? renderGroupedCard(sectionName, groupCards) : renderCard(groupCards[0]);
+            return groupCards.length > 1 || sectionName === 'karmannye-kalendariki'
+                ? renderGroupedCard(sectionName, groupCards)
+                : renderCard(groupCards[0]);
         });
     };
 

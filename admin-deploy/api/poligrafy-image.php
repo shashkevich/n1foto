@@ -33,6 +33,10 @@ $allowedTargets = [
         'products' => ['leaflet_digital'],
         'directory' => 'img/listovki/uploads',
     ],
+    'karmannye-kalendariki' => [
+        'products' => ['pocket_calendar'],
+        'directory' => 'img/karmannye-kalendariki/uploads',
+    ],
 ];
 $target = $allowedTargets[$section] ?? null;
 

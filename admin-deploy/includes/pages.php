@@ -132,6 +132,74 @@ function adminSitePages(): array
             ],
         ],
         [
+            'id' => 'karmannye-kalendariki',
+            'title' => 'Карманные календарики',
+            'path' => '/karmannye-kalendariki.html',
+            'group' => 'Полиграфия',
+            'data' => [
+                'prices' => 'db/poligrafy.json#karmannye-kalendariki',
+                'seo' => 'php/seo.php#/karmannye-kalendariki.html',
+                'template' => 'karmannye-kalendariki.html',
+            ],
+            'modules' => [
+                [
+                    'id' => 'poligrafy-prices',
+                    'title' => 'Прайс партнера и доплаты',
+                    'description' => 'Импорт CSV, коэффициенты, ручные цены, ламинация и скругление углов',
+                    'status' => 'active',
+                ],
+                [
+                    'id' => 'seo',
+                    'title' => 'SEO и заголовок страницы',
+                    'description' => 'Title, description, keywords и H1 из php/seo.php',
+                    'status' => 'planned',
+                ],
+                [
+                    'id' => 'preview',
+                    'title' => 'Предпросмотр страницы',
+                    'description' => 'Открыть страницу карманных календариков и проверить расчет',
+                    'status' => 'active',
+                ],
+            ],
+        ],
+        [
+            'id' => 'pechat-i-kopirovanie',
+            'title' => 'Печать и копирование',
+            'path' => '/pechat-i-kopirovanie.html',
+            'group' => 'Полиграфия',
+            'pageJson' => 'db/pages/pechat-i-kopirovanie.json',
+            'manualSections' => ['copyandprint', 'chertezhy'],
+            'imageUpload' => [
+                'directory' => 'img/pechat-i-kopirovanie/uploads',
+                'sections' => ['copyandprint', 'chertezhy'],
+            ],
+            'data' => [
+                'prices' => 'db/pages/pechat-i-kopirovanie.json#copyandprint,chertezhy',
+                'seo' => 'php/seo.php#/pechat-i-kopirovanie.html',
+                'template' => 'pechat-i-kopirovanie.html',
+            ],
+            'modules' => [
+                [
+                    'id' => 'manual-copy-prices',
+                    'title' => 'Карточки и ручные цены',
+                    'description' => 'Заголовки, таблицы цен, примечания и изображения для документов и чертежей',
+                    'status' => 'active',
+                ],
+                [
+                    'id' => 'seo',
+                    'title' => 'SEO и заголовок страницы',
+                    'description' => 'Title, description, keywords и H1 из php/seo.php',
+                    'status' => 'planned',
+                ],
+                [
+                    'id' => 'preview',
+                    'title' => 'Предпросмотр страницы',
+                    'description' => 'Открыть страницу печати и копирования и проверить карточки',
+                    'status' => 'active',
+                ],
+            ],
+        ],
+        [
             'id' => 'tablichki',
             'title' => 'Печать на пластике',
             'path' => '/tablichki.html',

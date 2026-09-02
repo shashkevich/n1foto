@@ -31,6 +31,7 @@
   const productImagePreview = document.getElementById('productImagePreview');
   const productImagePreviewImg = document.getElementById('productImagePreviewImg');
   const productImageProductName = document.getElementById('productImageProductName');
+  const productExtrasGrid = document.getElementById('productExtrasGrid');
   const isProduction = String(editorRoot.dataset.publicSiteBase || '').replace(/\/$/, '') === 'https://n1foto.com';
 
   const config = {
@@ -81,6 +82,32 @@
           image: 'img/listovki/fly_a5.jpg'
         }
       }
+    },
+    'karmannye-kalendariki': {
+      name: 'Карманные календарики',
+      page: 'karmannye-kalendariki.html',
+      roundTo: 10,
+      roundMode: 'ceil',
+      costMultiplierRules: [
+        { to: 3000, multiplier: 2 },
+        { from: 3000.01, to: 7000, multiplier: 1.8 },
+        { from: 7000.01, to: 15000, multiplier: 1.5 },
+        { from: 15000.01, to: 40000, multiplier: 1.4 },
+        { from: 40000.01, multiplier: 1.3 }
+      ],
+      products: {
+        pocket_calendar: {
+          name: 'Карманные календарики',
+          titleTemplate: 'Карманные календарики {format}',
+          description: 'Мелованный картон 300 г/м2, цветная печать с двух сторон, офсет',
+          image: 'img/pocket_calendar.jpg',
+          extras: [
+            { id: 'front-lamination', label: 'Ламинация, лицо', percent: 40 },
+            { id: 'back-lamination', label: 'Ламинация, оборот', percent: 40 },
+            { id: 'rounded-corners', label: 'Скругление углов', percent: 20 }
+          ]
+        }
+      }
     }
   };
 
@@ -97,7 +124,8 @@
     csvName: '',
     sourceMode: 'empty',
     selectedSection: initialSection,
-    selectedProduct: 'booklet_1fold'
+    selectedProduct: 'booklet_1fold',
+    productExtras: []
   };
 
   const coefficientLimits = [
@@ -145,6 +173,12 @@
   };
 
   const getProductConfig = () => config[state.selectedSection].products[state.selectedProduct];
+
+  const cloneExtras = (extras) => (Array.isArray(extras) ? extras : []).map((extra) => ({
+    id: extra.id || `extra-${Date.now()}`,
+    label: extra.label || '',
+    percent: Number(extra.percent) || 0
+  }));
 
   const getAutoMultiplier = (cost, rules = config[state.selectedSection].costMultiplierRules) => {
     const rule = rules.find((item) => {
@@ -267,6 +301,30 @@
     return sectionCards.filter((card) => card.productId === state.selectedProduct);
   };
 
+  const loadProductExtras = (cards = getExistingProductCards()) => {
+    const existingExtras = cards.find((card) => Array.isArray(card.extras))?.extras;
+    state.productExtras = cloneExtras(existingExtras || getProductConfig().extras || []);
+  };
+
+  const renderProductExtras = () => {
+    if (!productExtrasGrid) {
+      return;
+    }
+
+    productExtrasGrid.innerHTML = state.productExtras.map((extra, index) => `
+      <div class="manual-extra-row">
+        <label class="field">
+          <span>Название</span>
+          <input value="${escapeHtml(extra.label)}" data-extra-index="${index}" data-extra-field="label">
+        </label>
+        <label class="field manual-extra-percent">
+          <span>Процент</span>
+          <input type="number" min="0" step="1" value="${extra.percent}" data-extra-index="${index}" data-extra-field="percent">
+        </label>
+      </div>
+    `).join('');
+  };
+
   const renderProductImage = (cacheBust = false) => {
     if (!productImagePreview || !productImagePreviewImg) {
       return;
@@ -297,6 +355,9 @@
 
   const loadExistingProductPrices = async () => {
     const cards = getExistingProductCards();
+
+    loadProductExtras(cards);
+    renderProductExtras();
 
     if (!cards.length) {
       resetWork();
@@ -632,6 +693,7 @@
         color,
         printType,
         img: existingCard ? (existingCard.img || []) : (product.image ? [product.image] : []),
+        ...(state.productExtras.length ? { extras: cloneExtras(state.productExtras) } : {}),
         table
       };
     }).sort((a, b) => a.format.localeCompare(b.format, 'ru'));
@@ -954,6 +1016,28 @@
     state.selectedProduct = productSelect.value;
     await loadExistingProductPrices();
   });
+
+  if (productExtrasGrid) {
+    productExtrasGrid.addEventListener('input', (event) => {
+      const input = event.target.closest('[data-extra-index][data-extra-field]');
+
+      if (!input) {
+        return;
+      }
+
+      const extra = state.productExtras[Number(input.dataset.extraIndex)];
+
+      if (!extra) {
+        return;
+      }
+
+      extra[input.dataset.extraField] = input.dataset.extraField === 'percent'
+        ? parseDecimal(input.value)
+        : input.value;
+      buildCards();
+      renderCardsPreview();
+    });
+  }
 
   if (productImageInput && uploadProductImageButton) {
     productImageInput.addEventListener('change', () => {
