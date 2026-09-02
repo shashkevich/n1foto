@@ -34,7 +34,6 @@ jobs:
             db/pages/pechat-na-odezhde.json
             db/pages/tablichki.json
             db/pages/nakleyki.json
-            db/pages/pechat-i-kopirovanie.json
             img/buklety/uploads/**
             img/listovki/uploads/**
             img/odezhda/uploads/**
