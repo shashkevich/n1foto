@@ -20,7 +20,7 @@ $authorized = adminIsAuthorized();
   <meta name="robots" content="noindex, nofollow, noarchive">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Вход | N1 Foto Admin</title>
-  <link rel="stylesheet" href="/assets/admin.css?v=20260901-1">
+  <link rel="stylesheet" href="/assets/admin.css?v=20260902-1">
 </head>
 <body>
   <main class="auth-shell">
@@ -97,7 +97,9 @@ adminRenderShellStart($sitePage['title'], $sitePage['id']);
                 <h2><?= adminEscape($module['title']) ?></h2>
                 <p><?= adminEscape($module['description']) ?></p>
               </div>
-              <?php if ($isActive && $module['id'] === 'poligrafy-prices'): ?>
+              <?php if ($isActive && $module['id'] === 'manual-home-cards'): ?>
+                <a class="button button-primary" href="#manual-prices-editor">К карточкам</a>
+              <?php elseif ($isActive && $module['id'] === 'poligrafy-prices'): ?>
                 <a class="button button-primary" href="#poligrafy-editor">К ценам</a>
               <?php elseif ($isActive && $module['id'] === 'manual-copy-prices'): ?>
                 <a class="button button-primary" href="#manual-prices-editor">К ценам</a>

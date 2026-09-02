@@ -5,6 +5,35 @@ function adminSitePages(): array
 {
     return [
         [
+            'id' => 'home',
+            'title' => 'Главная',
+            'path' => '/',
+            'group' => 'Основное',
+            'pageJson' => 'db/main-page-cards.json',
+            'imageUpload' => [
+                'directory' => 'img/main-page/uploads',
+                'sections' => ['main'],
+            ],
+            'data' => [
+                'cards' => 'db/main-page-cards.json',
+                'template' => 'index.html',
+            ],
+            'modules' => [
+                [
+                    'id' => 'manual-home-cards',
+                    'title' => 'Карточки услуг',
+                    'description' => 'Изображения и подписи карточек на главной странице',
+                    'status' => 'active',
+                ],
+                [
+                    'id' => 'preview',
+                    'title' => 'Предпросмотр страницы',
+                    'description' => 'Открыть главную страницу и проверить изменения',
+                    'status' => 'active',
+                ],
+            ],
+        ],
+        [
             'id' => 'shary',
             'title' => 'Елочные игрушки',
             'path' => '/shary.html',

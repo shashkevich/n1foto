@@ -16,6 +16,7 @@
   const uploadDigitalImageButton = document.getElementById('uploadDigitalLeafletImage');
   const isProduction = String(root.dataset.publicSiteBase || '').replace(/\/$/, '') === 'https://n1foto.com';
   const supportsImageUpload = root.dataset.imageUpload === '1';
+  const isHomePage = pageId === 'home';
 
   let pageData = null;
 
@@ -38,6 +39,14 @@
     const normalizedPath = String(path || '').replace(/^\//, '');
 
     return normalizedPath ? `${publicBase}/${normalizedPath}${cacheBust ? `?v=${Date.now()}` : ''}` : '';
+  };
+
+  const getAdminImageUrl = (path, cacheBust = false) => {
+    const normalizedPath = String(path || '').replace(/^\//, '');
+
+    return normalizedPath
+      ? `/api/site-image.php?path=${encodeURIComponent(normalizedPath)}${cacheBust ? `&v=${Date.now()}` : ''}`
+      : '';
   };
 
   const getDigitalLeafletSection = () => (pageData && Array.isArray(pageData.sections)
@@ -137,6 +146,18 @@
   };
 
   const syncInputValue = (input) => {
+    if (isHomePage) {
+      const section = pageData.main[Number(input.dataset.sectionIndex)];
+      const card = section.content[Number(input.dataset.cardIndex)];
+
+      if (input.dataset.field === 'home-title') {
+        card.title = input.value;
+      }
+
+      saveButton.disabled = false;
+      return;
+    }
+
     const section = pageData.sections[Number(input.dataset.sectionIndex)];
     const card = section.cards[Number(input.dataset.cardIndex)];
     const value = input.value;
@@ -386,6 +407,56 @@
     `;
   };
 
+  const renderHomeCard = (sectionIndex, card, cardIndex) => {
+    const imagePath = card.img || '';
+    const imageUrl = getAdminImageUrl(imagePath);
+
+    return `
+      <article class="home-card-editor panel">
+        <div class="home-card-image-preview${imageUrl ? '' : ' is-empty'}">
+          ${imageUrl ? `<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(card.alt || card.title || 'Изображение карточки')}">` : '<span>Нет изображения</span>'}
+        </div>
+        <div class="home-card-editor__content">
+          <div>
+            <strong>${escapeHtml(card.name || card.title || `Карточка ${cardIndex + 1}`)}</strong>
+            <p class="home-card-editor__link">${escapeHtml(card.link || '')}</p>
+          </div>
+          <label class="field">
+            <span>Подпись под изображением</span>
+            <input value="${escapeHtml(card.title || '')}" data-field="home-title" data-section-index="${sectionIndex}" data-card-index="${cardIndex}">
+          </label>
+          <div class="home-card-editor__upload">
+            <label class="field">
+              <span>Изображение JPG или PNG</span>
+              <input type="file" accept="image/jpeg,image/png,.jpg,.jpeg,.png" data-action="page-image-input" data-section-index="${sectionIndex}" data-card-index="${cardIndex}">
+            </label>
+            <button class="button button-primary" type="button" data-action="upload-page-image" data-section-index="${sectionIndex}" data-card-index="${cardIndex}" disabled>Загрузить</button>
+          </div>
+          <p class="home-card-editor__hint">Рекомендуемый размер: 600 × 450 px, соотношение 4:3.</p>
+          ${imagePath ? `<p class="home-card-editor__path">${escapeHtml(imagePath)}</p>` : ''}
+        </div>
+      </article>
+    `;
+  };
+
+  const renderHomePage = () => {
+    const sections = pageData && Array.isArray(pageData.main) ? pageData.main : [];
+
+    cardsRoot.innerHTML = sections.map((section, sectionIndex) => `
+      <section class="manual-section home-editor-section">
+        <div class="section-heading">
+          <div>
+            <h2>${escapeHtml(section.title || `Раздел ${sectionIndex + 1}`)}</h2>
+            <p>${section.content?.length || 0} карточек</p>
+          </div>
+        </div>
+        <div class="home-cards-editor-grid">
+          ${(section.content || []).map((card, cardIndex) => renderHomeCard(sectionIndex, card, cardIndex)).join('')}
+        </div>
+      </section>
+    `).join('');
+  };
+
   const renderPlasticSignSettings = (sectionIndex, card, cardIndex) => {
     const materials = Array.isArray(card.materials) ? card.materials : [];
     const threshold = card.areaThreshold ?? 6;
@@ -604,6 +675,11 @@
   };
 
   const render = () => {
+    if (isHomePage) {
+      renderHomePage();
+      return;
+    }
+
     const sections = pageData && Array.isArray(pageData.sections) ? pageData.sections : [];
 
     cardsRoot.innerHTML = sections.map((section, sectionIndex) => {
@@ -628,8 +704,8 @@
   };
 
   const uploadPageImage = async (sectionIndex, cardIndex, button) => {
-    const section = pageData.sections[sectionIndex];
-    const card = section.cards[cardIndex];
+    const section = isHomePage ? pageData.main[sectionIndex] : pageData.sections[sectionIndex];
+    const card = isHomePage ? section.content[cardIndex] : section.cards[cardIndex];
     const input = cardsRoot.querySelector(`input[data-action="page-image-input"][data-section-index="${sectionIndex}"][data-card-index="${cardIndex}"]`);
 
     if (!input || !input.files.length) {
@@ -638,8 +714,8 @@
 
     const formData = new FormData();
     formData.append('page', pageId);
-    formData.append('sectionId', section.id);
-    formData.append('cardId', card.id || '');
+    formData.append('sectionId', isHomePage ? 'main' : section.id);
+    formData.append('cardId', isHomePage ? `card-${sectionIndex}-${cardIndex}` : (card.id || ''));
     formData.append('image', input.files[0]);
 
     try {
@@ -657,7 +733,7 @@
         throw new Error(payload.error || `Не удалось загрузить изображение: ${response.status}`);
       }
 
-      card.img = [payload.path];
+      card.img = isHomePage ? payload.path : [payload.path];
       render();
       setStatus('Изображение загружено и опубликовано на сайте.', 'success');
     } catch (error) {

@@ -70,26 +70,38 @@ if ($relativeDirectory === '' || (!is_dir($targetDirectory) && !mkdir($targetDir
 $relativeJsonPath = ltrim((string) $sitePage['pageJson'], '/');
 $jsonPath = adminSiteFilePath($relativeJsonPath);
 $data = json_decode((string) @file_get_contents($jsonPath), true);
+$hasStandardSections = is_array($data) && isset($data['sections']) && is_array($data['sections']);
+$hasHomeSections = $pageId === 'home' && is_array($data) && isset($data['main']) && is_array($data['main']);
 
-if (!is_array($data) || !isset($data['sections']) || !is_array($data['sections'])) {
+if (!$hasStandardSections && !$hasHomeSections) {
     adminPageImageResponse(['ok' => false, 'error' => 'Не удалось прочитать JSON страницы.'], 500);
 }
 
 $cardFound = false;
+$homeSectionIndex = null;
+$homeCardIndex = null;
 
-foreach ($data['sections'] as &$section) {
-    if (($section['id'] ?? '') !== $sectionId || !isset($section['cards']) || !is_array($section['cards'])) {
-        continue;
-    }
+if ($pageId === 'home' && $sectionId === 'main' && preg_match('/^card-(\d+)-(\d+)$/', $cardId, $matches)) {
+    $homeSectionIndex = (int) $matches[1];
+    $homeCardIndex = (int) $matches[2];
+    $cardFound = isset($data['main'][$homeSectionIndex]['content'][$homeCardIndex]);
+}
 
-    foreach ($section['cards'] as &$card) {
-        if (($card['id'] ?? '') === $cardId) {
-            $cardFound = true;
-            break 2;
+if (!$cardFound && isset($data['sections']) && is_array($data['sections'])) {
+    foreach ($data['sections'] as &$section) {
+        if (($section['id'] ?? '') !== $sectionId || !isset($section['cards']) || !is_array($section['cards'])) {
+            continue;
+        }
+
+        foreach ($section['cards'] as &$card) {
+            if (($card['id'] ?? '') === $cardId) {
+                $cardFound = true;
+                break 2;
+            }
         }
     }
+    unset($card, $section);
 }
-unset($card, $section);
 
 if (!$cardFound) {
     adminPageImageResponse(['ok' => false, 'error' => 'Карточка не найдена в JSON страницы.'], 404);
@@ -103,19 +115,23 @@ if (!move_uploaded_file((string) $image['tmp_name'], $targetPath)) {
     adminPageImageResponse(['ok' => false, 'error' => 'Не удалось сохранить изображение на сервере.'], 500);
 }
 
-foreach ($data['sections'] as &$section) {
-    if (($section['id'] ?? '') !== $sectionId) {
-        continue;
-    }
+if ($pageId === 'home' && $homeSectionIndex !== null && $homeCardIndex !== null) {
+    $data['main'][$homeSectionIndex]['content'][$homeCardIndex]['img'] = $relativeImagePath;
+} else {
+    foreach ($data['sections'] as &$section) {
+        if (($section['id'] ?? '') !== $sectionId) {
+            continue;
+        }
 
-    foreach ($section['cards'] as &$card) {
-        if (($card['id'] ?? '') === $cardId) {
-            $card['img'] = [$relativeImagePath];
-            break 2;
+        foreach ($section['cards'] as &$card) {
+            if (($card['id'] ?? '') === $cardId) {
+                $card['img'] = [$relativeImagePath];
+                break 2;
+            }
         }
     }
+    unset($card, $section);
 }
-unset($card, $section);
 
 $data['meta']['updatedAt'] = date('Y-m-d H:i:s');
 $encoded = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);

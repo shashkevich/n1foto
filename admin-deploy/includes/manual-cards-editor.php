@@ -6,14 +6,15 @@ function adminRenderManualCardsEditor(array $sitePage): void
     $sections = $sitePage['manualSections'] ?? [];
     $api = $sitePage['manualEditor']['api'] ?? ('/api/page-json.php?page=' . rawurlencode((string) $sitePage['id']));
     $isDigitalLeaflets = $sitePage['id'] === 'listovki';
+    $isHomePage = $sitePage['id'] === 'home';
     $isProduction = adminPublicSiteBaseUrl() === 'https://n1foto.com';
     $publishButtonLabel = $isProduction ? 'Опубликовать на n1foto.com' : 'Сохранить на тестовый сайт';
     ?>
     <section class="manual-editor" id="manual-cards-editor" data-manual-api="<?= adminEscape($api) ?>" data-manual-sections="<?= adminEscape(implode(',', $sections)) ?>" data-public-site-base="<?= adminEscape(adminPublicSiteBaseUrl()) ?>" data-image-upload="<?= !empty($sitePage['imageUpload']) ? '1' : '0' ?>">
       <div class="manual-editor__toolbar panel">
         <div>
-          <h2><?= $isDigitalLeaflets ? 'Цифровая печать' : 'Карточки и ручные цены' ?></h2>
-          <p><?= $isDigitalLeaflets ? 'Все цены цифровых листовок в одной таблице.' : 'Ручное редактирование карточек и таблиц для страницы ' . adminEscape($sitePage['title']) . '.' ?></p>
+          <h2><?= $isHomePage ? 'Карточки главной страницы' : ($isDigitalLeaflets ? 'Цифровая печать' : 'Карточки и ручные цены') ?></h2>
+          <p><?= $isHomePage ? 'Загружайте изображения и меняйте подписи под ними. Рекомендуемый размер изображения: 600 × 450 px (соотношение 4:3).' : ($isDigitalLeaflets ? 'Все цены цифровых листовок в одной таблице.' : 'Ручное редактирование карточек и таблиц для страницы ' . adminEscape($sitePage['title']) . '.') ?></p>
         </div>
         <div class="action-row">
           <button class="button button-soft" id="manualReload" type="button">Обновить</button>
@@ -49,6 +50,6 @@ function adminRenderManualCardsEditor(array $sitePage): void
 
       <div id="manualCards" class="manual-cards"></div>
     </section>
-    <script src="/assets/manual-cards-admin.js?v=20260828-2"></script>
+    <script src="/assets/manual-cards-admin.js?v=20260902-1"></script>
     <?php
 }
