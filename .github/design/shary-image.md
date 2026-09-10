@@ -1,0 +1,9 @@
+# Фото для карточки ёлочного шара
+
+Создано 10 сентября 2026 через встроенный ImageGen. Референс — существующий товар `img/shary/shar_ng.jpg`. Итог: `img/shary/photo-bauble-studio.jpg`, JPEG 960 × 720. Исходное фото сохранено.
+
+Вдохновение для карточки: [Product Listing Page — Mihir Ghosh, Dribbble](https://dribbble.com/shots/27214123-Product-Listing-Page): выразительное фото товара, спокойные отступы и ясная иерархия цен.
+
+## Промпт
+
+Use case: product-mockup. Asset type: realistic ecommerce product photo for a Russian print shop. Input image 1 is the actual product reference; preserve its identity and construction. Create a more photorealistic high-quality studio photograph of the SAME clear plastic 7 cm Christmas photo bauble, with circular full-color flat paper photo insert inside (the family Christmas photograph shown in the reference), silver small cap and thin deep-red satin hanging loop. The print is on a paper insert INSIDE a clear two-piece injection-molded plastic shell; preserve the visible transparent rim, slight edge seam, round shape, red ribbon, and family image. Keep the same recognizable family composition and clothing. Material must look like inexpensive clear glossy plastic, NOT glass, not a solid red ornament, no direct print on the surface, no snowglobe and no 3D people inside. Subtle realistic plastic highlights, optically clear face so the paper print is legible as a printed photograph. Warm off-white seamless studio backdrop, soft diffuse window light, delicate natural contact shadow. The bauble rests upright with a slight natural lean; red hanging loop lies softly above it. Centered full product with comfortable margins in a 4:3 landscape image, object about 78% of image height including loop, 85mm product lens detail. No additional props, no labels, no added text, no watermark. Premium photographic polish while keeping the exact practical product.

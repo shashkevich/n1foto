@@ -1,23 +1,26 @@
 <!DOCTYPE html>
 <html lang="ru" class="h-100" data-bs-theme="auto">
 <head>
-    <? include "php/blocks/head.php" ?>    
+    <? include "php/blocks/head.php" ?>
+    <link rel="stylesheet" href="css/shary.css?v=20260910-2">
 </head>
 
 <body class="d-flex flex-column h-100">
     
     <? include "php/blocks/nav.php" ?>
     
-    <section class="py-5 text-center">
-        <div class="container text-center">
+    <main class="shary-page">
+        <div class="container">
             <h1><?php echo $link['name'] ?></h1>
-            <div class="cardsField row justify-content-md-center row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-4 my-3 text-center" id="shary">
+            <div class="shary-products" id="shary" aria-live="polite" aria-busy="true">
+                <p class="shary-message" role="status">Загружаем карточку и цены…</p>
             </div>
+            <noscript><p class="shary-message">Для просмотра цен включите JavaScript или <a href="contact.html">свяжитесь с нами</a>.</p></noscript>
         </div>
-    </section>
+    </main>
 
     <? include "php/blocks/footer.php" ?>
-<script src="js/cardsBuilder.js"></script>
+<script src="js/shary-cards.js?v=20260910-1"></script>
 </body>
 </html>
 

@@ -7,6 +7,7 @@ function adminRenderManualCardsEditor(array $sitePage): void
     $api = $sitePage['manualEditor']['api'] ?? ('/api/page-json.php?page=' . rawurlencode((string) $sitePage['id']));
     $isDigitalLeaflets = $sitePage['id'] === 'listovki';
     $isHomePage = $sitePage['id'] === 'home';
+    $isSharyPage = $sitePage['id'] === 'shary';
     $isProduction = adminPublicSiteBaseUrl() === 'https://n1foto.com';
     $publishButtonLabel = $isProduction ? 'Опубликовать на n1foto.com' : 'Сохранить на тестовый сайт';
     ?>
@@ -14,7 +15,7 @@ function adminRenderManualCardsEditor(array $sitePage): void
       <div class="manual-editor__toolbar panel">
         <div>
           <h2><?= $isHomePage ? 'Карточки главной страницы' : ($isDigitalLeaflets ? 'Цифровая печать' : 'Карточки и ручные цены') ?></h2>
-          <p><?= $isHomePage ? 'Загружайте изображения и меняйте подписи под ними. Рекомендуемый размер изображения: 600 × 450 px (соотношение 4:3).' : ($isDigitalLeaflets ? 'Все цены цифровых листовок в одной таблице.' : 'Ручное редактирование карточек и таблиц для страницы ' . adminEscape($sitePage['title']) . '.') ?></p>
+          <p><?= $isHomePage ? 'Загружайте изображения и меняйте подписи под ними. Рекомендуемый размер изображения: 600 × 450 px (соотношение 4:3).' : ($isSharyPage ? 'Меняйте фото, описание и цены по количеству. Первая строка таблицы — основная цена; следующие строки — цены для больших заказов.' : ($isDigitalLeaflets ? 'Все цены цифровых листовок в одной таблице.' : 'Ручное редактирование карточек и таблиц для страницы ' . adminEscape($sitePage['title']) . '.')) ?></p>
         </div>
         <div class="action-row">
           <button class="button button-soft" id="manualReload" type="button">Обновить</button>
@@ -50,6 +51,6 @@ function adminRenderManualCardsEditor(array $sitePage): void
 
       <div id="manualCards" class="manual-cards"></div>
     </section>
-    <script src="/assets/manual-cards-admin.js?v=20260902-1"></script>
+    <script src="/assets/manual-cards-admin.js?v=20260910-1"></script>
     <?php
 }

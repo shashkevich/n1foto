@@ -35,11 +35,17 @@ function adminSitePages(): array
         ],
         [
             'id' => 'shary',
-            'title' => 'Елочные игрушки',
+            'title' => 'Ёлочные игрушки',
             'path' => '/shary.html',
             'group' => 'Сувениры',
+            'pageJson' => 'db/pages/shary.json',
+            'manualSections' => ['shary'],
+            'imageUpload' => [
+                'directory' => 'img/shary/uploads',
+                'sections' => ['shary'],
+            ],
             'data' => [
-                'cards' => 'db/tovary.json#shary',
+                'cards' => 'db/pages/shary.json#shary',
                 'seo' => 'php/seo.php#/shary.html',
                 'template' => 'shary.html',
             ],
@@ -51,10 +57,10 @@ function adminSitePages(): array
                     'status' => 'planned',
                 ],
                 [
-                    'id' => 'cards',
+                    'id' => 'manual-copy-prices',
                     'title' => 'Карточки товаров',
-                    'description' => 'Название, цена, подпись и картинка из db/tovary.json',
-                    'status' => 'planned',
+                    'description' => 'Фото, название, описание, цены по количеству и примечания',
+                    'status' => 'active',
                 ],
                 [
                     'id' => 'preview',

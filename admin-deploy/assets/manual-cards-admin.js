@@ -295,6 +295,7 @@
   const renderTableEditor = (section, sectionIndex, card, cardIndex) => {
     const rows = card.table || [];
     const headers = getHeaders(rows);
+    const isQuantityPricing = pageId === 'shary';
 
     if (!rows.length || !headers.length) {
       return '<div class="notice notice-muted">Таблица пустая.</div>';
@@ -303,7 +304,7 @@
     return `
       <div class="manual-table-tools">
         <button class="button button-soft" type="button" data-action="add-row" data-section-index="${sectionIndex}" data-card-index="${cardIndex}">Добавить строку</button>
-        <button class="button button-soft" type="button" data-action="add-column" data-section-index="${sectionIndex}" data-card-index="${cardIndex}">Добавить колонку</button>
+        ${isQuantityPricing ? '' : `<button class="button button-soft" type="button" data-action="add-column" data-section-index="${sectionIndex}" data-card-index="${cardIndex}">Добавить колонку</button>`}
       </div>
       <div class="table-wrap">
         <table class="manual-edit-table">
@@ -311,8 +312,8 @@
             <tr>
               ${headers.map((header) => `
                 <th>
-                  <input class="manual-header-input" value="${escapeHtml(header)}" data-action="rename-header" data-section-index="${sectionIndex}" data-card-index="${cardIndex}" data-header="${escapeHtml(header)}">
-                  <button class="icon-text-button" type="button" data-action="remove-column" data-section-index="${sectionIndex}" data-card-index="${cardIndex}" data-header="${escapeHtml(header)}">Удалить</button>
+                  ${isQuantityPricing ? escapeHtml(header) : `<input class="manual-header-input" value="${escapeHtml(header)}" data-action="rename-header" data-section-index="${sectionIndex}" data-card-index="${cardIndex}" data-header="${escapeHtml(header)}">`}
+                  ${isQuantityPricing ? '' : `<button class="icon-text-button" type="button" data-action="remove-column" data-section-index="${sectionIndex}" data-card-index="${cardIndex}" data-header="${escapeHtml(header)}">Удалить</button>`}
                 </th>
               `).join('')}
               <th></th>
@@ -327,7 +328,7 @@
                   </td>
                 `).join('')}
                 <td>
-                  <button class="icon-text-button" type="button" data-action="remove-row" data-section-index="${sectionIndex}" data-card-index="${cardIndex}" data-row-index="${rowIndex}">Удалить</button>
+                  <button class="icon-text-button" type="button" data-action="remove-row" data-section-index="${sectionIndex}" data-card-index="${cardIndex}" data-row-index="${rowIndex}"${isQuantityPricing && rows.length === 1 ? ' disabled' : ''}>Удалить</button>
                 </td>
               </tr>
             `).join('')}
@@ -572,8 +573,8 @@
 
           ${'description' in card ? `
             <label class="field">
-              <span>${pageId === 'nakleyki' ? 'Краткое описание материала' : 'Описание метода'}</span>
-              <textarea rows="4" data-field="description" data-section-index="${sectionIndex}" data-card-index="${cardIndex}">${escapeHtml(card.description || '')}</textarea>
+              <span>${pageId === 'nakleyki' ? 'Краткое описание материала' : (pageId === 'shary' ? 'Описание товара' : 'Описание метода')}</span>
+              <textarea rows="${pageId === 'shary' ? '2' : '4'}" data-field="description" data-section-index="${sectionIndex}" data-card-index="${cardIndex}">${escapeHtml(card.description || '')}</textarea>
             </label>
           ` : ''}
 
@@ -598,7 +599,7 @@
 
           <label class="field">
             <span>Примечание под таблицей</span>
-            <textarea rows="4" data-field="footer" data-section-index="${sectionIndex}" data-card-index="${cardIndex}">${escapeHtml(card.footer || '')}</textarea>
+            <textarea rows="${pageId === 'shary' ? '2' : '4'}" data-field="footer" data-section-index="${sectionIndex}" data-card-index="${cardIndex}">${escapeHtml(card.footer || '')}</textarea>
           </label>
         </div>
 

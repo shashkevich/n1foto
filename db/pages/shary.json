@@ -1,0 +1,35 @@
+{
+  "meta": {
+    "page": "shary",
+    "source": "db/tovary.json#shary",
+    "migratedAt": "2026-09-10"
+  },
+  "sections": [
+    {
+      "id": "shary",
+      "title": "Ёлочные шары",
+      "cards": [
+        {
+          "id": "photo-bauble",
+          "title": "Ёлочный шар с фотографией",
+          "img": [
+            "img/shary/photo-bauble-studio.jpg"
+          ],
+          "description": "Пластиковый шар с полиграфической вставкой",
+          "price_title": "Цена за 1 шт.",
+          "footer": "Диаметр — 7 см",
+          "table": [
+            {
+              "Количество": "1–14 шт.",
+              "Цена за шт.": "400 ₽"
+            },
+            {
+              "Количество": "от 15 шт.",
+              "Цена за шт.": "300 ₽"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
