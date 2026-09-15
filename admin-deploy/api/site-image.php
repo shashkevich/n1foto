@@ -24,7 +24,7 @@ if ($siteRoot === false || $imagePath === false || strpos($imagePath, $allowedRo
 $imageInfo = @getimagesize($imagePath);
 $mime = is_array($imageInfo) ? (string) ($imageInfo['mime'] ?? '') : '';
 
-if (!in_array($mime, ['image/jpeg', 'image/png'], true)) {
+if (!in_array($mime, ['image/jpeg', 'image/png', 'image/webp'], true)) {
     http_response_code(415);
     exit('Формат изображения не поддерживается.');
 }

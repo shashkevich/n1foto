@@ -45,7 +45,7 @@ if (!$target || !in_array($productId, $target['products'], true)) {
 }
 
 if (!isset($_FILES['image']) || !is_array($_FILES['image'])) {
-    adminImageResponse(['ok' => false, 'error' => 'Выберите изображение JPG или PNG.'], 400);
+    adminImageResponse(['ok' => false, 'error' => 'Выберите изображение JPG, PNG или WebP.'], 400);
 }
 
 $image = $_FILES['image'];
@@ -54,8 +54,8 @@ if (($image['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
     adminImageResponse(['ok' => false, 'error' => 'Не удалось загрузить изображение.'], 400);
 }
 
-if ((int) ($image['size'] ?? 0) > 8 * 1024 * 1024) {
-    adminImageResponse(['ok' => false, 'error' => 'Размер изображения не должен превышать 8 МБ.'], 400);
+if ((int) ($image['size'] ?? 0) > 1024 * 1024) {
+    adminImageResponse(['ok' => false, 'error' => 'Размер изображения не должен превышать 1 МБ.'], 400);
 }
 
 $imageInfo = @getimagesize((string) $image['tmp_name']);
@@ -63,10 +63,11 @@ $mime = is_array($imageInfo) ? (string) ($imageInfo['mime'] ?? '') : '';
 $extensions = [
     'image/jpeg' => 'jpg',
     'image/png' => 'png',
+    'image/webp' => 'webp',
 ];
 
 if (!isset($extensions[$mime])) {
-    adminImageResponse(['ok' => false, 'error' => 'Разрешены только изображения JPG и PNG.'], 400);
+    adminImageResponse(['ok' => false, 'error' => 'Разрешены только изображения JPG, PNG и WebP.'], 400);
 }
 
 $relativeDirectory = $target['directory'];

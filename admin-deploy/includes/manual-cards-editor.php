@@ -40,8 +40,8 @@ function adminRenderManualCardsEditor(array $sitePage): void
             <div class="product-image-editor__controls">
               <strong>Цифровая печать</strong>
               <label class="field">
-                <span>Файл JPG или PNG</span>
-                <input id="digitalLeafletImageInput" type="file" accept="image/jpeg,image/png,.jpg,.jpeg,.png">
+                <span>Файл JPG, PNG или WebP — до 1 МБ</span>
+                <input id="digitalLeafletImageInput" type="file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp">
               </label>
               <button class="button button-primary" id="uploadDigitalLeafletImage" type="button" disabled>Загрузить изображение</button>
             </div>
@@ -51,6 +51,6 @@ function adminRenderManualCardsEditor(array $sitePage): void
 
       <div id="manualCards" class="manual-cards"></div>
     </section>
-    <script src="/assets/manual-cards-admin.js?v=20260915-1"></script>
+    <script src="/assets/manual-cards-admin.js?v=20260915-3"></script>
     <?php
 }

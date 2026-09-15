@@ -55,8 +55,8 @@ function adminRenderPoligrafyEditor(?array $sitePage = null): void
           <div class="product-image-editor__controls">
             <strong id="productImageProductName"></strong>
             <label class="field">
-              <span>Файл JPG или PNG</span>
-              <input id="productImageInput" type="file" accept="image/jpeg,image/png,.jpg,.jpeg,.png">
+              <span>Файл JPG, PNG или WebP — до 1 МБ</span>
+              <input id="productImageInput" type="file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp">
             </label>
             <button class="button button-primary" id="uploadProductImage" type="button" disabled>Загрузить изображение</button>
           </div>

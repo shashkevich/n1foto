@@ -357,10 +357,10 @@
         </div>
         <div class="manual-card-image-controls">
           <strong>Изображение карточки</strong>
-          <p>${imagePath ? escapeHtml(imagePath) : 'Загрузите квадратное изображение JPG или PNG.'}</p>
+          <p>${imagePath ? escapeHtml(imagePath) : 'Загрузите квадратное изображение JPG, PNG или WebP.'}</p>
           <label class="field">
-            <span>Файл JPG или PNG</span>
-            <input type="file" accept="image/jpeg,image/png,.jpg,.jpeg,.png" data-action="page-image-input" data-section-index="${sectionIndex}" data-card-index="${cardIndex}">
+            <span>Файл JPG, PNG или WebP — до 1 МБ</span>
+            <input type="file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" data-action="page-image-input" data-section-index="${sectionIndex}" data-card-index="${cardIndex}">
           </label>
           <button class="button button-primary" type="button" data-action="upload-page-image" data-section-index="${sectionIndex}" data-card-index="${cardIndex}" disabled>Загрузить изображение</button>
         </div>
@@ -432,8 +432,8 @@
           </label>
           <div class="home-card-editor__upload">
             <label class="field">
-              <span>Изображение JPG или PNG</span>
-              <input type="file" accept="image/jpeg,image/png,.jpg,.jpeg,.png" data-action="page-image-input" data-section-index="${sectionIndex}" data-card-index="${cardIndex}">
+              <span>Изображение JPG, PNG или WebP — до 1 МБ</span>
+              <input type="file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" data-action="page-image-input" data-section-index="${sectionIndex}" data-card-index="${cardIndex}">
             </label>
             <button class="button button-primary" type="button" data-action="upload-page-image" data-section-index="${sectionIndex}" data-card-index="${cardIndex}" disabled>Загрузить</button>
           </div>
