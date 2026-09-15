@@ -3,16 +3,17 @@
 <html lang="ru" class="h-100" data-bs-theme="auto">
 <head>
     <? include "php/blocks/head.php" ?>    
+    <link rel="stylesheet" href="css/product-cards.css?v=20260915-1">
 </head>
 
 <body class="d-flex flex-column h-100">
     
     <? include "php/blocks/nav.php" ?>
     
-    <section class="py-5 text-center">
+    <section class="product-page py-5 text-center">
         <div class="container text-center">
             <h1><?php echo $link['name'] ?></h1>
-            <div class="cardsField row justify-content-md-center row-cols-1 row-cols-md-2 row-cols-lg-2 row-cols-xl-3 my-3 text-center" id="polaroid" name="polaroid">
+            <div class="product-catalog row justify-content-md-center row-cols-1 row-cols-lg-2 my-3 g-3" id="polaroid" data-product-page="insta-pechat" data-product-section="polaroid" data-product-layout="split">
                
             </div>
         </div>
@@ -66,6 +67,6 @@
     </section>
 
     <? include "php/blocks/footer.php" ?>
-<script src="js/cardsBuilder.js"></script>
+<script src="js/product-cards.js?v=20260915-1"></script>
 </body>
 </html>

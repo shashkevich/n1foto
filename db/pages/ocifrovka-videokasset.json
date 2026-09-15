@@ -1,0 +1,36 @@
+{
+  "meta": {
+    "page": "ocifrovka-videokasset",
+    "source": "db/tovary.json#ocifrovka",
+    "migratedAt": "2026-09-11"
+  },
+  "sections": [
+    {
+      "id": "ocifrovka",
+      "title": "Оцифровка видеокассет",
+      "cards": [
+        {
+          "id": "ocifrovka-1",
+          "cardType": "product",
+          "title": "Оцифровка видеокассет VHS и VHS-C (VHS Compact)",
+          "img": [
+            "img/ocifrovka/vhs.jpg"
+          ],
+          "description": "Минимальная стоимость оцифровки видеокассет - 300 руб.",
+          "footer": "",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "До 2 часов видео",
+              "Цена": "6 ₽/мин"
+            },
+            {
+              "Условие": "Более 2 часов видео",
+              "Цена": "5 ₽/мин"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

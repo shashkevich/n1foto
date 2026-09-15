@@ -2,25 +2,25 @@
 <html lang="ru" class="h-100" data-bs-theme="auto">
 <head>
     <? include "php/blocks/head.php" ?>
-    <link rel="stylesheet" href="css/shary.css?v=20260910-2">
+    <link rel="stylesheet" href="css/product-cards.css?v=20260915-1">
 </head>
 
 <body class="d-flex flex-column h-100">
     
     <? include "php/blocks/nav.php" ?>
     
-    <main class="shary-page">
-        <div class="container">
+    <main class="product-page py-5 text-center">
+        <div class="container text-center">
             <h1><?php echo $link['name'] ?></h1>
-            <div class="shary-products" id="shary" aria-live="polite" aria-busy="true">
-                <p class="shary-message" role="status">Загружаем карточку и цены…</p>
+            <div class="product-catalog row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-3 my-3" id="shary" data-product-page="shary" data-product-section="shary" data-product-layout="stacked" aria-live="polite" aria-busy="true">
+                <p class="catalog-message" role="status">Загружаем карточку и цены…</p>
             </div>
-            <noscript><p class="shary-message">Для просмотра цен включите JavaScript или <a href="contact.html">свяжитесь с нами</a>.</p></noscript>
+            <noscript><p class="catalog-message">Для просмотра цен включите JavaScript или <a href="contact.html">свяжитесь с нами</a>.</p></noscript>
         </div>
     </main>
 
     <? include "php/blocks/footer.php" ?>
-<script src="js/shary-cards.js?v=20260910-1"></script>
+<script src="js/product-cards.js?v=20260915-1"></script>
 </body>
 </html>
 

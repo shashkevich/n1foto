@@ -16,7 +16,9 @@
   const uploadDigitalImageButton = document.getElementById('uploadDigitalLeafletImage');
   const isProduction = String(root.dataset.publicSiteBase || '').replace(/\/$/, '') === 'https://n1foto.com';
   const supportsImageUpload = root.dataset.imageUpload === '1';
+  const imageUploadSections = String(root.dataset.imageSections || '').split(',').filter(Boolean);
   const isHomePage = pageId === 'home';
+  const isProductCard = (card) => card.cardType === 'product' || pageId === 'shary';
 
   let pageData = null;
 
@@ -245,6 +247,7 @@
 
   const removeRow = (sectionIndex, cardIndex, rowIndex) => {
     const card = pageData.sections[sectionIndex].cards[cardIndex];
+    if (isProductCard(card) && card.table.length <= 1) return;
     card.table.splice(rowIndex, 1);
     saveButton.disabled = false;
     render();
@@ -295,7 +298,7 @@
   const renderTableEditor = (section, sectionIndex, card, cardIndex) => {
     const rows = card.table || [];
     const headers = getHeaders(rows);
-    const isQuantityPricing = pageId === 'shary';
+    const isQuantityPricing = isProductCard(card);
 
     if (!rows.length || !headers.length) {
       return '<div class="notice notice-muted">Таблица пустая.</div>';
@@ -339,7 +342,8 @@
   };
 
   const renderCardImageEditor = (sectionIndex, card, cardIndex) => {
-    if (!supportsImageUpload) {
+    const sectionId = pageData.sections[sectionIndex].id;
+    if (!supportsImageUpload || (imageUploadSections.length && !imageUploadSections.includes(sectionId))) {
       return '';
     }
 
@@ -573,8 +577,8 @@
 
           ${'description' in card ? `
             <label class="field">
-              <span>${pageId === 'nakleyki' ? 'Краткое описание материала' : (pageId === 'shary' ? 'Описание товара' : 'Описание метода')}</span>
-              <textarea rows="${pageId === 'shary' ? '2' : '4'}" data-field="description" data-section-index="${sectionIndex}" data-card-index="${cardIndex}">${escapeHtml(card.description || '')}</textarea>
+              <span>${pageId === 'nakleyki' ? 'Краткое описание материала' : (isProductCard(card) ? 'Описание товара' : (section.id === 'canvas-standard' ? 'Описание таблицы' : 'Описание метода'))}</span>
+              <textarea rows="${isProductCard(card) ? '2' : '4'}" data-field="description" data-section-index="${sectionIndex}" data-card-index="${cardIndex}">${escapeHtml(card.description || '')}</textarea>
             </label>
           ` : ''}
 
@@ -593,13 +597,13 @@
           ` : ''}
 
           <label class="field">
-            <span>Подпись перед таблицей</span>
+            <span>${isProductCard(card) ? 'Подпись к основной цене' : 'Подпись перед таблицей'}</span>
             <textarea rows="2" data-field="price_title" data-section-index="${sectionIndex}" data-card-index="${cardIndex}">${escapeHtml(card.price_title || '')}</textarea>
           </label>
 
           <label class="field">
-            <span>Примечание под таблицей</span>
-            <textarea rows="${pageId === 'shary' ? '2' : '4'}" data-field="footer" data-section-index="${sectionIndex}" data-card-index="${cardIndex}">${escapeHtml(card.footer || '')}</textarea>
+            <span>${isProductCard(card) ? 'Примечание к товару' : 'Примечание под таблицей'}</span>
+            <textarea rows="${isProductCard(card) ? '2' : '4'}" data-field="footer" data-section-index="${sectionIndex}" data-card-index="${cardIndex}">${escapeHtml(card.footer || '')}</textarea>
           </label>
         </div>
 

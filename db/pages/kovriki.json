@@ -1,0 +1,66 @@
+{
+  "meta": {
+    "page": "kovriki",
+    "source": "db/tovary.json#kovriki",
+    "migratedAt": "2026-09-11"
+  },
+  "sections": [
+    {
+      "id": "kovriki",
+      "title": "Коврики для мыши",
+      "cards": [
+        {
+          "id": "kovriki-1",
+          "cardType": "product",
+          "title": "Коврик прямоугольный 19 х 23 см",
+          "img": [
+            "img/pads/padsmall.jpg"
+          ],
+          "description": "",
+          "footer": "",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "Цена за 1 шт.",
+              "Цена": "550 ₽"
+            }
+          ]
+        },
+        {
+          "id": "kovriki-2",
+          "cardType": "product",
+          "title": "Коврик круглый 20 см",
+          "img": [
+            "img/pads/padcircle.jpg"
+          ],
+          "description": "",
+          "footer": "",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "Цена за 1 шт.",
+              "Цена": "550 ₽"
+            }
+          ]
+        },
+        {
+          "id": "kovriki-3",
+          "cardType": "product",
+          "title": "Коврик прямоугольный 36 × 29 см",
+          "img": [
+            "img/pads/padbig.jpg"
+          ],
+          "description": "",
+          "footer": "",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "Цена за 1 шт.",
+              "Цена": "850 ₽"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

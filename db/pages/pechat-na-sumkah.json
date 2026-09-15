@@ -1,0 +1,141 @@
+{
+  "meta": {
+    "page": "pechat-na-sumkah",
+    "source": "db/tovary.json#shoppery",
+    "migratedAt": "2026-09-11"
+  },
+  "sections": [
+    {
+      "id": "shoppery",
+      "title": "Печать на сумках",
+      "cards": [
+        {
+          "id": "shoppery-1",
+          "cardType": "product",
+          "title": "Шоппер. Цвет: натуральный",
+          "img": [
+            "img/bags/shopper110-natural.jpg"
+          ],
+          "description": "Плотность: 110 гр/м2 Состав: 100% хлопок",
+          "footer": "",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "Цена за 1 шт.",
+              "Цена": "200 ₽"
+            },
+            {
+              "Условие": "От 10 шт.",
+              "Цена": "160 ₽"
+            }
+          ]
+        },
+        {
+          "id": "shoppery-2",
+          "cardType": "product",
+          "title": "Шоппер. Цвет: красный",
+          "img": [
+            "img/bags/shopper110-red.jpg"
+          ],
+          "description": "Плотность: 110 гр/м2 Состав: 100% хлопок",
+          "footer": "",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "Цена за 1 шт.",
+              "Цена": "220 ₽"
+            },
+            {
+              "Условие": "От 10 шт.",
+              "Цена": "180 ₽"
+            }
+          ]
+        },
+        {
+          "id": "shoppery-3",
+          "cardType": "product",
+          "title": "Шоппер. Цвет: тёмно-синий",
+          "img": [
+            "img/bags/shopper110-darkblue.jpg"
+          ],
+          "description": "Плотность: 110 гр/м2 Состав: 100% хлопок",
+          "footer": "",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "Цена за 1 шт.",
+              "Цена": "220 ₽"
+            },
+            {
+              "Условие": "От 10 шт.",
+              "Цена": "180 ₽"
+            }
+          ]
+        },
+        {
+          "id": "shoppery-4",
+          "cardType": "product",
+          "title": "Шоппер. Цвет: натуральный",
+          "img": [
+            "img/bags/shopper220-natural.jpg"
+          ],
+          "description": "Плотность: 220 гр/м2 Состав: 100% хлопок",
+          "footer": "",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "Цена за 1 шт.",
+              "Цена": "320 ₽"
+            },
+            {
+              "Условие": "От 10 шт.",
+              "Цена": "280 ₽"
+            }
+          ]
+        },
+        {
+          "id": "shoppery-5",
+          "cardType": "product",
+          "title": "Шоппер. Цвет: оранжевый",
+          "img": [
+            "img/bags/shopper220-orange.jpg"
+          ],
+          "description": "Плотность: 220 гр/м2 Состав: 100% хлопок",
+          "footer": "",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "Цена за 1 шт.",
+              "Цена": "320 ₽"
+            },
+            {
+              "Условие": "От 10 шт.",
+              "Цена": "280 ₽"
+            }
+          ]
+        },
+        {
+          "id": "shoppery-6",
+          "cardType": "product",
+          "title": "Сумка холщовая, плотная, с печатью",
+          "img": [
+            "img/bags/bag_holst.jpg"
+          ],
+          "description": "Плотность: 220 гр/м2 Состав: 100% хлопок",
+          "footer": "",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "Односторонняя",
+              "Цена": "650 ₽"
+            },
+            {
+              "Условие": "Двухсторонняя",
+              "Цена": "780 ₽"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

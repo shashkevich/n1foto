@@ -1,0 +1,65 @@
+{
+  "meta": {
+    "page": "insta-pechat",
+    "source": "db/tovary.json#polaroid",
+    "migratedAt": "2026-09-11"
+  },
+  "sections": [
+    {
+      "id": "polaroid",
+      "title": "Печать фото Polaroid",
+      "cards": [
+        {
+          "id": "polaroid-1",
+          "cardType": "product",
+          "title": "Полароид 10х10 см",
+          "img": [
+            "img/polaroid/polaroid-10x10.jpg"
+          ],
+          "description": "",
+          "footer": "",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "Цена за 1 шт.",
+              "Цена": "35 ₽"
+            },
+            {
+              "Условие": "Комплект 15 шт",
+              "Цена": "400 ₽"
+            },
+            {
+              "Условие": "Комплект 25 шт",
+              "Цена": "550 ₽"
+            }
+          ]
+        },
+        {
+          "id": "polaroid-2",
+          "cardType": "product",
+          "title": "Полароид 10х12 см",
+          "img": [
+            "img/polaroid/polaroid-12x10.jpg"
+          ],
+          "description": "",
+          "footer": "",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "Цена за 1 шт.",
+              "Цена": "35 ₽"
+            },
+            {
+              "Условие": "Комплект 15 шт",
+              "Цена": "400 ₽"
+            },
+            {
+              "Условие": "Комплект 25 шт",
+              "Цена": "550 ₽"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -18,12 +18,14 @@ jobs:
       - name: 📥 Checkout repository
         uses: actions/checkout@v4
 
-      - name: 🌱 Initialize editable ornament data if missing
+      - name: 🌱 Initialize missing editable page data
         env:
           FTP_SERVER: ${{ secrets.FTP_SERVER }}
           FTP_USER: ${{ secrets.FTP_USER }}
           FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
-        run: python3 .github/scripts/seed-shary-data.py
+        run: |
+          python3 -B .github/scripts/test_seed_page_data.py
+          python3 .github/scripts/seed-page-data.py
 
       - name: 📤 Deploy via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
@@ -47,6 +49,18 @@ jobs:
             db/pages/nakleyki.json
             db/pages/pechat-i-kopirovanie.json
             db/pages/shary.json
+            db/pages/magnity.json
+            db/pages/pechat-na-podushkah.json
+            db/pages/pechat-na-sumkah.json
+            db/pages/pazly.json
+            db/pages/kovriki.json
+            db/pages/ocifrovka-videokasset.json
+            db/pages/vlagostoykie-ramki.json
+            db/pages/printcanvas.json
+            db/pages/pechat-na-kruzhkah.json
+            db/pages/butylki.json
+            db/pages/bage.json
+            db/pages/insta-pechat.json
             img/buklety/uploads/**
             img/listovki/uploads/**
             img/odezhda/uploads/**
@@ -56,6 +70,18 @@ jobs:
             img/karmannye-kalendariki/uploads/**
             img/main-page/uploads/**
             img/shary/uploads/**
+            img/magnity/uploads/**
+            img/pillows/uploads/**
+            img/bags/uploads/**
+            img/puzzles/uploads/**
+            img/pads/uploads/**
+            img/ocifrovka/uploads/**
+            img/vlagostoykie-ramki/uploads/**
+            img/holsty/uploads/**
+            img/kruzhki/uploads/**
+            img/butylki/uploads/**
+            img/bages/uploads/**
+            img/polaroid/uploads/**
 
   deploy-admin:
     runs-on: ubuntu-latest

@@ -4,6 +4,7 @@
 <head>
     <? include "php/blocks/head.php" ?>
     <link rel="stylesheet" href="css/plastic-sign-calculator.css?v=20260821-6">
+    <link rel="stylesheet" href="css/product-cards.css?v=20260915-1">
 </head>
 
 <body class="d-flex flex-column h-100">
@@ -65,18 +66,18 @@
         </div>
     </section>
   
-    <section class="py-5 text-center">
+    <section class="product-page py-5 text-center">
         <div class="container text-center">
             <h2>Адресные таблички</h2>
             <h5>Цены указаны за таблички напечатанные на пластике толщиной 3мм</h5>
             <h5>Печать таблички возможна в любом цвете</h5>
-            <div class="cardsField row justify-content-md-center row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 my-3 text-center" id="tablichki">
+            <div class="product-catalog row row-cols-1 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3 my-3" id="tablichki" data-product-page="tablichki" data-product-section="address-signs" data-product-layout="stacked" data-product-heading="3">
             </div>
         </div>
     </section>
 
     <? include "php/blocks/footer.php" ?>
-<script src="js/cardsBuilder.js"></script>
+<script src="js/product-cards.js?v=20260915-1"></script>
 <script src="js/plastic-sign-calculator.js?v=20260821-4"></script>
 </body>
 </html>

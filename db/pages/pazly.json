@@ -1,0 +1,66 @@
+{
+  "meta": {
+    "page": "pazly",
+    "source": "db/tovary.json#puzzles",
+    "migratedAt": "2026-09-11"
+  },
+  "sections": [
+    {
+      "id": "puzzles",
+      "title": "Пазлы с фотографией",
+      "cards": [
+        {
+          "id": "puzzles-1",
+          "cardType": "product",
+          "title": "Пазл магнитный 13 × 18 см",
+          "img": [
+            "img/puzzles/13x18puzzle.jpg"
+          ],
+          "description": "12 элементов",
+          "footer": "",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "Цена за 1 шт.",
+              "Цена": "490 ₽"
+            }
+          ]
+        },
+        {
+          "id": "puzzles-2",
+          "cardType": "product",
+          "title": "Пазл картонный 20 × 29 см",
+          "img": [
+            "img/puzzles/20x29puzzle.jpg"
+          ],
+          "description": "120 элементов",
+          "footer": "",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "Цена за 1 шт.",
+              "Цена": "790 ₽"
+            }
+          ]
+        },
+        {
+          "id": "puzzles-3",
+          "cardType": "product",
+          "title": "Пазл картонный 28 × 39 см",
+          "img": [
+            "img/puzzles/29x40puzzle.jpg"
+          ],
+          "description": "300 элементов",
+          "footer": "",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "Цена за 1 шт.",
+              "Цена": "1350 ₽"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

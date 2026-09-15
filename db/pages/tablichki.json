@@ -38,6 +38,474 @@
           ]
         }
       ]
+    },
+    {
+      "id": "address-signs",
+      "title": "Адресные таблички",
+      "cards": [
+        {
+          "id": "address-signs-1",
+          "cardType": "product",
+          "title": "Табличка №1",
+          "img": [
+            "img/tablichki/tab_1.jpg"
+          ],
+          "description": "",
+          "footer": "",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "60×40 см",
+              "Цена": "1800 ₽"
+            },
+            {
+              "Условие": "70×47 см",
+              "Цена": "2500 ₽"
+            }
+          ]
+        },
+        {
+          "id": "address-signs-2",
+          "cardType": "product",
+          "title": "Табличка №2",
+          "img": [
+            "img/tablichki/tab_2.jpg"
+          ],
+          "description": "",
+          "footer": "",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "60×51 см",
+              "Цена": "2350 ₽"
+            },
+            {
+              "Условие": "70×60 см",
+              "Цена": "3150 ₽"
+            }
+          ]
+        },
+        {
+          "id": "address-signs-3",
+          "cardType": "product",
+          "title": "Табличка №3",
+          "img": [
+            "img/tablichki/tab_3.jpg"
+          ],
+          "description": "",
+          "footer": "",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "60×58,7 см",
+              "Цена": "2650 ₽"
+            },
+            {
+              "Условие": "70×68 см",
+              "Цена": "3600 ₽"
+            }
+          ]
+        },
+        {
+          "id": "address-signs-4",
+          "cardType": "product",
+          "title": "Табличка №4",
+          "img": [
+            "img/tablichki/tab_4.jpg"
+          ],
+          "description": "",
+          "footer": "",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "60×60 см",
+              "Цена": "2700 ₽"
+            },
+            {
+              "Условие": "70×70 см",
+              "Цена": "3700 ₽"
+            }
+          ]
+        },
+        {
+          "id": "address-signs-5",
+          "cardType": "product",
+          "title": "Табличка №5",
+          "img": [
+            "img/tablichki/tab_5.jpg"
+          ],
+          "description": "",
+          "footer": "",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "60×55 см",
+              "Цена": "2500 ₽"
+            },
+            {
+              "Условие": "70×64 см",
+              "Цена": "3400 ₽"
+            }
+          ]
+        },
+        {
+          "id": "address-signs-6",
+          "cardType": "product",
+          "title": "Табличка №6",
+          "img": [
+            "img/tablichki/tab_6.jpg"
+          ],
+          "description": "",
+          "footer": "",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "60×55 см",
+              "Цена": "2500 ₽"
+            },
+            {
+              "Условие": "70×64 см",
+              "Цена": "3350 ₽"
+            }
+          ]
+        },
+        {
+          "id": "address-signs-7",
+          "cardType": "product",
+          "title": "Табличка №7",
+          "img": [
+            "img/tablichki/tab_7.jpg"
+          ],
+          "description": "",
+          "footer": "",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "60×15 см",
+              "Цена": "950 ₽"
+            },
+            {
+              "Условие": "70×18 см",
+              "Цена": "1000 ₽"
+            }
+          ]
+        },
+        {
+          "id": "address-signs-8",
+          "cardType": "product",
+          "title": "Табличка №8",
+          "img": [
+            "img/tablichki/tab_8.jpg"
+          ],
+          "description": "",
+          "footer": "",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "60×15 см",
+              "Цена": "950 ₽"
+            },
+            {
+              "Условие": "70×18 см",
+              "Цена": "1000 ₽"
+            }
+          ]
+        },
+        {
+          "id": "address-signs-9",
+          "cardType": "product",
+          "title": "Табличка №9",
+          "img": [
+            "img/tablichki/tab_9.jpg"
+          ],
+          "description": "",
+          "footer": "",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "60×17 см",
+              "Цена": "950 ₽"
+            },
+            {
+              "Условие": "70×20 см",
+              "Цена": "1050 ₽"
+            }
+          ]
+        },
+        {
+          "id": "address-signs-10",
+          "cardType": "product",
+          "title": "Табличка №10",
+          "img": [
+            "img/tablichki/tab_10.jpg"
+          ],
+          "description": "",
+          "footer": "",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "60×16,9 см",
+              "Цена": "950 ₽"
+            },
+            {
+              "Условие": "70×20 см",
+              "Цена": "1050 ₽"
+            }
+          ]
+        },
+        {
+          "id": "address-signs-11",
+          "cardType": "product",
+          "title": "Табличка №11",
+          "img": [
+            "img/tablichki/tab_11.jpg"
+          ],
+          "description": "",
+          "footer": "",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "60×18,4 см",
+              "Цена": "950 ₽"
+            },
+            {
+              "Условие": "70×22 см",
+              "Цена": "1150 ₽"
+            }
+          ]
+        },
+        {
+          "id": "address-signs-12",
+          "cardType": "product",
+          "title": "Табличка №12",
+          "img": [
+            "img/tablichki/tab_12.jpg"
+          ],
+          "description": "",
+          "footer": "",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "60×22 см",
+              "Цена": "1000 ₽"
+            },
+            {
+              "Условие": "70×25 см",
+              "Цена": "1350 ₽"
+            }
+          ]
+        },
+        {
+          "id": "address-signs-13",
+          "cardType": "product",
+          "title": "Табличка №13",
+          "img": [
+            "img/tablichki/tab_13.jpg"
+          ],
+          "description": "",
+          "footer": "",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "60×23 см",
+              "Цена": "1050 ₽"
+            },
+            {
+              "Условие": "70×27 см",
+              "Цена": "1450 ₽"
+            }
+          ]
+        },
+        {
+          "id": "address-signs-14",
+          "cardType": "product",
+          "title": "Табличка №14",
+          "img": [
+            "img/tablichki/tab_14.jpg"
+          ],
+          "description": "",
+          "footer": "",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "60×23,3 см",
+              "Цена": "1050 ₽"
+            },
+            {
+              "Условие": "70×27 см",
+              "Цена": "1450 ₽"
+            }
+          ]
+        },
+        {
+          "id": "address-signs-15",
+          "cardType": "product",
+          "title": "Табличка №15",
+          "img": [
+            "img/tablichki/tab_15.jpg"
+          ],
+          "description": "",
+          "footer": "",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "60×24 см",
+              "Цена": "1100 ₽"
+            },
+            {
+              "Условие": "70×28 см",
+              "Цена": "1500 ₽"
+            }
+          ]
+        },
+        {
+          "id": "address-signs-16",
+          "cardType": "product",
+          "title": "Табличка №16",
+          "img": [
+            "img/tablichki/tab_16.jpg"
+          ],
+          "description": "",
+          "footer": "",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "60×26 см",
+              "Цена": "1200 ₽"
+            },
+            {
+              "Условие": "70×31 см",
+              "Цена": "1650 ₽"
+            }
+          ]
+        },
+        {
+          "id": "address-signs-17",
+          "cardType": "product",
+          "title": "Табличка №17",
+          "img": [
+            "img/tablichki/tab_17.jpg"
+          ],
+          "description": "",
+          "footer": "",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "60×30 см",
+              "Цена": "1350 ₽"
+            },
+            {
+              "Условие": "70×35 см",
+              "Цена": "1850 ₽"
+            }
+          ]
+        },
+        {
+          "id": "address-signs-18",
+          "cardType": "product",
+          "title": "Табличка №18",
+          "img": [
+            "img/tablichki/tab_18.jpg"
+          ],
+          "description": "",
+          "footer": "",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "60×34 см",
+              "Цена": "1550 ₽"
+            },
+            {
+              "Условие": "70×40 см",
+              "Цена": "2100 ₽"
+            }
+          ]
+        },
+        {
+          "id": "address-signs-19",
+          "cardType": "product",
+          "title": "Табличка №19",
+          "img": [
+            "img/tablichki/tab_19.jpg"
+          ],
+          "description": "",
+          "footer": "",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "60×35 см",
+              "Цена": "1600 ₽"
+            },
+            {
+              "Условие": "70×41 см",
+              "Цена": "2200 ₽"
+            }
+          ]
+        },
+        {
+          "id": "address-signs-20",
+          "cardType": "product",
+          "title": "Табличка №20",
+          "img": [
+            "img/tablichki/tab_20.jpg"
+          ],
+          "description": "",
+          "footer": "",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "60×35 см",
+              "Цена": "1600 ₽"
+            },
+            {
+              "Условие": "70×41 см",
+              "Цена": "2200 ₽"
+            }
+          ]
+        },
+        {
+          "id": "address-signs-21",
+          "cardType": "product",
+          "title": "Табличка №21",
+          "img": [
+            "img/tablichki/tab_21.jpg"
+          ],
+          "description": "",
+          "footer": "",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "60×37 см",
+              "Цена": "1700 ₽"
+            },
+            {
+              "Условие": "70×43 см",
+              "Цена": "2300 ₽"
+            }
+          ]
+        },
+        {
+          "id": "address-signs-22",
+          "cardType": "product",
+          "title": "Табличка №22",
+          "img": [
+            "img/tablichki/tab_22.jpg"
+          ],
+          "description": "",
+          "footer": "",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "60×38 см",
+              "Цена": "1700 ₽"
+            },
+            {
+              "Условие": "70×44 см",
+              "Цена": "2300 ₽"
+            }
+          ]
+        }
+      ]
     }
   ]
 }

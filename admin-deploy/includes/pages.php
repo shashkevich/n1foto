@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 function adminSitePages(): array
 {
-    return [
+    $pages = [
         [
             'id' => 'home',
             'title' => 'Главная',
@@ -240,21 +240,22 @@ function adminSitePages(): array
             'path' => '/tablichki.html',
             'group' => 'Реклама и оформление',
             'pageJson' => 'db/pages/tablichki.json',
-            'manualSections' => ['plastic-sign'],
+            'manualSections' => ['plastic-sign', 'address-signs'],
+            'productCards' => true,
             'imageUpload' => [
                 'directory' => 'img/tablichki/uploads',
-                'sections' => ['plastic-sign'],
+                'sections' => ['plastic-sign', 'address-signs'],
             ],
             'data' => [
-                'prices' => 'db/pages/tablichki.json#plastic-sign',
+                'prices' => 'db/pages/tablichki.json#plastic-sign,address-signs',
                 'seo' => 'php/seo.php#/tablichki.html',
                 'template' => 'tablichki.html',
             ],
             'modules' => [
                 [
                     'id' => 'manual-copy-prices',
-                    'title' => 'Калькулятор и цены',
-                    'description' => 'Материалы, цены за м², резка, минимальный заказ, тексты и изображение карточки',
+                    'title' => 'Калькулятор и адресные таблички',
+                    'description' => 'Материалы, расчёт, изображения и цены адресных табличек по размерам',
                     'status' => 'active',
                 ],
                 [
@@ -384,6 +385,64 @@ function adminSitePages(): array
             ],
         ],
     ];
+
+    return array_merge($pages, adminProductSitePages());
+}
+
+function adminProductSitePages(): array
+{
+    $definitions = [
+        ['magnity', 'Магниты', 'Сувениры', ['magnity'], 'magnity'],
+        ['pechat-na-podushkah', 'Печать на подушках', 'Сувениры', ['podushki'], 'pillows'],
+        ['pechat-na-sumkah', 'Печать на сумках', 'Одежда и текстиль', ['shoppery'], 'bags'],
+        ['pazly', 'Пазлы', 'Сувениры', ['puzzles'], 'puzzles'],
+        ['kovriki', 'Коврики для мыши', 'Сувениры', ['kovriki'], 'pads'],
+        ['ocifrovka-videokasset', 'Оцифровка видеокассет', 'Фотоуслуги', ['ocifrovka'], 'ocifrovka'],
+        ['vlagostoykie-ramki', 'Влагостойкие рамки', 'Фотоуслуги', ['vlagostoykie-ramki'], 'vlagostoykie-ramki'],
+        ['printcanvas', 'Печать на холсте', 'Фотоуслуги', ['canvas-standard', 'canvas-styles'], 'holsty'],
+        ['pechat-na-kruzhkah', 'Печать на кружках', 'Сувениры', ['kruzhki'], 'kruzhki'],
+        ['butylki', 'Бутылки с печатью', 'Сувениры', ['butylki'], 'butylki'],
+        ['bage', 'Бейджи', 'Реклама и оформление', ['bages'], 'bages'],
+        ['insta-pechat', 'Печать фото Polaroid', 'Фотоуслуги', ['polaroid'], 'polaroid'],
+    ];
+
+    return array_map(static function (array $definition): array {
+        [$id, $title, $group, $sections, $imageDirectory] = $definition;
+        $json = 'db/pages/' . $id . '.json';
+
+        return [
+            'id' => $id,
+            'title' => $title,
+            'path' => '/' . $id . '.html',
+            'group' => $group,
+            'pageJson' => $json,
+            'manualSections' => $sections,
+            'productCards' => true,
+            'imageUpload' => [
+                'directory' => 'img/' . $imageDirectory . '/uploads',
+                'sections' => array_values(array_diff($sections, ['canvas-standard'])),
+            ],
+            'data' => [
+                'cards' => $json . '#' . implode(',', $sections),
+                'seo' => 'php/seo.php#/' . $id . '.html',
+                'template' => $id . '.html',
+            ],
+            'modules' => [
+                [
+                    'id' => 'manual-copy-prices',
+                    'title' => 'Карточки товаров и цены',
+                    'description' => 'Фото, название, описание, условия цен и примечания',
+                    'status' => 'active',
+                ],
+                [
+                    'id' => 'preview',
+                    'title' => 'Предпросмотр страницы',
+                    'description' => 'Открыть страницу на основном сайте и проверить изменения',
+                    'status' => 'active',
+                ],
+            ],
+        ];
+    }, $definitions);
 }
 
 function adminSitePageById(string $id): ?array

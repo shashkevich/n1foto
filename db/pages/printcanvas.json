@@ -1,0 +1,323 @@
+{
+  "meta": {
+    "page": "printcanvas",
+    "source": "printcanvas.html,db/tovary.json#canvasStyles",
+    "migratedAt": "2026-09-11"
+  },
+  "sections": [
+    {
+      "id": "canvas-standard",
+      "title": "Печать на холсте",
+      "cards": [
+        {
+          "id": "canvas-standard-prices",
+          "title": "Стандартные размеры",
+          "img": [],
+          "description": "",
+          "price_title": "",
+          "footer": "В стоимость входит:\nЭкологичная печать на собственном оборудовании\nСрок выполнения заказа — 1–2 дня\nНатуральный холст и деревянный подрамник\nГалерейная натяжка холста на подрамник\nПокрытие бесцветным защитным лаком\nНастенный крепёж",
+          "table": [
+            {
+              "Размер": "20×30 см",
+              "Цена": "1300 ₽"
+            },
+            {
+              "Размер": "30×30 см",
+              "Цена": "1500 ₽"
+            },
+            {
+              "Размер": "30×40 см",
+              "Цена": "2000 ₽"
+            },
+            {
+              "Размер": "30×45 см",
+              "Цена": "2250 ₽"
+            },
+            {
+              "Размер": "35×50 см",
+              "Цена": "2500 ₽"
+            },
+            {
+              "Размер": "40×50 см",
+              "Цена": "2800 ₽"
+            },
+            {
+              "Размер": "40×60 см",
+              "Цена": "3200 ₽"
+            },
+            {
+              "Размер": "50×50 см",
+              "Цена": "3500 ₽"
+            },
+            {
+              "Размер": "50×70 см",
+              "Цена": "4000 ₽"
+            },
+            {
+              "Размер": "60×80 см",
+              "Цена": "5100 ₽"
+            },
+            {
+              "Размер": "60×90 см",
+              "Цена": "5700 ₽"
+            },
+            {
+              "Размер": "80×120 см",
+              "Цена": "8500 ₽"
+            },
+            {
+              "Размер": "90×120 см",
+              "Цена": "9800 ₽"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "canvas-styles",
+      "title": "Обработка фотографии",
+      "cards": [
+        {
+          "id": "canvas-styles-1",
+          "cardType": "product",
+          "title": "Масло",
+          "img": [
+            "img/holsty/maslo1.jpg"
+          ],
+          "description": "",
+          "footer": "",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "За одно лицо",
+              "Цена": "1300 ₽"
+            },
+            {
+              "Условие": "Каждое дополнительное лицо",
+              "Цена": "+600 ₽"
+            }
+          ],
+          "imageTreatment": "photo"
+        },
+        {
+          "id": "canvas-styles-2",
+          "cardType": "product",
+          "title": "Масло экспрессия",
+          "img": [
+            "img/holsty/masloexpr1.jpg"
+          ],
+          "description": "",
+          "footer": "",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "За одно лицо",
+              "Цена": "1500 ₽"
+            },
+            {
+              "Условие": "Каждое дополнительное лицо",
+              "Цена": "+600 ₽"
+            }
+          ],
+          "imageTreatment": "photo"
+        },
+        {
+          "id": "canvas-styles-3",
+          "cardType": "product",
+          "title": "Образ",
+          "img": [
+            "img/holsty/obraz1.jpg"
+          ],
+          "description": "",
+          "footer": "",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "За одно лицо",
+              "Цена": "1300 ₽"
+            },
+            {
+              "Условие": "Каждое дополнительное лицо",
+              "Цена": "+600 ₽"
+            }
+          ],
+          "imageTreatment": "photo"
+        },
+        {
+          "id": "canvas-styles-4",
+          "cardType": "product",
+          "title": "Дрим-арт",
+          "img": [
+            "img/holsty/grunge1.jpg"
+          ],
+          "description": "",
+          "footer": "",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "За одно лицо",
+              "Цена": "1500 ₽"
+            },
+            {
+              "Условие": "Каждое дополнительное лицо",
+              "Цена": "+600 ₽"
+            }
+          ],
+          "imageTreatment": "photo"
+        },
+        {
+          "id": "canvas-styles-5",
+          "cardType": "product",
+          "title": "Симпсоны",
+          "img": [
+            "img/holsty/simpsons1.jpg"
+          ],
+          "description": "",
+          "footer": "финальная стоимость будет зависеть от фона, кол-ва людей и прочих деталей",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "Стилизация",
+              "Цена": "от 2500 ₽"
+            }
+          ],
+          "imageTreatment": "photo"
+        },
+        {
+          "id": "canvas-styles-6",
+          "cardType": "product",
+          "title": "Рик и Морти",
+          "img": [
+            "img/holsty/rickandmorty1.jpg"
+          ],
+          "description": "",
+          "footer": "",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "За одно лицо",
+              "Цена": "от 2500 ₽"
+            },
+            {
+              "Условие": "Каждое дополнительное лицо",
+              "Цена": "+850 ₽"
+            }
+          ],
+          "imageTreatment": "photo"
+        },
+        {
+          "id": "canvas-styles-7",
+          "cardType": "product",
+          "title": "Аниме",
+          "img": [
+            "img/holsty/anime1.jpg"
+          ],
+          "description": "",
+          "footer": "",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "За одно лицо",
+              "Цена": "от 2500 ₽"
+            },
+            {
+              "Условие": "Каждое дополнительное лицо",
+              "Цена": "+850 ₽"
+            }
+          ],
+          "imageTreatment": "photo"
+        },
+        {
+          "id": "canvas-styles-8",
+          "cardType": "product",
+          "title": "Коллаж",
+          "img": [
+            "img/holsty/Collage1.jpg"
+          ],
+          "description": "",
+          "footer": "",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "Стилизация",
+              "Цена": "от 500 ₽"
+            }
+          ],
+          "imageTreatment": "photo"
+        },
+        {
+          "id": "canvas-styles-9",
+          "cardType": "product",
+          "title": "Фототрэк №1",
+          "img": [
+            "img/holsty/fototrack1.jpg"
+          ],
+          "description": "",
+          "footer": "",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "Стилизация",
+              "Цена": "Бесплатно"
+            }
+          ],
+          "imageTreatment": "photo"
+        },
+        {
+          "id": "canvas-styles-10",
+          "cardType": "product",
+          "title": "Фототрэк №2",
+          "img": [
+            "img/holsty/fototrack2.jpg"
+          ],
+          "description": "",
+          "footer": "",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "Стилизация",
+              "Цена": "Бесплатно"
+            }
+          ],
+          "imageTreatment": "photo"
+        },
+        {
+          "id": "canvas-styles-11",
+          "cardType": "product",
+          "title": "Polaroid",
+          "img": [
+            "img/holsty/polaroid1.jpg"
+          ],
+          "description": "",
+          "footer": "",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "Стилизация",
+              "Цена": "Бесплатно"
+            }
+          ],
+          "imageTreatment": "photo"
+        },
+        {
+          "id": "canvas-styles-12",
+          "cardType": "product",
+          "title": "Love is",
+          "img": [
+            "img/holsty/loveis1.jpg"
+          ],
+          "description": "",
+          "footer": "",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "Стилизация",
+              "Цена": "Бесплатно"
+            }
+          ],
+          "imageTreatment": "photo"
+        }
+      ]
+    }
+  ]
+}

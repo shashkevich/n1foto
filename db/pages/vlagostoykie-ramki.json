@@ -1,0 +1,99 @@
+{
+  "meta": {
+    "page": "vlagostoykie-ramki",
+    "source": "db/tovary.json#vlagostoykie-ramki",
+    "migratedAt": "2026-09-11"
+  },
+  "sections": [
+    {
+      "id": "vlagostoykie-ramki",
+      "title": "Влагостойкие рамки",
+      "cards": [
+        {
+          "id": "vlagostoykie-ramki-1",
+          "cardType": "product",
+          "title": "Фоторамка \"Память\" Эконом",
+          "img": [
+            "img/vlagostoykie-ramki/ramka-econom.jpg"
+          ],
+          "description": "",
+          "footer": "",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "21×30 см",
+              "Цена": "950 ₽"
+            },
+            {
+              "Условие": "Печать фотографии и сборка фоторамки",
+              "Цена": "+250 ₽"
+            }
+          ]
+        },
+        {
+          "id": "vlagostoykie-ramki-2",
+          "cardType": "product",
+          "title": "Фоторамка \"Память\" Стандарт",
+          "img": [
+            "img/vlagostoykie-ramki/ramka-standart.jpg"
+          ],
+          "description": "",
+          "footer": "",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "21×30 см",
+              "Цена": "1250 ₽"
+            },
+            {
+              "Условие": "Печать фотографии и сборка фоторамки",
+              "Цена": "+250 ₽"
+            }
+          ]
+        },
+        {
+          "id": "vlagostoykie-ramki-3",
+          "cardType": "product",
+          "title": "Фоторамка \"Память\" Премиум",
+          "img": [
+            "img/vlagostoykie-ramki/ramka-premium.jpg"
+          ],
+          "description": "",
+          "footer": "",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "21×30 см",
+              "Цена": "1500 ₽"
+            },
+            {
+              "Условие": "Печать фотографии и сборка фоторамки",
+              "Цена": "+250 ₽"
+            }
+          ]
+        },
+        {
+          "id": "vlagostoykie-ramki-4",
+          "cardType": "product",
+          "title": "Фоторамка \"Память\" Эксклюзив",
+          "img": [
+            "img/vlagostoykie-ramki/ramka-exclusive.jpg"
+          ],
+          "description": "",
+          "footer": "",
+          "price_title": "",
+          "table": [
+            {
+              "Условие": "21×30 см",
+              "Цена": "2000 ₽"
+            },
+            {
+              "Условие": "Печать фотографии и сборка фоторамки",
+              "Цена": "+250 ₽"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
