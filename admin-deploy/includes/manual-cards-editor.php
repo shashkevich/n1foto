@@ -8,10 +8,13 @@ function adminRenderManualCardsEditor(array $sitePage): void
     $isDigitalLeaflets = $sitePage['id'] === 'listovki';
     $isHomePage = $sitePage['id'] === 'home';
     $hasProductCards = $sitePage['id'] === 'shary' || !empty($sitePage['productCards']);
+    $createSections = $hasProductCards
+        ? array_values(array_diff($sections, ['plastic-sign', 'canvas-standard']))
+        : (in_array($sitePage['id'], ['vizitki', 'pechat-i-kopirovanie'], true) ? $sections : []);
     $isProduction = adminPublicSiteBaseUrl() === 'https://n1foto.com';
     $publishButtonLabel = $isProduction ? 'Опубликовать на n1foto.com' : 'Сохранить на тестовый сайт';
     ?>
-    <section class="manual-editor" id="manual-cards-editor" data-manual-api="<?= adminEscape($api) ?>" data-manual-sections="<?= adminEscape(implode(',', $sections)) ?>" data-public-site-base="<?= adminEscape(adminPublicSiteBaseUrl()) ?>" data-image-upload="<?= !empty($sitePage['imageUpload']) ? '1' : '0' ?>" data-image-sections="<?= adminEscape(implode(',', $sitePage['imageUpload']['sections'] ?? [])) ?>">
+    <section class="manual-editor" id="manual-cards-editor" data-manual-api="<?= adminEscape($api) ?>" data-manual-sections="<?= adminEscape(implode(',', $sections)) ?>" data-public-site-base="<?= adminEscape(adminPublicSiteBaseUrl()) ?>" data-image-upload="<?= !empty($sitePage['imageUpload']) ? '1' : '0' ?>" data-image-sections="<?= adminEscape(implode(',', $sitePage['imageUpload']['sections'] ?? [])) ?>" data-create-sections="<?= adminEscape(implode(',', $createSections)) ?>" data-product-cards="<?= $hasProductCards ? '1' : '0' ?>">
       <div class="manual-editor__toolbar panel">
         <div>
           <h2><?= $isHomePage ? 'Карточки главной страницы' : ($isDigitalLeaflets ? 'Цифровая печать' : 'Карточки и ручные цены') ?></h2>
@@ -51,6 +54,6 @@ function adminRenderManualCardsEditor(array $sitePage): void
 
       <div id="manualCards" class="manual-cards"></div>
     </section>
-    <script src="/assets/manual-cards-admin.js?v=20260915-3"></script>
+    <script src="/assets/manual-cards-admin.js?v=20260916-1"></script>
     <?php
 }

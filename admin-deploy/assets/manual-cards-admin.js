@@ -19,6 +19,8 @@
   const imageUploadSections = String(root.dataset.imageSections || '').split(',').filter(Boolean);
   const isHomePage = pageId === 'home';
   const isProductCard = (card) => card.cardType === 'product' || pageId === 'shary';
+  const createSections = String(root.dataset.createSections || '').split(',').filter(Boolean);
+  const newCardIds = new Set();
 
   let pageData = null;
 
@@ -87,6 +89,7 @@
     }
 
     pageData = await response.json();
+    newCardIds.clear();
 
     (pageData.sections || []).forEach((section) => {
       (section.cards || []).forEach((card) => {
@@ -102,6 +105,16 @@
   };
 
   const savePageData = async () => {
+    for (const section of pageData.sections || []) {
+      for (const card of section.cards || []) {
+        if (!newCardIds.has(card.id)) continue;
+        if (!String(card.title || '').trim()) throw new Error('Укажите название новой карточки.');
+        if (!card.table?.length || card.table.some((row) => Object.keys(row).length < 2
+          || Object.values(row).some((value) => !String(value ?? '').trim()))) {
+          throw new Error(`Заполните условия и цены новой карточки «${card.title}».`);
+        }
+      }
+    }
     const response = await fetch(getApiUrl(), {
       method: 'POST',
       credentials: 'same-origin',
@@ -115,6 +128,7 @@
     if (!response.ok || !payload.ok) {
       throw new Error(payload.error || `Не удалось сохранить JSON: ${response.status}`);
     }
+    newCardIds.clear();
 
     const message = isProduction
       ? `Опубликовано на n1foto.com: ${payload.path}.`
@@ -123,6 +137,80 @@
   };
 
   const getHeaders = (rows) => Object.keys(rows[0] || {});
+
+  const addCard = (sectionIndex) => {
+    const section = pageData.sections?.[sectionIndex];
+    if (!section || !createSections.includes(section.id)) return;
+    const ids = new Set(pageData.sections.flatMap((item) => (item.cards || []).map((card) => card.id)));
+    let id;
+    do {
+      id = `card-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+    } while (ids.has(id));
+    const product = root.dataset.productCards === '1';
+    const card = {
+      id,
+      ...(product ? { cardType: 'product' } : {}),
+      title: '',
+      img: [],
+      ...(pageId !== 'vizitki' ? { description: '' } : {}),
+      price_title: '',
+      footer: '',
+      table: [{ 'Условие': 'Цена за 1 шт.', 'Цена': '' }]
+    };
+    section.cards = Array.isArray(section.cards) ? section.cards : [];
+    section.cards.push(card);
+    newCardIds.add(id);
+    saveButton.disabled = false;
+    render();
+    cardsRoot.querySelector(`[data-field="title"][data-section-index="${sectionIndex}"][data-card-index="${section.cards.length - 1}"]`)?.focus();
+    setStatus('Новая карточка добавлена в редактор. Заполните название и цены, затем сохраните страницу. Фото можно загрузить после сохранения.');
+  };
+
+  const cancelNewCard = (sectionIndex, cardIndex) => {
+    const section = pageData.sections?.[sectionIndex];
+    const card = section?.cards?.[cardIndex];
+    if (!card || !newCardIds.has(card.id)) return;
+    newCardIds.delete(card.id);
+    section.cards.splice(cardIndex, 1);
+    render();
+    setStatus('Добавление карточки отменено.');
+  };
+
+  const removeCard = (sectionIndex, cardIndex) => {
+    const section = pageData.sections?.[sectionIndex];
+    const card = section?.cards?.[cardIndex];
+    if (!card || !createSections.includes(section.id)) return;
+    if (newCardIds.has(card.id)) {
+      cancelNewCard(sectionIndex, cardIndex);
+      return;
+    }
+    if (!window.confirm(`Удалить карточку «${card.title || 'Без названия'}»? Изменение применится после сохранения страницы.`)) return;
+    section.cards.splice(cardIndex, 1);
+    saveButton.disabled = false;
+    render();
+    setStatus('Карточка удалена из редактора. Сохраните страницу, чтобы применить изменение на сайте.');
+  };
+
+  const moveCard = (sectionIndex, cardIndex, direction) => {
+    const section = pageData.sections?.[sectionIndex];
+    const nextIndex = cardIndex + direction;
+    if (!section || !createSections.includes(section.id) || !section.cards?.[cardIndex]
+      || nextIndex < 0 || nextIndex >= section.cards.length) return;
+    [section.cards[cardIndex], section.cards[nextIndex]] = [section.cards[nextIndex], section.cards[cardIndex]];
+    saveButton.disabled = false;
+    render();
+    cardsRoot.querySelector(`[data-field="title"][data-section-index="${sectionIndex}"][data-card-index="${nextIndex}"]`)?.focus();
+    setStatus('Порядок карточек изменён. Сохраните страницу, чтобы применить его на сайте.');
+  };
+
+  const renderCardActions = (section, sectionIndex, card, cardIndex) => {
+    if (!createSections.includes(section.id)) return '';
+    return `<div class="action-row">
+      <button class="button button-soft" type="button" data-action="move-card-up" data-section-index="${sectionIndex}" data-card-index="${cardIndex}"${cardIndex === 0 ? ' disabled' : ''}>↑ Вверх</button>
+      <button class="button button-soft" type="button" data-action="move-card-down" data-section-index="${sectionIndex}" data-card-index="${cardIndex}"${cardIndex === section.cards.length - 1 ? ' disabled' : ''}>↓ Вниз</button>
+      <button class="button button-soft" type="button" data-action="remove-card" data-section-index="${sectionIndex}" data-card-index="${cardIndex}">${newCardIds.has(card.id) ? 'Отменить добавление' : 'Удалить карточку'}</button>
+    </div>`;
+  };
 
   const getPriceHeaders = (cards) => {
     const headers = new Set();
@@ -346,6 +434,9 @@
     if (!supportsImageUpload || (imageUploadSections.length && !imageUploadSections.includes(sectionId))) {
       return '';
     }
+    if (newCardIds.has(card.id)) {
+      return '<p class="notice notice-muted">Сначала заполните и сохраните новую карточку. После сохранения здесь появится загрузка фото — JPG, PNG или WebP до 1 МБ.</p>';
+    }
 
     const imagePath = (card.img || []).find(Boolean) || '';
     const imageUrl = getPublicImageUrl(imagePath);
@@ -558,6 +649,7 @@
       <article class="manual-card panel">
         <div class="manual-card__heading">
           <h3>${escapeHtml(card.title || `${section.title} · карточка ${cardIndex + 1}`)}</h3>
+          ${renderCardActions(section, sectionIndex, card, cardIndex)}
         </div>
 
         ${renderCardImageEditor(sectionIndex, card, cardIndex)}
@@ -699,8 +791,9 @@
               <h2>${escapeHtml(section.title || section.id)}</h2>
               <p>${escapeHtml(section.id)}</p>
             </div>
+            ${createSections.includes(section.id) ? `<button class="button button-primary" type="button" data-action="add-card" data-section-index="${sectionIndex}">Добавить карточку</button>` : ''}
           </div>
-          ${(section.cards || []).map((card, cardIndex) => renderCard(section, sectionIndex, card, cardIndex)).join('')}
+          ${(section.cards || []).map((card, cardIndex) => renderCard(section, sectionIndex, card, cardIndex)).join('') || '<p class="notice notice-muted">В разделе пока нет карточек.</p>'}
         </section>
       `;
     }).join('');
@@ -725,6 +818,12 @@
 
     try {
       button.disabled = true;
+      const saveWasDisabled = saveButton.disabled;
+      // Keep indexes and the page JSON stable until the image request finishes.
+      cardsRoot.inert = true;
+      saveButton.disabled = true;
+      reloadButton.disabled = true;
+      button.dataset.saveWasDisabled = String(saveWasDisabled);
       setStatus(`Загружаю изображение для карточки «${card.title || card.id}»...`);
 
       const response = await fetch('/api/page-image.php', {
@@ -744,6 +843,10 @@
     } catch (error) {
       setStatus(error.message, 'danger');
       button.disabled = false;
+    } finally {
+      cardsRoot.inert = false;
+      reloadButton.disabled = false;
+      saveButton.disabled = button.dataset.saveWasDisabled === 'true';
     }
   };
 
@@ -786,7 +889,15 @@
     const sectionIndex = Number(button.dataset.sectionIndex);
     const cardIndex = Number(button.dataset.cardIndex);
 
-    if (button.dataset.action === 'upload-page-image') {
+    if (button.dataset.action === 'add-card') {
+      addCard(sectionIndex);
+    } else if (button.dataset.action === 'remove-card') {
+      removeCard(sectionIndex, cardIndex);
+    } else if (button.dataset.action === 'move-card-up') {
+      moveCard(sectionIndex, cardIndex, -1);
+    } else if (button.dataset.action === 'move-card-down') {
+      moveCard(sectionIndex, cardIndex, 1);
+    } else if (button.dataset.action === 'upload-page-image') {
       await uploadPageImage(sectionIndex, cardIndex, button);
     } else if (button.dataset.action === 'add-extra') {
       addExtra(sectionIndex, cardIndex);
@@ -818,11 +929,17 @@
   saveButton.addEventListener('click', async () => {
     try {
       saveButton.disabled = true;
+      reloadButton.disabled = true;
+      cardsRoot.inert = true;
       setStatus('Сохраняю данные...');
       await savePageData();
+      render();
     } catch (error) {
       setStatus(error.message, 'danger');
       saveButton.disabled = false;
+    } finally {
+      reloadButton.disabled = false;
+      cardsRoot.inert = false;
     }
   });
 

@@ -158,6 +158,12 @@ async function run(page, respond = () => fixture(page)) {
   }
   const network = await run('shary', () => { throw new Error('Offline'); });
   assert.match(network.roots[0].textContent, /Повторить загрузку/);
+  const noCards = fixture('shary');
+  noCards.sections[0].cards = [];
+  const deleted = await run('shary', () => noCards);
+  assert.equal(deleted.errors.length, 0, 'Deleting the last card is not a loading error');
+  assert.equal(deleted.roots[0].children.length, 0);
+  assert.equal(deleted.roots[0].attributes['aria-busy'], 'false');
   const missingPrice = fixture('shary');
   missingPrice.sections[0].cards[0].table = null;
   const empty = await run('shary', () => missingPrice);

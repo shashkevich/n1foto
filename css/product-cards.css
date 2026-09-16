@@ -61,6 +61,9 @@
 .catalog-card__media--artwork .catalog-card__image { height: auto; object-fit: contain; }
 .catalog-card__media--studio .catalog-card__image { object-fit: contain; }
 
+[data-product-page="tablichki"] .catalog-card__media { background: #fff; }
+[data-product-page="tablichki"] .catalog-card__image { padding: 0; mix-blend-mode: normal; }
+
 .catalog-card__body {
   display: flex;
   flex-direction: column;
