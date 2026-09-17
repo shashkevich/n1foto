@@ -17,9 +17,13 @@ async function editor(page, sections, product = true, initial = fixture(page)) {
     publicSiteBase: 'http://n1foto-test', imageUpload: '1', imageSections: sections.join(',') };
   let remote = clone(initial);
   const writes = [];
-  const state = { failSave: false, focusCount: 0, confirmDelete: false, confirmations: 0 };
+  const state = { failSave: false, focusCount: 0, confirmDelete: false, confirmations: 0,
+    fileSize: 2500000, uploadRequests: 0, failUpload: false };
+  nodes.uploadError = { hidden: true, textContent: '' };
   nodes.manualCards.querySelector = (selector) => selector.startsWith('[data-field="title"]')
-    ? { focus() { state.focusCount++; } } : { files: [{ name: 'photo.webp' }] };
+    ? { focus() { state.focusCount++; } }
+    : selector.startsWith('[data-upload-error]') ? nodes.uploadError
+    : { files: [{ name: 'photo.webp', size: state.fileSize }] };
   class Form { constructor() { this.values = new Map(); } append(key, value) { this.values.set(key, value); } }
   vm.runInNewContext(source, {
     URLSearchParams, FormData: Form,
@@ -27,6 +31,8 @@ async function editor(page, sections, product = true, initial = fixture(page)) {
     window: { location: { search: `?page=${page}` }, confirm() { state.confirmations++; return state.confirmDelete; } },
     fetch: async (url, options) => {
       if (url === '/api/page-image.php') {
+        state.uploadRequests++;
+        if (state.failUpload) return { ok: false, status: 400, json: async () => ({ error: 'Image invalid' }) };
         const id = options.body.values.get('cardId');
         const section = remote.sections.find(item => item.id === options.body.values.get('sectionId'));
         const card = section.cards.find(item => item.id === id);
@@ -162,5 +168,19 @@ async function editor(page, sections, product = true, initial = fixture(page)) {
   app.fill(0, 0);
   await app.save();
   assert.equal(app.remote().sections[0].cards.length, 1, 'Empty section can be repopulated');
+  app.state.fileSize = 10 * 1024 * 1024 + 1;
+  const requests = app.state.uploadRequests;
+  await app.click('upload-page-image');
+  assert.equal(app.state.uploadRequests, requests, 'Oversized file is rejected before the request');
+  assert.equal(app.nodes.uploadError.hidden, false);
+  assert.match(app.nodes.uploadError.textContent, /10 МБ/);
+  app.state.fileSize = 2500000;
+  app.state.failUpload = true;
+  await app.click('upload-page-image');
+  assert.equal(app.nodes.uploadError.textContent, 'Image invalid', 'API error is visible beside the upload button');
+  assert.equal(app.nodes.uploadError.hidden, false);
+  app.state.failUpload = false;
+  await app.click('upload-page-image');
+  assert.equal(app.nodes.uploadError.hidden, true, 'Retry clears the inline error');
   console.log('PASS: creation, deletion/confirmation, reordering, draft validation, save failure/retry, persistence, image upload, unique IDs, empty and mixed sections.');
 })().catch(error => { console.error(error); process.exitCode = 1; });

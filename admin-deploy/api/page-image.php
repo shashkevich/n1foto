@@ -4,6 +4,7 @@ declare(strict_types=1);
 require dirname(__DIR__) . '/includes/auth.php';
 require dirname(__DIR__) . '/includes/pages.php';
 require dirname(__DIR__) . '/includes/site-storage.php';
+require dirname(__DIR__) . '/includes/image-upload.php';
 adminRequireLogin();
 
 header('Content-Type: application/json; charset=utf-8');
@@ -45,20 +46,12 @@ if (($image['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
     adminPageImageResponse(['ok' => false, 'error' => 'Не удалось загрузить изображение.'], 400);
 }
 
-if ((int) ($image['size'] ?? 0) > 1024 * 1024) {
-    adminPageImageResponse(['ok' => false, 'error' => 'Размер изображения не должен превышать 1 МБ.'], 400);
+if ((int) ($image['size'] ?? 0) > ADMIN_IMAGE_INPUT_LIMIT) {
+    adminPageImageResponse(['ok' => false, 'error' => 'Размер изображения не должен превышать 10 МБ.'], 400);
 }
 
-$imageInfo = @getimagesize((string) $image['tmp_name']);
-$mime = is_array($imageInfo) ? (string) ($imageInfo['mime'] ?? '') : '';
-$extensions = [
-    'image/jpeg' => 'jpg',
-    'image/png' => 'png',
-    'image/webp' => 'webp',
-];
-
-if (!isset($extensions[$mime])) {
-    adminPageImageResponse(['ok' => false, 'error' => 'Разрешены только изображения JPG, PNG и WebP.'], 400);
+if (!is_uploaded_file((string) ($image['tmp_name'] ?? ''))) {
+    adminPageImageResponse(['ok' => false, 'error' => 'Не удалось получить загруженный файл.'], 400);
 }
 
 $relativeDirectory = trim((string) ($uploadConfig['directory'] ?? ''), '/');
@@ -108,12 +101,16 @@ if (!$cardFound) {
     adminPageImageResponse(['ok' => false, 'error' => 'Карточка не найдена в JSON страницы.'], 404);
 }
 
-$fileName = $cardId . '-' . date('YmdHis') . '.' . $extensions[$mime];
+$fileName = $cardId . '-' . date('YmdHis') . '-' . bin2hex(random_bytes(6)) . '.webp';
 $relativeImagePath = $relativeDirectory . '/' . $fileName;
 $targetPath = $targetDirectory . '/' . $fileName;
 
-if (!move_uploaded_file((string) $image['tmp_name'], $targetPath)) {
-    adminPageImageResponse(['ok' => false, 'error' => 'Не удалось сохранить изображение на сервере.'], 500);
+try {
+    adminSaveOptimizedImage((string) $image['tmp_name'], $targetPath);
+} catch (RuntimeException $error) {
+    adminPageImageResponse(['ok' => false, 'error' => $error->getMessage()], $error->getCode() === 400 ? 400 : 500);
+} catch (Throwable $error) {
+    adminPageImageResponse(['ok' => false, 'error' => 'Не удалось обработать изображение.'], 500);
 }
 
 if ($pageId === 'home' && $homeSectionIndex !== null && $homeCardIndex !== null) {
@@ -138,7 +135,7 @@ $data['meta']['updatedAt'] = date('Y-m-d H:i:s');
 $encoded = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
 $tmpPath = $jsonPath . '.tmp';
 
-if ($encoded === false || file_put_contents($tmpPath, $encoded . PHP_EOL, LOCK_EX) === false || !rename($tmpPath, $jsonPath)) {
+if ($encoded === false || @file_put_contents($tmpPath, $encoded . PHP_EOL, LOCK_EX) === false || !@rename($tmpPath, $jsonPath)) {
     @unlink($tmpPath);
     @unlink($targetPath);
     adminPageImageResponse(['ok' => false, 'error' => 'Изображение загружено, но обновить JSON страницы не удалось.'], 500);

@@ -21,6 +21,16 @@
   const isProductCard = (card) => card.cardType === 'product' || pageId === 'shary';
   const createSections = String(root.dataset.createSections || '').split(',').filter(Boolean);
   const newCardIds = new Set();
+  const imageInputLimit = 10 * 1024 * 1024;
+
+  const showImageError = (element, message) => {
+    setStatus(message, 'danger');
+    if (element) {
+      element.textContent = message;
+      element.hidden = false;
+      element.scrollIntoView?.({ block: 'nearest' });
+    }
+  };
 
   let pageData = null;
 
@@ -435,7 +445,7 @@
       return '';
     }
     if (newCardIds.has(card.id)) {
-      return '<p class="notice notice-muted">Сначала заполните и сохраните новую карточку. После сохранения здесь появится загрузка фото — JPG, PNG или WebP до 1 МБ.</p>';
+      return '<p class="notice notice-muted">Сначала заполните и сохраните новую карточку. После сохранения здесь появится загрузка фото — JPG, PNG или WebP до 10 МБ, с сохранением в WebP до 100 КБ.</p>';
     }
 
     const imagePath = (card.img || []).find(Boolean) || '';
@@ -450,10 +460,11 @@
           <strong>Изображение карточки</strong>
           <p>${imagePath ? escapeHtml(imagePath) : 'Загрузите квадратное изображение JPG, PNG или WebP.'}</p>
           <label class="field">
-            <span>Файл JPG, PNG или WebP — до 1 МБ</span>
+            <span>Файл JPG, PNG или WebP — до 10 МБ; сохранится WebP до 100 КБ</span>
             <input type="file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" data-action="page-image-input" data-section-index="${sectionIndex}" data-card-index="${cardIndex}">
           </label>
           <button class="button button-primary" type="button" data-action="upload-page-image" data-section-index="${sectionIndex}" data-card-index="${cardIndex}" disabled>Загрузить изображение</button>
+          <p class="notice notice-danger" data-upload-error data-section-index="${sectionIndex}" data-card-index="${cardIndex}" role="alert" hidden></p>
         </div>
       </div>
     `;
@@ -523,10 +534,11 @@
           </label>
           <div class="home-card-editor__upload">
             <label class="field">
-              <span>Изображение JPG, PNG или WebP — до 1 МБ</span>
+              <span>Изображение JPG, PNG или WebP — до 10 МБ; сохранится WebP до 100 КБ</span>
               <input type="file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" data-action="page-image-input" data-section-index="${sectionIndex}" data-card-index="${cardIndex}">
             </label>
             <button class="button button-primary" type="button" data-action="upload-page-image" data-section-index="${sectionIndex}" data-card-index="${cardIndex}" disabled>Загрузить</button>
+            <p class="notice notice-danger" data-upload-error data-section-index="${sectionIndex}" data-card-index="${cardIndex}" role="alert" hidden></p>
           </div>
           <p class="home-card-editor__hint">Рекомендуемый размер: 600 × 450 px, соотношение 4:3.</p>
           ${imagePath ? `<p class="home-card-editor__path">${escapeHtml(imagePath)}</p>` : ''}
@@ -810,6 +822,13 @@
       return;
     }
 
+    const errorElement = cardsRoot.querySelector(`[data-upload-error][data-section-index="${sectionIndex}"][data-card-index="${cardIndex}"]`);
+    if (errorElement) errorElement.hidden = true;
+    if (input.files[0].size > imageInputLimit) {
+      showImageError(errorElement, 'Исходное изображение должно быть не больше 10 МБ. Готовый WebP будет до 100 КБ.');
+      return;
+    }
+
     const formData = new FormData();
     formData.append('page', pageId);
     formData.append('sectionId', isHomePage ? 'main' : section.id);
@@ -841,7 +860,7 @@
       render();
       setStatus('Изображение загружено и опубликовано на сайте.', 'success');
     } catch (error) {
-      setStatus(error.message, 'danger');
+      showImageError(errorElement, error.message);
       button.disabled = false;
     } finally {
       cardsRoot.inert = false;
@@ -953,6 +972,13 @@
         return;
       }
 
+      const errorElement = document.getElementById('digitalLeafletImageError');
+      if (errorElement) errorElement.hidden = true;
+      if (digitalImageInput.files[0].size > imageInputLimit) {
+        showImageError(errorElement, 'Исходное изображение должно быть не больше 10 МБ. Готовый WebP будет до 100 КБ.');
+        return;
+      }
+
       const formData = new FormData();
       formData.append('section', 'listovki-cifra');
       formData.append('productId', 'leaflet_digital');
@@ -985,7 +1011,7 @@
         digitalImageInput.value = '';
         setStatus('Изображение цифровой печати загружено.', 'success');
       } catch (error) {
-        setStatus(error.message, 'danger');
+        showImageError(errorElement, error.message);
       } finally {
         uploadDigitalImageButton.disabled = !digitalImageInput.files.length;
       }

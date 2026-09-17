@@ -124,7 +124,7 @@ adminRenderShellStart($sitePage['title'], $sitePage['id']);
           </div>
           <?php adminRenderPoligrafyEditor($sitePage); ?>
         </section>
-        <script src="/assets/poligrafy-admin.js?v=20260901-1"></script>
+        <script src="/assets/poligrafy-admin.js?v=20260917-1"></script>
       <?php endif; ?>
       <?php if (!empty($sitePage['pageJson']) || !empty($sitePage['manualEditor'])): ?>
         <section class="embedded-module" id="manual-prices-editor">

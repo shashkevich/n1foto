@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 require dirname(__DIR__) . '/includes/auth.php';
 require dirname(__DIR__) . '/includes/site-storage.php';
+require dirname(__DIR__) . '/includes/image-upload.php';
 adminRequireLogin();
 
 header('Content-Type: application/json; charset=utf-8');
@@ -54,20 +55,12 @@ if (($image['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
     adminImageResponse(['ok' => false, 'error' => 'Не удалось загрузить изображение.'], 400);
 }
 
-if ((int) ($image['size'] ?? 0) > 1024 * 1024) {
-    adminImageResponse(['ok' => false, 'error' => 'Размер изображения не должен превышать 1 МБ.'], 400);
+if ((int) ($image['size'] ?? 0) > ADMIN_IMAGE_INPUT_LIMIT) {
+    adminImageResponse(['ok' => false, 'error' => 'Размер изображения не должен превышать 10 МБ.'], 400);
 }
 
-$imageInfo = @getimagesize((string) $image['tmp_name']);
-$mime = is_array($imageInfo) ? (string) ($imageInfo['mime'] ?? '') : '';
-$extensions = [
-    'image/jpeg' => 'jpg',
-    'image/png' => 'png',
-    'image/webp' => 'webp',
-];
-
-if (!isset($extensions[$mime])) {
-    adminImageResponse(['ok' => false, 'error' => 'Разрешены только изображения JPG, PNG и WebP.'], 400);
+if (!is_uploaded_file((string) ($image['tmp_name'] ?? ''))) {
+    adminImageResponse(['ok' => false, 'error' => 'Не удалось получить загруженный файл.'], 400);
 }
 
 $relativeDirectory = $target['directory'];
@@ -77,12 +70,16 @@ if (!is_dir($targetDirectory) && !mkdir($targetDirectory, 0755, true) && !is_dir
     adminImageResponse(['ok' => false, 'error' => 'Не удалось создать папку для изображений.'], 500);
 }
 
-$fileName = $productId . '-' . date('YmdHis') . '.' . $extensions[$mime];
+$fileName = $productId . '-' . date('YmdHis') . '-' . bin2hex(random_bytes(6)) . '.webp';
 $relativePath = $relativeDirectory . '/' . $fileName;
 $targetPath = $targetDirectory . '/' . $fileName;
 
-if (!move_uploaded_file((string) $image['tmp_name'], $targetPath)) {
-    adminImageResponse(['ok' => false, 'error' => 'Не удалось сохранить изображение на сервере.'], 500);
+try {
+    adminSaveOptimizedImage((string) $image['tmp_name'], $targetPath);
+} catch (RuntimeException $error) {
+    adminImageResponse(['ok' => false, 'error' => $error->getMessage()], $error->getCode() === 400 ? 400 : 500);
+} catch (Throwable $error) {
+    adminImageResponse(['ok' => false, 'error' => 'Не удалось обработать изображение.'], 500);
 }
 
 $jsonPath = adminSiteFilePath('db/poligrafy.json');
@@ -112,7 +109,7 @@ $data['meta']['generatedAt'] = date('Y-m-d H:i:s');
 $encoded = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
 $tmpPath = $jsonPath . '.tmp';
 
-if ($encoded === false || file_put_contents($tmpPath, $encoded . PHP_EOL, LOCK_EX) === false || !rename($tmpPath, $jsonPath)) {
+if ($encoded === false || @file_put_contents($tmpPath, $encoded . PHP_EOL, LOCK_EX) === false || !@rename($tmpPath, $jsonPath)) {
     @unlink($tmpPath);
     @unlink($targetPath);
     adminImageResponse(['ok' => false, 'error' => 'Изображение загружено, но обновить poligrafy.json не удалось.'], 500);

@@ -1049,6 +1049,21 @@
         return;
       }
 
+      const errorElement = document.getElementById('productImageError');
+      const showError = (message) => {
+        setStatus(message, 'danger');
+        if (errorElement) {
+          errorElement.textContent = message;
+          errorElement.hidden = false;
+          errorElement.scrollIntoView?.({ block: 'nearest' });
+        }
+      };
+      if (errorElement) errorElement.hidden = true;
+      if (productImageInput.files[0].size > 10 * 1024 * 1024) {
+        showError('Исходное изображение должно быть не больше 10 МБ. Готовый WebP будет до 100 КБ.');
+        return;
+      }
+
       const formData = new FormData();
       formData.append('section', state.selectedSection);
       formData.append('productId', state.selectedProduct);
@@ -1078,7 +1093,7 @@
         productImageInput.value = '';
         setStatus(`Изображение загружено и применено к карточке: ${payload.path}`, 'success');
       } catch (error) {
-        setStatus(error.message, 'danger');
+        showError(error.message);
       } finally {
         uploadProductImageButton.disabled = !productImageInput.files.length;
       }

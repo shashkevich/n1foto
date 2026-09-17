@@ -8,6 +8,12 @@ $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
     || (isset($_SERVER['SERVER_PORT']) && (string) $_SERVER['SERVER_PORT'] === '443');
 
 if (session_status() !== PHP_SESSION_ACTIVE) {
+    $sessionHost = strtolower(explode(':', (string) ($_SERVER['HTTP_HOST'] ?? ''))[0]);
+    if (in_array($sessionHost, ['admin-n1foto-test', 'localhost', '127.0.0.1'], true)) {
+        // Browsers cannot overwrite an existing Secure cookie over HTTP.
+        // Keep local HTTP and HTTPS logins separate from each other and PHPSESSID.
+        session_name($isHttps ? 'N1FOTOADMINHTTPS' : 'N1FOTOADMINHTTP');
+    }
     $sessionPath = dirname(__DIR__) . '/storage/sessions';
 
     if (is_dir($sessionPath) && is_writable($sessionPath)) {
