@@ -18,6 +18,22 @@ jobs:
       - name: 📥 Checkout repository
         uses: actions/checkout@v4
 
+      - name: Set up PHP for service link checks
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          coverage: none
+
+      - name: Check service links before uploading
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USER: ${{ secrets.FTP_USER }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        run: |
+          php .github/scripts/test-service-links.php
+          php .github/scripts/check-service-links.php
+          python3 -B .github/scripts/check-production-service-links.py
+
       - name: 🌱 Initialize missing editable page data
         env:
           FTP_SERVER: ${{ secrets.FTP_SERVER }}

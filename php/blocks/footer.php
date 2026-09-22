@@ -1,8 +1,4 @@
-<section class="py-5 text-center container">
-    <? foreach ($title_arr as $key => $value) {
-        echo '<a class="badge rounded-pill bg-light text-light-gray m-1" href="' . $key . '" role="button">' . $title_arr[$key]['name'] . '</a>';
-    } ?>
-</section>
+<?php require __DIR__ . '/service-links.php'; ?>
 
 <footer class="footer mt-auto py-1">
     <div class="container">
