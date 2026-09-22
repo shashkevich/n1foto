@@ -1,0 +1,50 @@
+/* Allow price tables to scroll inside their cards, without widening the page. */
+.cardsField > .col,
+.cardsField .card,
+.cardsField .card-body,
+.table-wrap {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.cardsField > .stretch > .card { width: 100%; }
+.table-wrap { overflow-x: auto; }
+.table-wrap:focus-visible { outline: 2px solid #6c3d87; outline-offset: 2px; }
+
+@keyframes nav-dropdown-enter {
+    from { opacity: 0; translate: 0 -5px; }
+    to { opacity: 1; translate: 0 0; }
+}
+
+.navbar .dropdown-menu.show {
+    animation: nav-dropdown-enter .22s ease-out;
+}
+
+@media (min-width: 576px) {
+    .navbar .dropdown:hover > .dropdown-menu {
+        animation: nav-dropdown-enter .22s ease-out;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .navbar .dropdown-menu { animation: none !important; }
+}
+
+@media (max-width: 767.98px) {
+    .card .badge {
+        max-width: 100%;
+        white-space: normal;
+        overflow-wrap: anywhere;
+        line-height: 1.4;
+    }
+
+    h1, .card-body { overflow-wrap: anywhere; }
+}
+
+@media (max-width: 991.98px) {
+    .navbar .navbar-collapse,
+    .navbar .navbar-nav,
+    .navbar .nav-item { min-width: 0; max-width: 100%; }
+    .navbar .dropdown-menu { min-width: 0; max-width: 100%; }
+    .navbar .dropdown-item { white-space: normal; overflow-wrap: anywhere; }
+}

@@ -4,7 +4,19 @@ window.addEventListener('DOMContentLoaded', () => {
 const body = document.querySelector('body');
 const cardsField = document.querySelector('.cardsField');
 const navbar = document.querySelector('.navbar-nav');
+if (!navbar) return;
 const firstLi = navbar.querySelector('.nav-item');
+if (!firstLi) return;
+const currentPath = window.location.pathname === '/' ? '/index.html' : window.location.pathname;
+const markCurrentLink = (link) => {
+    const target = new URL(link.href, window.location.href);
+    const active = target.origin === window.location.origin && target.pathname === currentPath;
+    link.classList.toggle('active', active);
+    if (active) link.setAttribute('aria-current', 'page');
+    else link.removeAttribute('aria-current');
+    return active;
+};
+navbar.querySelectorAll('a.nav-link').forEach(markCurrentLink);
 const main = document.querySelector('#main');
 
 // функция по получению данных из базы данных json
@@ -35,6 +47,8 @@ getData('db/main-page-cards.json')
                 navElementItem.classList.add('nav-link','dropdown-toggle');
                 navElementItem.setAttribute('data-bs-toggle', 'dropdown');
                 navElementItem.setAttribute('href', '#');
+                navElementItem.setAttribute('role', 'button');
+                navElementItem.setAttribute('aria-expanded', 'false');
                 navElementItem.textContent = `${obj.nav_title}`;
                 navElement.append(navElementItem);
 
@@ -43,11 +57,13 @@ getData('db/main-page-cards.json')
                 navElement.append(dropdownMenu);
 
                 obj.content.forEach(elem => {
+                    if (!elem || !elem.link || !(elem.name || elem.title)) return;
                     const dropdownItem = document.createElement('li');
                     const dropdownLink = document.createElement('a');
                     dropdownLink.classList.add('dropdown-item');
                     dropdownLink.href = elem.link || '#';
                     dropdownLink.textContent = elem.name || elem.title || '';
+                    if (markCurrentLink(dropdownLink)) navElementItem.classList.add('active');
                     dropdownItem.append(dropdownLink);
                     dropdownMenu.append(dropdownItem);
                 });

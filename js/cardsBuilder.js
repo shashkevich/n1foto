@@ -2,6 +2,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
 const body = document.querySelector('body');
 const cardsField = document.querySelector('.cardsField');
+if (!cardsField) return;
 // const priceA = document.querySelector('#A4');
 const fullPrice = document.querySelectorAll('.price');
 const cardsFeild = document.querySelector('.cardsField');
@@ -195,7 +196,13 @@ const makeTable = (obj, elem) => {
     }
     table.appendChild(thead); // добавляем заголовок таблицы в таблицу
     table.appendChild(tbody); // добавляем тело таблицы в таблицу
-    elem.appendChild(table);
+    const tableWrap = document.createElement('div');
+    tableWrap.classList.add('table-wrap');
+    tableWrap.tabIndex = 0;
+    tableWrap.setAttribute('role', 'region');
+    tableWrap.setAttribute('aria-label', 'Цены — таблица с горизонтальной прокруткой');
+    tableWrap.appendChild(table);
+    elem.appendChild(tableWrap);
 }
 
 }); // DOMcontentLoaded ends

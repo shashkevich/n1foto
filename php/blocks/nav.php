@@ -39,7 +39,7 @@
                 <!-- <a class="navbar-brand mx-2" href="index.html"><img src="img/logo2.png" width="150" alt="..."></a> -->
                 <a class="navbar-brand mx-2" href="index.html"><img src="img/logo_n1.svg" width="150" alt="Фотосалон №1"></a>
 
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Открыть меню">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarColor01">
