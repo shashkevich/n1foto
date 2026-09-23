@@ -25,7 +25,7 @@ with tempfile.TemporaryDirectory(prefix='n1foto-upload-api-') as temporary:
     (admin / 'api').mkdir(parents=True)
     (admin / 'includes').mkdir()
     (site / 'db/pages').mkdir(parents=True)
-    for name in ['page-image.php', 'poligrafy-image.php', 'site-image.php']:
+    for name in ['page-image.php', 'poligrafy-image.php', 'site-image.php', 'page-json.php']:
         shutil.copyfile(repo / 'admin-deploy/api' / name, admin / 'api' / name)
     for name in ['site-storage.php', 'pages.php', 'image-upload.php']:
         shutil.copyfile(repo / 'admin-deploy/includes' / name, admin / 'includes' / name)
@@ -33,6 +33,8 @@ with tempfile.TemporaryDirectory(prefix='n1foto-upload-api-') as temporary:
     (admin / 'includes/auth.php').write_text('<?php function adminRequireLogin(): void {}', encoding='utf-8')
     page = site / 'db/pages/shary.json'
     page.write_text(json.dumps({'sections': [{'id': 'shary', 'cards': [{'id': 'test-card', 'title': 'Test', 'img': ['old.jpg']}]}]}), encoding='utf-8')
+    collage = site / 'db/pages/sostavlenie-kollagey.json'
+    shutil.copyfile(repo / 'db/pages/sostavlenie-kollagey.json', collage)
     home = site / 'db/main-page-cards.json'
     home.write_text(json.dumps({'main': [{'content': [{'title': 'Home', 'img': 'old-home.jpg'}]}]}), encoding='utf-8')
     poly = site / 'db/poligrafy.json'
@@ -72,6 +74,21 @@ with tempfile.TemporaryDirectory(prefix='n1foto-upload-api-') as temporary:
             else:
                 raise RuntimeError('Temporary PHP server did not start')
             fields = {'page': 'shary', 'sectionId': 'shary', 'cardId': 'test-card'}
+            endpoint = base + '/api/page-json.php?page=sostavlenie-kollagey'
+            with opener.open(endpoint) as response:
+                collage_data = json.loads(response.read())
+            for archived in [True, False]:
+                collage_data['sections'][0]['cards'][0]['archived'] = archived
+                request = urllib.request.Request(endpoint, data=json.dumps(collage_data).encode(), headers={'Content-Type': 'application/json'})
+                with opener.open(request) as response:
+                    assert json.loads(response.read())['ok']
+                with opener.open(endpoint) as response:
+                    assert json.loads(response.read()) == collage_data, 'Archive round trip must retain all data'
+            status, uploaded = upload('page-image.php', {'page': 'sostavlenie-kollagey', 'sectionId': 'kollagi', 'cardId': 'kollagi-1'})
+            assert status == 200 and uploaded['path'].startswith('img/collages/uploads/'), uploaded
+            saved_collage = json.loads(collage.read_text(encoding='utf-8'))
+            assert saved_collage['sections'][0]['cards'][0]['img'] == [uploaded['path']]
+            assert saved_collage['sections'][0]['cards'][0]['table'] == collage_data['sections'][0]['cards'][0]['table']
             status, result = upload('page-image.php', fields)
             assert status == 200 and result['ok'], result
             output = site / result['path']

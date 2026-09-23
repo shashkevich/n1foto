@@ -159,6 +159,11 @@
     };
 
     const applySettings = (card) => {
+        if (card.archived === true) {
+            calculator.hidden = true;
+            calculator.style.display = 'none';
+            return;
+        }
         const materials = Array.isArray(card.materials) ? card.materials : [];
 
         if (!materials.length) {

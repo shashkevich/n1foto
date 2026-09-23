@@ -510,7 +510,7 @@ window.addEventListener('DOMContentLoaded', () => {
       const section = (data.sections || []).find((item) => item.id === 'print-methods');
       const cards = section && Array.isArray(section.cards) ? section.cards : [];
       root.classList.add('clothing-methods-grid');
-      root.replaceChildren(...cards.map(renderCard));
+      root.replaceChildren(...cards.filter((card) => card.archived !== true).map(renderCard));
     })
     .catch((error) => {
       console.error(error);

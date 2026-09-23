@@ -125,7 +125,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 sections
                     .filter((section) => sectionIds.includes(section.id))
                     .forEach((section) => {
-                        (section.cards || []).forEach((card) => {
+                        (section.cards || []).filter((card) => card.archived !== true).forEach((card) => {
                             root.append(renderCard(card));
                         });
                     });

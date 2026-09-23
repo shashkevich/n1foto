@@ -24,6 +24,7 @@ PAGE_SEEDS = {
     "butylki.json": ["butylki"],
     "bage.json": ["bages"],
     "insta-pechat.json": ["polaroid"],
+    "sostavlenie-kollagey.json": ["kollagi"],
 }
 # Existing calculator values and all other remote content remain authoritative.
 SECTION_MERGES = {"tablichki.json": ["address-signs"]}

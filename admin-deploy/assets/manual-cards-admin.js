@@ -213,6 +213,12 @@
     setStatus('Порядок карточек изменён. Сохраните страницу, чтобы применить его на сайте.');
   };
 
+  const renderArchiveToggle = (sectionIndex, card, cardIndex) => `
+    <label class="manual-archive-switch">
+      <input type="checkbox" role="switch" data-field="archived" data-section-index="${sectionIndex}" data-card-index="${cardIndex}"${card.archived === true ? ' checked' : ''}>
+      <span>Позиция в архиве<small>Не показывать на сайте после сохранения</small></span>
+    </label>`;
+
   const renderCardActions = (section, sectionIndex, card, cardIndex) => {
     if (!createSections.includes(section.id)) return '';
     return `<div class="action-row">
@@ -252,6 +258,8 @@
 
       if (input.dataset.field === 'home-title') {
         card.title = input.value;
+      } else if (input.dataset.field === 'archived') {
+        card.archived = input.checked;
       }
 
       saveButton.disabled = false;
@@ -262,7 +270,9 @@
     const card = section.cards[Number(input.dataset.cardIndex)];
     const value = input.value;
 
-    if (input.dataset.field === 'title') {
+    if (input.dataset.field === 'archived') {
+      card.archived = input.checked;
+    } else if (input.dataset.field === 'title') {
       card.title = value;
     } else if (input.dataset.field === 'subtitle') {
       card.subtitle = value;
@@ -528,6 +538,7 @@
             <strong>${escapeHtml(card.name || card.title || `Карточка ${cardIndex + 1}`)}</strong>
             <p class="home-card-editor__link">${escapeHtml(card.link || '')}</p>
           </div>
+          ${renderArchiveToggle(sectionIndex, card, cardIndex)}
           <label class="field">
             <span>Подпись под изображением</span>
             <input value="${escapeHtml(card.title || '')}" data-field="home-title" data-section-index="${sectionIndex}" data-card-index="${cardIndex}">
@@ -622,6 +633,7 @@
           <h3>${escapeHtml(card.title || 'Калькулятор печати на пластике')}</h3>
         </div>
 
+        ${renderArchiveToggle(sectionIndex, card, cardIndex)}
         ${renderCardImageEditor(sectionIndex, card, cardIndex)}
 
         <div class="manual-card-grid">
@@ -664,6 +676,7 @@
           ${renderCardActions(section, sectionIndex, card, cardIndex)}
         </div>
 
+        ${renderArchiveToggle(sectionIndex, card, cardIndex)}
         ${renderCardImageEditor(sectionIndex, card, cardIndex)}
 
         <div class="manual-card-grid">
@@ -681,7 +694,7 @@
 
           ${'description' in card ? `
             <label class="field">
-              <span>${pageId === 'nakleyki' ? 'Краткое описание материала' : (isProductCard(card) ? 'Описание товара' : (section.id === 'canvas-standard' ? 'Описание таблицы' : 'Описание метода'))}</span>
+              <span>${pageId === 'sostavlenie-kollagey' ? 'Текст под заголовком' : (pageId === 'nakleyki' ? 'Краткое описание материала' : (isProductCard(card) ? 'Описание товара' : (section.id === 'canvas-standard' ? 'Описание таблицы' : 'Описание метода')))}</span>
               <textarea rows="${isProductCard(card) ? '2' : '4'}" data-field="description" data-section-index="${sectionIndex}" data-card-index="${cardIndex}">${escapeHtml(card.description || '')}</textarea>
             </label>
           ` : ''}
@@ -753,7 +766,7 @@
 
                   return `
                     <tr>
-                      ${rowIndex === 0 ? `<th class="manual-unified-table__format" rowspan="${rows.length}">${escapeHtml(card.formatLabel || card.format || '')}</th>` : ''}
+                      ${rowIndex === 0 ? `<th class="manual-unified-table__format" rowspan="${rows.length}">${escapeHtml(card.formatLabel || card.format || '')}${renderArchiveToggle(sectionIndex, card, cardIndex)}</th>` : ''}
                       ${rowIndex === 0 ? `<th class="manual-unified-table__print" rowspan="${rows.length}">${escapeHtml(getPrintSideLabel(card))}</th>` : ''}
                       <th class="manual-unified-table__paper">${escapeHtml(row[paperHeader] || '')}</th>
                       ${priceHeaders.map((header) => {

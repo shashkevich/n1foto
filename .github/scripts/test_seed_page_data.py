@@ -93,7 +93,7 @@ class SeedPreservationTests(unittest.TestCase):
         }
 
     def test_all_working_seeds_are_present(self):
-        self.assertEqual(len(self.seeds), 14)  # 12 new pages, existing shary and tablichki.
+        self.assertEqual(len(self.seeds), 15)  # Product pages, existing calculators and collages.
         for name, payload in self.seeds.items():
             with self.subTest(page=name):
                 self.assertTrue(json.loads(payload)["sections"])

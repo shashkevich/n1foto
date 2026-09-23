@@ -152,7 +152,7 @@ window.addEventListener('DOMContentLoaded', () => {
       const data = await getData(root.dataset.productPage, refresh);
       const section = data.sections?.find((item) => item.id === root.dataset.productSection);
       if (!Array.isArray(section?.cards)) throw new Error('Карточки раздела отсутствуют.');
-      root.replaceChildren(...section.cards.map((card) => root.dataset.productLayout === 'table'
+      root.replaceChildren(...section.cards.filter((card) => card.archived !== true).map((card) => root.dataset.productLayout === 'table'
         ? renderTable(card, root) : renderProduct(card, root)));
     } catch (error) {
       console.error(error);

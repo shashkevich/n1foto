@@ -132,6 +132,22 @@ async function run(page, respond = () => fixture(page)) {
     }
   }
   const content = (page, section = 0) => results.get(page).roots[section].textContent;
+  for (const [page] of bindings) {
+    const data = fixture(page);
+    for (const section of data.sections) for (const card of section.cards) card.archived = true;
+    const snapshot = JSON.stringify(data);
+    const archived = await run(page, () => data);
+    assert.equal(archived.errors.length, 0);
+    assert.ok(archived.roots.every(root => root.children.length === 0), `${page}: archive hides all cards without a loading error`);
+    assert.equal(JSON.stringify(data), snapshot, 'Public rendering must not mutate stored data');
+    for (const section of data.sections) if (section.cards[0]) section.cards[0].archived = false;
+    const restored = await run(page, () => data);
+    for (const root of restored.roots) {
+      const active = data.sections.find(section => section.id === root.dataset.productSection).cards.filter(card => !card.archived);
+      assert.equal(root.children.length, active.length);
+      if (active.length) assert.ok(root.textContent.includes(plain(active[0].title)));
+    }
+  }
   for (const expected of ['Цена за 1 шт.', '35 ₽', 'Комплект 15 шт', '400 ₽', 'Комплект 25 шт', '550 ₽']) assert.ok(content('insta-pechat').includes(expected));
   for (const expected of ['За 10 шт.', '3000 ₽', 'За 100 шт.', '6000 ₽', 'Фигурная форма + 10%']) assert.ok(content('magnity').includes(expected));
   for (const expected of ['До 2 часов видео', '6 ₽/мин', 'Более 2 часов видео', '5 ₽/мин', '300 руб.']) assert.ok(content('ocifrovka-videokasset').includes(expected));

@@ -280,7 +280,7 @@
         .filter((card) => !requestedCardId || card.id === requestedCardId);
       const fragment = document.createDocumentFragment();
 
-      cards.forEach((card) => {
+      cards.filter((card) => card.archived !== true).forEach((card) => {
         const element = renderCard(card);
         if (element) {
           fragment.append(element);

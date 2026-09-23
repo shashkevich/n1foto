@@ -565,7 +565,7 @@ window.addEventListener('DOMContentLoaded', () => {
                     .filter(Boolean);
 
                 sectionNames.forEach((sectionName) => {
-                    const cards = data[sectionName] || [];
+                    const cards = (data[sectionName] || []).filter((card) => card.archived !== true);
 
                     renderSectionCards(sectionName, cards).forEach((cardElement) => {
                         container.append(cardElement);

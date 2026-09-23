@@ -113,7 +113,7 @@ window.addEventListener('DOMContentLoaded', () => {
         const section = sections.find((item) => item.id === root.dataset.printCopySection);
         const fragment = document.createDocumentFragment();
 
-        (section?.cards || []).forEach((card) => fragment.append(createCard(card)));
+        (section?.cards || []).filter((card) => card.archived !== true).forEach((card) => fragment.append(createCard(card)));
         root.replaceChildren(fragment);
       });
     })

@@ -386,6 +386,21 @@ function adminSitePages(): array
         ],
     ];
 
+    $pages[] = [
+        'id' => 'sostavlenie-kollagey',
+        'title' => 'Коллажи и реставрация',
+        'path' => '/sostavlenie-kollagey.html',
+        'group' => 'Фотоуслуги',
+        'pageJson' => 'db/pages/sostavlenie-kollagey.json',
+        'manualSections' => ['kollagi'],
+        'imageUpload' => ['directory' => 'img/collages/uploads', 'sections' => ['kollagi']],
+        'data' => ['cards' => 'db/pages/sostavlenie-kollagey.json#kollagi', 'template' => 'sostavlenie-kollagey.html'],
+        'modules' => [
+            ['id' => 'manual-copy-prices', 'title' => 'Карточка коллажей и цены', 'description' => 'Фото 4:3, заголовок, описание и таблица цен', 'status' => 'active'],
+            ['id' => 'preview', 'title' => 'Предпросмотр страницы', 'description' => 'Открыть страницу коллажей и проверить изменения', 'status' => 'active'],
+        ],
+    ];
+
     return array_merge($pages, adminProductSitePages());
 }
 

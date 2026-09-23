@@ -54,7 +54,7 @@ async function editor(page, sections, product = true, initial = fixture(page)) {
     target: { closest: () => ({ dataset: { action, sectionIndex, cardIndex } }) }
   });
   const input = (field, value, sectionIndex, cardIndex, extras = {}) => nodes.manualCards.events.input({
-    target: { matches: () => true, value, dataset: { field, sectionIndex, cardIndex, ...extras } }
+    target: { matches: () => true, value, checked: value === true, dataset: { field, sectionIndex, cardIndex, ...extras } }
   });
   const fill = (section, card) => {
     input('title', 'Новая услуга', section, card);
@@ -65,6 +65,35 @@ async function editor(page, sections, product = true, initial = fixture(page)) {
 }
 
 (async () => {
+  for (const page of ['pechat-na-kruzhkah', 'sostavlenie-kollagey', 'tablichki']) {
+    const original = fixture(page);
+    const app = await editor(page, [], false, original);
+    for (const [sectionIndex, section] of original.sections.entries()) {
+      if (!section.cards.length) continue;
+      const card = section.cards[0];
+      assert.match(app.nodes.manualCards.innerHTML, /role="switch" data-field="archived"/);
+      app.input('archived', true, sectionIndex, 0);
+      assert.equal(app.writes.length, sectionIndex * 2, 'Archiving is not published before save');
+      await app.save();
+      await app.reload();
+      assert.deepEqual(app.remote().sections[sectionIndex].cards[0], { ...card, archived: true }, 'Archiving retains every card field');
+      assert.match(app.nodes.manualCards.innerHTML, new RegExp(`data-section-index="${sectionIndex}" data-card-index="0" checked`));
+      app.input('archived', false, sectionIndex, 0);
+      await app.save();
+      assert.deepEqual(app.remote().sections[sectionIndex].cards[0], { ...card, archived: false }, 'Restoring retains photo and prices');
+    }
+  }
+  const homeData = { main: [{ title: 'Услуги', content: [{ title: 'Коллажи', img: 'img/collage.jpg', link: 'sostavlenie-kollagey.html' }] }] };
+  const home = await editor('home', [], false, homeData);
+  home.input('archived', true, 0, 0);
+  await home.save();
+  await home.reload();
+  assert.equal(home.remote().main[0].content[0].archived, true);
+  assert.match(home.nodes.manualCards.innerHTML, /data-card-index="0" checked/);
+  home.input('archived', false, 0, 0);
+  await home.save();
+  assert.deepEqual(home.remote().main[0].content[0], { ...homeData.main[0].content[0], archived: false });
+
   for (const [page, sections, product] of [
     ['pechat-na-kruzhkah', ['kruzhki'], true], ['shary', ['shary'], true],
     ['pechat-i-kopirovanie', ['copyandprint', 'chertezhy'], false]

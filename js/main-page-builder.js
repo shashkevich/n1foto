@@ -27,6 +27,8 @@ const getData = async (url) => {
 getData('db/main-page-cards.json')
     .then(data => {
         (data.main || []).forEach((obj) => {
+            const cards = (obj.content || []).filter((card) => card.archived !== true);
+            if (!cards.length) return;
             const section = document.createElement('section');
             section.classList.add('pt-3', 'mb-5');
             section.innerHTML = `<h1 class="fw-light mb-2">${escapeHtml(obj.title)}</h1>`
@@ -36,7 +38,7 @@ getData('db/main-page-cards.json')
             category.classList.add('row', 'justify-content-md-center', 'row-cols-2', 'row-cols-md-4', 'row-cols-lg-6', 'row-cols-xl-6', 'my-3', 'text-center')
             section.append(category);
 
-            obj.content.forEach(({ img, alt, name, title, link }) => {
+            cards.forEach(({ img, alt, name, title, link }) => {
                 const card = new ProductCard(img, alt, name, title, link, category);
                 card.render();
             });

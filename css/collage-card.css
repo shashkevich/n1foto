@@ -1,0 +1,87 @@
+.collage-catalog { display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start; gap: 24px; }
+
+.collage-card {
+  width: 100%;
+  max-width: 480px;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+  border-radius: var(--site-card-radius, 24px);
+  background-color: #fff;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, .08);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  text-align: left;
+}
+
+.collage-card-image { width: 100%; aspect-ratio: 4 / 3; overflow: hidden; }
+
+.collage-card-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  object-fit: cover;
+  object-position: center;
+}
+
+.collage-card-body { padding: 18px 20px; }
+
+.collage-card-title {
+  margin: 0 0 4px;
+  font-size: 22px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.collage-card-note {
+  margin: 0 0 12px;
+  font-size: 13px;
+  color: #6b7280;
+  font-style: italic;
+  white-space: pre-line;
+}
+
+.collage-card-footer, .collage-card-price-title { margin: 12px 0 0; font-size: 13px; white-space: pre-line; }
+.collage-card-price-title { margin: 0 0 10px; }
+.collage-message { padding: 24px; }
+.collage-card-image .collage-message { display: grid; place-items: center; height: 100%; }
+.collage-retry { margin-top: 10px; padding: 8px 16px; border: 1px solid #3d0075; border-radius: 8px; background: #fff; color: #3d0075; }
+
+.collage-price-scroll { overflow-x: auto; }
+.collage-price-scroll:focus-visible { outline: 2px solid #6c3d87; outline-offset: 2px; }
+
+.collage-price-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  line-height: 1.35;
+  text-align: left;
+}
+
+.collage-price-table th {
+  padding: 8px;
+  background-color: #f9fafb;
+  color: #374151;
+  font-weight: 600;
+  border-bottom: 2px solid #e5e7eb;
+  font-size: 13px;
+}
+
+.collage-price-table tbody th,
+.collage-price-table td {
+  padding: 7px 8px;
+  background: transparent;
+  font-weight: 400;
+  color: #4b5563;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.collage-price-table tr:last-child > * { border-bottom: none; }
+.collage-price-table .price-cell { font-weight: 600; color: #111827; white-space: nowrap; }
+.collage-price-table .free-cell { color: #10b981; font-weight: 700; }
+
+@media (max-width: 575px) {
+  .collage-card-body { padding: 16px; }
+  .collage-price-table th, .collage-price-table td { padding: 7px 6px; }
+}
