@@ -37,8 +37,11 @@ async function editor(page, sections, product = true, initial = fixture(page)) {
         const section = remote.sections.find(item => item.id === options.body.values.get('sectionId'));
         const card = section.cards.find(item => item.id === id);
         assert.ok(card, 'Upload must target a saved card');
-        card.img = [`img/test/uploads/${id}.webp`];
-        return { ok: true, json: async () => ({ ok: true, path: card.img[0] }) };
+        const index = options.body.values.get('imageIndex');
+        const uploadedPath = `img/test/uploads/${id}-${index ?? 'default'}.webp`;
+        if (card.cardType === 'restoration') card.img[Number(index)] = uploadedPath;
+        else card.img = [uploadedPath];
+        return { ok: true, json: async () => ({ ok: true, path: uploadedPath }) };
       }
       if (options.method === 'POST') {
         if (state.failSave) return { ok: false, status: 500, json: async () => ({ error: 'Save failed' }) };
@@ -50,8 +53,8 @@ async function editor(page, sections, product = true, initial = fixture(page)) {
     }
   });
   await flush();
-  const click = (action, sectionIndex = 0, cardIndex = 0) => nodes.manualCards.events.click({
-    target: { closest: () => ({ dataset: { action, sectionIndex, cardIndex } }) }
+  const click = (action, sectionIndex = 0, cardIndex = 0, extras = {}) => nodes.manualCards.events.click({
+    target: { closest: () => ({ dataset: { action, sectionIndex, cardIndex, ...extras } }) }
   });
   const input = (field, value, sectionIndex, cardIndex, extras = {}) => nodes.manualCards.events.input({
     target: { matches: () => true, value, checked: value === true, dataset: { field, sectionIndex, cardIndex, ...extras } }
@@ -65,6 +68,16 @@ async function editor(page, sections, product = true, initial = fixture(page)) {
 }
 
 (async () => {
+  const restorationEditor = await editor('sostavlenie-kollagey', [], false);
+  assert.match(restorationEditor.nodes.manualCards.innerHTML, /Было — до реставрации/);
+  assert.match(restorationEditor.nodes.manualCards.innerHTML, /Стало — после реставрации/);
+  const originalPair = fixture('sostavlenie-kollagey').sections[1].cards[0].img;
+  await restorationEditor.click('upload-page-image', 1, 0, { imageIndex: '1' });
+  await restorationEditor.save();
+  assert.deepEqual(restorationEditor.remote().sections[1].cards[0].img, [originalPair[0], 'img/test/uploads/photo-restoration-1.webp']);
+  await restorationEditor.click('upload-page-image', 1, 0, { imageIndex: '0' });
+  await restorationEditor.save();
+  assert.deepEqual(restorationEditor.remote().sections[1].cards[0].img, ['img/test/uploads/photo-restoration-0.webp', 'img/test/uploads/photo-restoration-1.webp']);
   for (const page of ['pechat-na-kruzhkah', 'sostavlenie-kollagey', 'tablichki']) {
     const original = fixture(page);
     const app = await editor(page, [], false, original);

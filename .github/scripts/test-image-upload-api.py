@@ -89,6 +89,20 @@ with tempfile.TemporaryDirectory(prefix='n1foto-upload-api-') as temporary:
             saved_collage = json.loads(collage.read_text(encoding='utf-8'))
             assert saved_collage['sections'][0]['cards'][0]['img'] == [uploaded['path']]
             assert saved_collage['sections'][0]['cards'][0]['table'] == collage_data['sections'][0]['cards'][0]['table']
+            original_restoration = saved_collage['sections'][1]['cards'][0]
+            pair = list(original_restoration['img'])
+            for index in [1, 0]:
+                status, uploaded = upload('page-image.php', {'page': 'sostavlenie-kollagey', 'sectionId': 'restoration', 'cardId': 'photo-restoration', 'imageIndex': str(index)})
+                assert status == 200, uploaded
+                pair[index] = uploaded['path']
+                changed = json.loads(collage.read_text(encoding='utf-8'))['sections'][1]['cards'][0]
+                assert changed == {**original_restoration, 'img': pair}, 'Upload must preserve the other photo and all text'
+            for index in ['-1', '2', 'unexpected']:
+                before = collage.read_bytes()
+                status, rejected = upload('page-image.php', {'page': 'sostavlenie-kollagey', 'sectionId': 'restoration', 'cardId': 'photo-restoration', 'imageIndex': index})
+                assert status == 400 and collage.read_bytes() == before
+            status, rejected = upload('page-image.php', {'page': 'shary', 'sectionId': 'shary', 'cardId': 'test-card', 'imageIndex': '1'})
+            assert status == 400
             status, result = upload('page-image.php', fields)
             assert status == 200 and result['ok'], result
             output = site / result['path']

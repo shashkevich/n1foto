@@ -129,6 +129,20 @@ class SeedPreservationTests(unittest.TestCase):
                                if section["id"] == "address-signs")
         self.assertEqual(addition, local_addresses)
 
+    def test_restoration_added_once_without_overwriting_collage_edits(self):
+        name = "sostavlenie-kollagey.json"
+        original = {"sections": [{"id": "kollagi", "cards": [{"id": "kollagi-1", "title": "Edited title", "archived": True, "img": ["custom.webp"], "table": [{"Price": 999}]}]}]}
+        ftp = FakeFTP({name: encode(original)})
+        self.assertTrue(seed.seed_page(ftp, name, self.seeds[name]))
+        merged = json.loads(ftp.files[name])
+        self.assertEqual(merged["sections"][0], original["sections"][0])
+        self.assertEqual(merged["sections"][1]["id"], "restoration")
+        merged["sections"][1]["cards"][0]["archived"] = True
+        ftp.files[name] = encode(merged)
+        saved = ftp.files[name]
+        self.assertFalse(seed.seed_page(ftp, name, self.seeds[name]))
+        self.assertEqual(ftp.files[name], saved)
+
     def test_existing_address_prices_and_images_are_never_reseeded(self):
         self.production["sections"].append({"id": "address-signs", "cards": [{
             "id": "address-signs-1", "img": ["img/tablichki/uploads/custom.jpg"],

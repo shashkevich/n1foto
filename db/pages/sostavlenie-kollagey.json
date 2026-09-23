@@ -23,6 +23,20 @@
           ]
         }
       ]
+    },
+    {
+      "id": "restoration",
+      "title": "Реставрация фото",
+      "cards": [{
+        "id": "photo-restoration",
+        "cardType": "restoration",
+        "title": "Реставрация фото",
+        "img": ["img/restoration/demo-before.webp", "img/restoration/demo-after.webp"],
+        "description": "Бережно восстановим старые фотографии: уберём царапины, заломы и следы времени.",
+        "price_title": "Цена рассчитывается индивидуально по запросу.",
+        "footer": "Перемещайте ползунок, чтобы сравнить фото до и после реставрации.\nДемонстрационный пример, созданный ИИ.",
+        "archived": false
+      }]
     }
   ]
 }

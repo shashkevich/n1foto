@@ -1,4 +1,5 @@
-.collage-catalog { display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start; gap: 24px; }
+.collage-catalog { display: grid; grid-template-columns: repeat(2, minmax(0, 480px)); justify-content: center; align-items: start; gap: 24px; }
+.collage-catalog > :only-child { grid-column: 1 / -1; justify-self: center; }
 
 .collage-card {
   width: 100%;
@@ -23,6 +24,22 @@
   padding: 0;
   object-fit: cover;
   object-position: center;
+}
+
+.restoration-comparison { position: relative; --comparison-position: 50%; }
+.restoration-comparison img { position: absolute; inset: 0; }
+.restoration-comparison__before { clip-path: inset(0 calc(100% - var(--comparison-position)) 0 0); }
+.restoration-comparison__label { position: absolute; top: 14px; padding: 5px 10px; border-radius: 6px; background: rgb(17 24 39 / 70%); color: #fff; font-size: 12px; pointer-events: none; }
+.restoration-comparison__label--before { left: 14px; }
+.restoration-comparison__label--after { right: 14px; }
+.restoration-comparison__handle { position: absolute; top: 0; bottom: 0; left: var(--comparison-position); width: 2px; transform: translateX(-50%); background: #fff; pointer-events: none; }
+.restoration-comparison__handle > span { position: absolute; top: 50%; left: 50%; display: grid; place-items: center; width: 42px; height: 42px; transform: translate(-50%, -50%); border: 2px solid #fff; border-radius: 50%; background: #5b1bb7; color: #fff; font-size: 24px; box-shadow: 0 2px 8px rgb(0 0 0 / 25%); }
+.restoration-comparison__slider { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: ew-resize; }
+.restoration-comparison:focus-within { outline: 3px solid #5b1bb7; outline-offset: -3px; }
+.restoration-comparison:focus-within .restoration-comparison__handle > span { box-shadow: 0 0 0 4px #5b1bb7, 0 0 0 6px #fff; }
+
+@media (max-width: 767px) {
+  .collage-catalog { grid-template-columns: minmax(0, 480px); }
 }
 
 .collage-card-body { padding: 18px 20px; }

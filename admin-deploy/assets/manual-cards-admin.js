@@ -449,7 +449,7 @@
     `;
   };
 
-  const renderCardImageEditor = (sectionIndex, card, cardIndex) => {
+  const renderCardImageEditor = (sectionIndex, card, cardIndex, imageIndex = null) => {
     const sectionId = pageData.sections[sectionIndex].id;
     if (!supportsImageUpload || (imageUploadSections.length && !imageUploadSections.includes(sectionId))) {
       return '';
@@ -458,7 +458,11 @@
       return '<p class="notice notice-muted">Сначала заполните и сохраните новую карточку. После сохранения здесь появится загрузка фото — JPG, PNG или WebP до 10 МБ, с сохранением в WebP до 100 КБ.</p>';
     }
 
-    const imagePath = (card.img || []).find(Boolean) || '';
+    if (card.cardType === 'restoration' && imageIndex === null) {
+      return [0, 1].map((index) => renderCardImageEditor(sectionIndex, card, cardIndex, index)).join('');
+    }
+    const imageAttribute = imageIndex === null ? '' : ` data-image-index="${imageIndex}"`;
+    const imagePath = imageIndex === null ? (card.img || []).find(Boolean) || '' : card.img?.[imageIndex] || '';
     const imageUrl = getPublicImageUrl(imagePath);
 
     return `
@@ -467,14 +471,14 @@
           ${imageUrl ? `<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(card.title || 'Изображение карточки')}">` : '<span>Нет изображения</span>'}
         </div>
         <div class="manual-card-image-controls">
-          <strong>Изображение карточки</strong>
-          <p>${imagePath ? escapeHtml(imagePath) : 'Загрузите квадратное изображение JPG, PNG или WebP.'}</p>
+          <strong>${imageIndex === null ? 'Изображение карточки' : (imageIndex === 0 ? 'Было — до реставрации' : 'Стало — после реставрации')}</strong>
+          <p>${imageIndex === null ? (imagePath ? escapeHtml(imagePath) : 'Загрузите изображение JPG, PNG или WebP.') : 'Два снимка одного размера и кадрирования, горизонтальные 4:3.'}</p>
           <label class="field">
             <span>Файл JPG, PNG или WebP — до 10 МБ; сохранится WebP до 100 КБ</span>
-            <input type="file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" data-action="page-image-input" data-section-index="${sectionIndex}" data-card-index="${cardIndex}">
+            <input type="file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" data-action="page-image-input" data-section-index="${sectionIndex}" data-card-index="${cardIndex}"${imageAttribute}>
           </label>
-          <button class="button button-primary" type="button" data-action="upload-page-image" data-section-index="${sectionIndex}" data-card-index="${cardIndex}" disabled>Загрузить изображение</button>
-          <p class="notice notice-danger" data-upload-error data-section-index="${sectionIndex}" data-card-index="${cardIndex}" role="alert" hidden></p>
+          <button class="button button-primary" type="button" data-action="upload-page-image" data-section-index="${sectionIndex}" data-card-index="${cardIndex}"${imageAttribute} disabled>Загрузить изображение</button>
+          <p class="notice notice-danger" data-upload-error data-section-index="${sectionIndex}" data-card-index="${cardIndex}"${imageAttribute} role="alert" hidden></p>
         </div>
       </div>
     `;
@@ -714,7 +718,7 @@
           ` : ''}
 
           <label class="field">
-            <span>${isProductCard(card) ? 'Подпись к основной цене' : 'Подпись перед таблицей'}</span>
+            <span>${card.cardType === 'restoration' ? 'Текст о стоимости' : (isProductCard(card) ? 'Подпись к основной цене' : 'Подпись перед таблицей')}</span>
             <textarea rows="2" data-field="price_title" data-section-index="${sectionIndex}" data-card-index="${cardIndex}">${escapeHtml(card.price_title || '')}</textarea>
           </label>
 
@@ -726,7 +730,7 @@
 
         ${renderExtrasEditor(sectionIndex, card, cardIndex)}
 
-        ${renderTableEditor(section, sectionIndex, card, cardIndex)}
+        ${card.cardType === 'restoration' ? '' : renderTableEditor(section, sectionIndex, card, cardIndex)}
       </article>
     `;
   };
@@ -829,13 +833,15 @@
   const uploadPageImage = async (sectionIndex, cardIndex, button) => {
     const section = isHomePage ? pageData.main[sectionIndex] : pageData.sections[sectionIndex];
     const card = isHomePage ? section.content[cardIndex] : section.cards[cardIndex];
-    const input = cardsRoot.querySelector(`input[data-action="page-image-input"][data-section-index="${sectionIndex}"][data-card-index="${cardIndex}"]`);
+    const imageIndex = button.dataset.imageIndex;
+    const imageSelector = imageIndex === undefined ? '' : `[data-image-index="${imageIndex}"]`;
+    const input = cardsRoot.querySelector(`input[data-action="page-image-input"][data-section-index="${sectionIndex}"][data-card-index="${cardIndex}"]${imageSelector}`);
 
     if (!input || !input.files.length) {
       return;
     }
 
-    const errorElement = cardsRoot.querySelector(`[data-upload-error][data-section-index="${sectionIndex}"][data-card-index="${cardIndex}"]`);
+    const errorElement = cardsRoot.querySelector(`[data-upload-error][data-section-index="${sectionIndex}"][data-card-index="${cardIndex}"]${imageSelector}`);
     if (errorElement) errorElement.hidden = true;
     if (input.files[0].size > imageInputLimit) {
       showImageError(errorElement, 'Исходное изображение должно быть не больше 10 МБ. Готовый WebP будет до 100 КБ.');
@@ -847,6 +853,7 @@
     formData.append('sectionId', isHomePage ? 'main' : section.id);
     formData.append('cardId', isHomePage ? `card-${sectionIndex}-${cardIndex}` : (card.id || ''));
     formData.append('image', input.files[0]);
+    if (imageIndex !== undefined) formData.append('imageIndex', imageIndex);
 
     try {
       button.disabled = true;
@@ -869,7 +876,12 @@
         throw new Error(payload.error || `Не удалось загрузить изображение: ${response.status}`);
       }
 
-      card.img = isHomePage ? payload.path : [payload.path];
+      if (card.cardType === 'restoration' && imageIndex !== undefined) {
+        if (!Array.isArray(card.img)) card.img = [];
+        card.img[Number(imageIndex)] = payload.path;
+      } else {
+        card.img = isHomePage ? payload.path : [payload.path];
+      }
       render();
       setStatus('Изображение загружено и опубликовано на сайте.', 'success');
     } catch (error) {
@@ -892,7 +904,9 @@
     if (event.target.matches('input[data-action="page-image-input"]')) {
       const sectionIndex = event.target.dataset.sectionIndex;
       const cardIndex = event.target.dataset.cardIndex;
-      const uploadButton = cardsRoot.querySelector(`button[data-action="upload-page-image"][data-section-index="${sectionIndex}"][data-card-index="${cardIndex}"]`);
+      const imageIndex = event.target.dataset.imageIndex;
+      const imageSelector = imageIndex === undefined ? '' : `[data-image-index="${imageIndex}"]`;
+      const uploadButton = cardsRoot.querySelector(`button[data-action="upload-page-image"][data-section-index="${sectionIndex}"][data-card-index="${cardIndex}"]${imageSelector}`);
 
       if (uploadButton) {
         uploadButton.disabled = !event.target.files.length;

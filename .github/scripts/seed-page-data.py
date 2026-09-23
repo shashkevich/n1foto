@@ -24,10 +24,10 @@ PAGE_SEEDS = {
     "butylki.json": ["butylki"],
     "bage.json": ["bages"],
     "insta-pechat.json": ["polaroid"],
-    "sostavlenie-kollagey.json": ["kollagi"],
+    "sostavlenie-kollagey.json": ["kollagi", "restoration"],
 }
 # Existing calculator values and all other remote content remain authoritative.
-SECTION_MERGES = {"tablichki.json": ["address-signs"]}
+SECTION_MERGES = {"tablichki.json": ["address-signs"], "sostavlenie-kollagey.json": ["restoration"]}
 
 
 def read_seed(name):
@@ -51,7 +51,10 @@ def read_seed(name):
                 image_path = (root / image).resolve()
                 if not image_path.is_relative_to(root) or not image_path.is_file():
                     raise ValueError(f"{name}: a referenced image is missing: {image}")
-            if product or not card.get("calculatorType"):
+            if card.get("cardType") == "restoration":
+                if len(card.get("img", [])) != 2 or not card.get("price_title"):
+                    raise ValueError(f"{name}: restoration needs before/after images and a price note.")
+            elif product or not card.get("calculatorType"):
                 rows = card.get("table", [])
                 if not rows:
                     raise ValueError(f"{name}: prices must not be empty.")

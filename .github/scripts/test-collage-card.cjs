@@ -1,4 +1,4 @@
-// Data/rendering checks; responsive geometry is checked in the browser.
+// Offline data/rendering checks; no live site requests.
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
@@ -9,6 +9,7 @@ class Node {
   constructor(tag) {
     this.tag = tag; this.children = []; this.events = {}; this.attributes = {}; this.className = ''; this.value = '';
     this.classList = { add: name => { this.className += ` ${name}`; } };
+    this.style = { setProperty: (key, value) => { this.style[key] = value; } };
   }
   set textContent(value) { this.value = String(value); }
   get textContent() { return this.value + this.children.map(child => child.textContent).join(''); }
@@ -34,14 +35,29 @@ async function render(respond = () => fixture()) {
 }
 (async () => {
   const { root, errors } = await render();
-  assert.equal(errors.length, 0); assert.equal(find(root, 'article').length, 1);
+  assert.equal(errors.length, 0); assert.equal(find(root, 'article').length, 2);
   const card = fixture().sections[0].cards[0];
   assert.equal(find(root, 'img')[0].src, card.img[0]);
   assert.equal(find(root, 'thead')[0].children[0].children.length, 3);
   assert.equal(find(root, 'tbody')[0].children.length, 5);
   for (const row of card.table) for (const value of Object.values(row)) assert.ok(root.textContent.includes(value));
   assert.equal(find(root, 'td').find(node => node.textContent === 'бесплатно').className, 'price-cell free-cell');
-  const data = fixture(); data.sections[0].cards[0].archived = true;
+  const restoration = find(root, 'article')[1];
+  assert.equal(find(restoration, 'table').length, 0, 'Restoration has no price table');
+  assert.ok(restoration.textContent.includes('Цена рассчитывается индивидуально по запросу.'));
+  const comparison = restoration.children[0];
+  const slider = find(restoration, 'input')[0];
+  assert.equal(slider.type, 'range'); assert.equal(slider.value, '50');
+  for (const value of ['0', '25', '100']) {
+    slider.value = value; slider.events.input();
+    assert.equal(comparison.style['--comparison-position'], `${value}%`);
+    assert.match(slider.attributes['aria-valuetext'], new RegExp(`До реставрации: ${value}%`));
+  }
+  assert.equal(find(comparison, 'img')[0].src, fixture().sections[1].cards[0].img[1]);
+  assert.equal(find(comparison, 'img')[1].src, fixture().sections[1].cards[0].img[0]);
+  find(comparison, 'img')[0].events.error();
+  assert.equal(find(comparison, 'input').length, 0, 'Failed photo removes misleading comparison');
+  const data = fixture(); data.sections.forEach(section => section.cards.forEach(card => { card.archived = true; }));
   const archived = await render(() => data);
   assert.equal(archived.root.children.length, 0); assert.equal(archived.errors.length, 0);
   data.sections[0].cards[0] = { ...card, archived: false, title: '<b>Новое имя</b>', description: 'Новый текст', footer: 'Примечание', price_title: 'Новые цены', img: ['img/new.webp'] };
@@ -50,7 +66,7 @@ async function render(respond = () => fixture()) {
   assert.equal(find(restored.root, 'img')[0].src, 'img/new.webp');
   const failed = await render(attempt => { if (attempt === 1) throw new Error('Offline'); return fixture(); });
   assert.equal(failed.errors.length, 1); find(failed.root, 'button')[0].events.click(); await flush();
-  assert.equal(find(failed.root, 'article').length, 1); assert.equal(failed.root.attributes['aria-busy'], 'false');
+  assert.equal(find(failed.root, 'article').length, 2); assert.equal(failed.root.attributes['aria-busy'], 'false');
   find(root, 'img')[0].events.error(); assert.ok(root.textContent.includes('Фото временно недоступно'));
   assert.ok(root.textContent.includes('150 ₽'));
   console.log('PASS: collage image, all prices, editable fields, archive/restore, network retry and image fallback.');

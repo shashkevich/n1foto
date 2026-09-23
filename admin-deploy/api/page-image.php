@@ -72,6 +72,11 @@ if (!$hasStandardSections && !$hasHomeSections) {
 }
 
 $cardFound = false;
+$isRestoration = false;
+$imageIndex = (string) ($_POST['imageIndex'] ?? '0');
+if (!in_array($imageIndex, ['0', '1'], true)) {
+    adminPageImageResponse(['ok' => false, 'error' => 'Неизвестная позиция изображения.'], 400);
+}
 $homeSectionIndex = null;
 $homeCardIndex = null;
 
@@ -90,6 +95,7 @@ if (!$cardFound && isset($data['sections']) && is_array($data['sections'])) {
         foreach ($section['cards'] as &$card) {
             if (($card['id'] ?? '') === $cardId) {
                 $cardFound = true;
+                $isRestoration = ($card['cardType'] ?? '') === 'restoration';
                 break 2;
             }
         }
@@ -99,6 +105,10 @@ if (!$cardFound && isset($data['sections']) && is_array($data['sections'])) {
 
 if (!$cardFound) {
     adminPageImageResponse(['ok' => false, 'error' => 'Карточка не найдена в JSON страницы.'], 404);
+}
+
+if ($imageIndex === '1' && !$isRestoration) {
+    adminPageImageResponse(['ok' => false, 'error' => 'Второе изображение доступно только для реставрации.'], 400);
 }
 
 $fileName = $cardId . '-' . date('YmdHis') . '-' . bin2hex(random_bytes(6)) . '.webp';
@@ -123,7 +133,13 @@ if ($pageId === 'home' && $homeSectionIndex !== null && $homeCardIndex !== null)
 
         foreach ($section['cards'] as &$card) {
             if (($card['id'] ?? '') === $cardId) {
-                $card['img'] = [$relativeImagePath];
+                if ($isRestoration) {
+                    $images = array_pad(array_values($card['img'] ?? []), 2, '');
+                    $images[(int) $imageIndex] = $relativeImagePath;
+                    $card['img'] = $images;
+                } else {
+                    $card['img'] = [$relativeImagePath];
+                }
                 break 2;
             }
         }

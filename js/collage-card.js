@@ -9,10 +9,46 @@ window.addEventListener('DOMContentLoaded', () => {
     return node;
   };
 
+  const renderComparison = (data) => {
+    const frame = element('div', 'collage-card-image restoration-comparison');
+    const after = element('img');
+    after.src = data.img[1];
+    after.alt = 'Фото после реставрации';
+    const before = element('img', 'restoration-comparison__before');
+    before.src = data.img[0];
+    before.alt = 'Фото до реставрации';
+    for (const image of [after, before]) {
+      image.width = 800;
+      image.height = 600;
+      image.decoding = 'async';
+      image.addEventListener('error', () => frame.replaceChildren(element('span', 'collage-message', 'Пример реставрации временно недоступен')), { once: true });
+    }
+    const handle = element('span', 'restoration-comparison__handle');
+    handle.setAttribute('aria-hidden', 'true');
+    handle.append(element('span', '', '↔'));
+    const slider = element('input', 'restoration-comparison__slider');
+    slider.type = 'range';
+    slider.min = '0';
+    slider.max = '100';
+    slider.value = '50';
+    slider.setAttribute('aria-label', 'Сравнение фото до и после реставрации');
+    const update = () => {
+      const value = Math.max(0, Math.min(100, Number(slider.value)));
+      frame.style.setProperty('--comparison-position', `${value}%`);
+      slider.setAttribute('aria-valuetext', `До реставрации: ${value}%, после: ${100 - value}%`);
+    };
+    slider.addEventListener('input', update);
+    update();
+    frame.append(after, before, element('span', 'restoration-comparison__label restoration-comparison__label--before', 'Было'), element('span', 'restoration-comparison__label restoration-comparison__label--after', 'Стало'), handle, slider);
+    return frame;
+  };
+
   const renderCard = (data) => {
     const card = element('article', 'collage-card');
     const source = Array.isArray(data.img) ? data.img.find(Boolean) : '';
-    if (source) {
+    if (data.cardType === 'restoration' && data.img?.[0] && data.img?.[1]) {
+      card.append(renderComparison(data));
+    } else if (source) {
       const frame = element('div', 'collage-card-image');
       const image = element('img');
       image.src = source;
@@ -73,9 +109,9 @@ window.addEventListener('DOMContentLoaded', () => {
       const response = await fetch('/db/pages/sostavlenie-kollagey.json', { cache: 'no-store' });
       if (!response.ok) throw new Error(`Collage prices: ${response.status}`);
       const data = await response.json();
-      const section = data.sections?.find((item) => item.id === 'kollagi');
-      if (!Array.isArray(section?.cards)) throw new Error('Collage section is missing');
-      root.replaceChildren(...section.cards.filter((card) => card.archived !== true).map(renderCard));
+      const sections = data.sections?.filter((item) => ['kollagi', 'restoration'].includes(item.id));
+      if (!sections?.length || sections.some((section) => !Array.isArray(section.cards))) throw new Error('Collage sections are missing');
+      root.replaceChildren(...sections.flatMap((section) => section.cards).filter((card) => card.archived !== true).map(renderCard));
     } catch (error) {
       console.error(error);
       const message = element('div', 'collage-message');
