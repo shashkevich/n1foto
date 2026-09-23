@@ -6,7 +6,7 @@
 .plastic-calculator {
     width: min(100%, 720px);
     border: 0;
-    border-radius: var(--site-card-radius);
+    border-radius: 8px;
     box-shadow: 0 10px 30px rgba(38, 25, 58, 0.1);
     text-align: left;
 }
@@ -25,9 +25,12 @@
 
 .plastic-calculator__image {
     width: 112px;
+    aspect-ratio: 1;
     margin: 0;
     overflow: hidden;
+    border: 1px solid #ebe5ef;
     border-radius: 6px;
+    background: #fff;
 }
 
 .plastic-calculator__image[hidden] + .plastic-calculator__heading {
@@ -36,11 +39,8 @@
 }
 
 .plastic-calculator__image img {
-    display: block;
     width: 100%;
-    height: auto;
-    margin: 0;
-    padding: 0;
+    height: 100%;
     object-fit: contain;
 }
 

@@ -28,11 +28,17 @@ window.addEventListener('DOMContentLoaded', () => {
     return requests.get(page);
   };
 
-  const renderImage = (card) => {
+  const renderImage = (card, section) => {
     const source = Array.isArray(card.img) ? card.img.find(Boolean) : '';
     if (!source) return null;
-    // Show every original image at its own aspect ratio, without colour blending.
-    const frame = element('div', 'catalog-card__media');
+    // Keep original artwork/lettering intact. White studio backdrops blend into
+    // the neutral media area; lifestyle images retain their original colours.
+    const photo = card.imageTreatment === 'photo'
+      || ['canvas-styles', 'polaroid', 'shary'].includes(section)
+      || /(?:\/studio\/|vinyl_magnit)/i.test(source);
+    const frame = element('div', `catalog-card__media${photo ? ' catalog-card__media--photo' : ''}`);
+    if (section === 'canvas-styles') frame.classList.add('catalog-card__media--artwork');
+    if (/\/studio\//i.test(source)) frame.classList.add('catalog-card__media--studio');
     const image = element('img', 'catalog-card__image');
     image.src = source;
     image.alt = text(card.alt || card.title);
@@ -70,7 +76,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const column = element('div', 'col');
     const layout = root.dataset.productLayout === 'split' ? 'split' : 'stacked';
     const card = element('article', `catalog-card catalog-card--${layout}`);
-    const image = renderImage(data);
+    const image = renderImage(data, root.dataset.productSection);
     if (image) card.append(image);
     else card.classList.add('catalog-card--no-image');
     const body = element('div', 'catalog-card__body');

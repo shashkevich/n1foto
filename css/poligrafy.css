@@ -45,18 +45,18 @@
 
 .poligrafy-card__image {
   width: 104px;
+  aspect-ratio: 1;
   margin: 0;
   overflow: hidden;
+  border: 1px solid #eee6f5;
   border-radius: 8px;
+  background: #f8f8fa;
 }
 
 .poligrafy-card__image img {
-  display: block;
   width: 100%;
-  height: auto;
-  margin: 0;
-  padding: 0;
-  object-fit: contain;
+  height: 100%;
+  object-fit: cover;
 }
 
 .leaflet-calculator {

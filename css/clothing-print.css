@@ -6,12 +6,11 @@
 }
 
 .clothing-method-card {
-  --clothing-card-padding: 20px;
   min-width: 0;
   overflow: hidden;
   border: 0;
-  border-radius: var(--site-card-radius);
-  padding: var(--clothing-card-padding);
+  border-radius: 8px;
+  padding: 20px;
   background: #fff;
   box-shadow: 0 8px 24px rgba(40, 24, 56, 0.1);
   text-align: left;
@@ -25,18 +24,19 @@
 }
 
 .clothing-method-card__image {
-  width: calc(100% + 2 * var(--clothing-card-padding));
-  margin: 0 calc(-1 * var(--clothing-card-padding)) 18px;
+  width: min(100%, 210px);
+  aspect-ratio: 1;
+  margin: 0 auto 18px;
   overflow: hidden;
+  border-radius: 8px;
+  background: #f5f5f7;
 }
 
 .clothing-method-card__image img {
   display: block;
   width: 100%;
-  height: auto;
-  margin: 0;
-  padding: 0;
-  object-fit: contain;
+  height: 100%;
+  object-fit: cover;
 }
 
 .clothing-method-card__notice {
@@ -286,7 +286,7 @@
   }
 
   .clothing-method-card {
-    --clothing-card-padding: 18px;
+    padding: 18px;
   }
 
   .clothing-method-card__title {
