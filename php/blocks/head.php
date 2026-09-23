@@ -19,6 +19,6 @@ $link = $title_arr[$_SERVER["SCRIPT_NAME"]]?>
 <link href="https://fonts.googleapis.com/css2?family=Geologica:wght@300;400;500;700&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="css/main.min.css?v=20260902-1">
-<link rel="stylesheet" href="css/legacy-cards.css?v=20260902-1">
+<link rel="stylesheet" href="css/legacy-cards.css?v=20260923-3">
 <link rel="stylesheet" href="/css/service-links.css?v=20260922-7">
 <link rel="stylesheet" href="/css/responsive.css?v=20260922-2">
