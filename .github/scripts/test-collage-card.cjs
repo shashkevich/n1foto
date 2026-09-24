@@ -28,7 +28,7 @@ async function render(respond = () => fixture(), cardSource = '') {
     document: { querySelector: () => root, createElement: tag => new Node(tag) },
     console: { error: error => errors.push(error) },
     fetch: async (url, options) => {
-      assert.equal(url, cardSource === 'srochnoe-foto' ? '/db/tovary.json' : '/db/pages/sostavlenie-kollagey.json'); assert.equal(options.cache, 'no-store');
+      assert.equal(url, ['srochnoe-foto', 'bloknoty'].includes(cardSource) ? '/db/tovary.json' : '/db/pages/sostavlenie-kollagey.json'); assert.equal(options.cache, 'no-store');
       return { ok: true, json: async () => respond(++requests) };
     }
   });
@@ -82,6 +82,23 @@ async function render(respond = () => fixture(), cardSource = '') {
   for (const row of expected.table) for (const value of Object.values(row)) assert.ok(documentCards.root.textContent.includes(value));
   assert.ok(documentCards.root.textContent.includes(expected.descr.replace(/<br\s*\/?\s*>/gi, '\n')));
   assert.equal(JSON.stringify(documentData), original, 'Restyling keeps source content unchanged');
+  const notebooks = await render(() => documentData, 'bloknoty');
+  assert.equal(notebooks.errors.length, 0);
+  const notebookCards = find(notebooks.root, 'article');
+  assert.equal(notebookCards.length, 4);
+  for (const [index, notebook] of documentData.bloknoty.entries()) {
+    const rendered = notebookCards[index];
+    assert.equal(find(rendered, 'img')[0].src, notebook.img);
+    for (const value of [notebook.title, notebook.descr, notebook.price_title]) assert.ok(rendered.textContent.includes(value));
+    const tiers = notebook.table.flatMap(row => Object.entries(row));
+    const rows = find(rendered, 'tbody')[0].children;
+    assert.equal(rows.length, tiers.length);
+    for (const [i, [quantity, price]] of tiers.entries()) {
+      assert.equal(rows[i].children[0].textContent, quantity);
+      assert.equal(rows[i].children[1].textContent, price);
+    }
+  }
+  assert.equal(JSON.stringify(documentData), original, 'Notebook price conversion is display-only');
   const missingDocument = await render(() => ({}), 'srochnoe-foto');
   assert.equal(missingDocument.errors.length, 1);
   assert.ok(missingDocument.root.textContent.includes('Повторить загрузку'));

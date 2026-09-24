@@ -1,7 +1,7 @@
 window.addEventListener('DOMContentLoaded', () => {
   const root = document.querySelector('.collage-catalog');
   if (!root) return;
-  const isDocumentPhoto = root.dataset.cardSource === 'srochnoe-foto';
+  const legacySection = ['srochnoe-foto', 'bloknoty'].includes(root.dataset.cardSource) ? root.dataset.cardSource : '';
 
   const element = (tag, className = '', text) => {
     const node = document.createElement(tag);
@@ -107,16 +107,19 @@ window.addEventListener('DOMContentLoaded', () => {
   const load = async () => {
     root.setAttribute('aria-busy', 'true');
     try {
-      const response = await fetch(isDocumentPhoto ? '/db/tovary.json' : '/db/pages/sostavlenie-kollagey.json', { cache: 'no-store' });
+      const response = await fetch(legacySection ? '/db/tovary.json' : '/db/pages/sostavlenie-kollagey.json', { cache: 'no-store' });
       if (!response.ok) throw new Error(`Collage prices: ${response.status}`);
       const data = await response.json();
       let cards;
-      if (isDocumentPhoto) {
-        if (!Array.isArray(data['srochnoe-foto'])) throw new Error('Document photo cards are missing');
-        cards = data['srochnoe-foto'].map((card) => ({
+      if (legacySection) {
+        if (!Array.isArray(data[legacySection])) throw new Error(`Cards are missing: ${legacySection}`);
+        cards = data[legacySection].map((card) => ({
           ...card,
           img: Array.isArray(card.img) ? card.img : [card.img],
           footer: String(card.descr || '').replace(/<br\s*\/?\s*>/gi, '\n').replace(/<[^>]*>/g, ''),
+          table: legacySection === 'bloknoty'
+            ? (card.table || []).flatMap((row) => Object.entries(row).map(([quantity, price]) => ({ 'Количество': quantity, 'Стоимость': price })))
+            : card.table,
         }));
       } else {
         const sections = data.sections?.filter((item) => ['kollagi', 'restoration'].includes(item.id));
