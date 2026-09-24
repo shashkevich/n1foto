@@ -28,7 +28,8 @@ async function render(respond = () => fixture(), cardSource = '') {
     document: { querySelector: () => root, createElement: tag => new Node(tag) },
     console: { error: error => errors.push(error) },
     fetch: async (url, options) => {
-      assert.equal(url, ['srochnoe-foto', 'bloknoty'].includes(cardSource) ? '/db/tovary.json' : '/db/pages/sostavlenie-kollagey.json'); assert.equal(options.cache, 'no-store');
+      const expectedUrl = cardSource === 'srochnoe-foto' ? '/db/tovary.json' : `/db/pages/${cardSource === 'bloknoty' ? 'bloknoty' : 'sostavlenie-kollagey'}.json`;
+      assert.equal(url, expectedUrl); assert.equal(options.cache, 'no-store');
       return { ok: true, json: async () => respond(++requests) };
     }
   });
@@ -82,7 +83,9 @@ async function render(respond = () => fixture(), cardSource = '') {
   for (const row of expected.table) for (const value of Object.values(row)) assert.ok(documentCards.root.textContent.includes(value));
   assert.ok(documentCards.root.textContent.includes(expected.descr.replace(/<br\s*\/?\s*>/gi, '\n')));
   assert.equal(JSON.stringify(documentData), original, 'Restyling keeps source content unchanged');
-  const notebooks = await render(() => documentData, 'bloknoty');
+  const notebookData = JSON.parse(read('db/pages/bloknoty.json'));
+  const notebookSnapshot = JSON.stringify(notebookData);
+  const notebooks = await render(() => notebookData, 'bloknoty');
   assert.equal(notebooks.errors.length, 0);
   const notebookCards = find(notebooks.root, 'article');
   assert.equal(notebookCards.length, 4);
@@ -98,7 +101,20 @@ async function render(respond = () => fixture(), cardSource = '') {
       assert.equal(rows[i].children[1].textContent, price);
     }
   }
-  assert.equal(JSON.stringify(documentData), original, 'Notebook price conversion is display-only');
+  assert.equal(JSON.stringify(notebookData), notebookSnapshot, 'Rendering preserves editable notebook data');
+  const edited = notebookData.sections[0].cards[0];
+  edited.title = 'Новое название';
+  edited.description = 'Новое описание';
+  edited.footer = 'Новое примечание';
+  edited.img = ['img/bloknoty/uploads/custom.webp'];
+  edited.table[0]['Стоимость'] = '999 ₽';
+  notebookData.sections[0].cards[1].archived = true;
+  const changed = await render(() => notebookData, 'bloknoty');
+  assert.equal(find(changed.root, 'article').length, 3);
+  for (const value of [edited.title, edited.description, edited.footer, '999 ₽']) assert.ok(changed.root.textContent.includes(value));
+  assert.equal(find(changed.root, 'img')[0].src, edited.img[0]);
+  notebookData.sections[0].cards[1].archived = false;
+  assert.equal(find((await render(() => notebookData, 'bloknoty')).root, 'article').length, 4);
   const missingDocument = await render(() => ({}), 'srochnoe-foto');
   assert.equal(missingDocument.errors.length, 1);
   assert.ok(missingDocument.root.textContent.includes('Повторить загрузку'));

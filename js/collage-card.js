@@ -1,7 +1,9 @@
 window.addEventListener('DOMContentLoaded', () => {
   const root = document.querySelector('.collage-catalog');
   if (!root) return;
-  const legacySection = ['srochnoe-foto', 'bloknoty'].includes(root.dataset.cardSource) ? root.dataset.cardSource : '';
+  const legacySection = root.dataset.cardSource === 'srochnoe-foto' ? 'srochnoe-foto' : '';
+  const isNotebook = root.dataset.cardSource === 'bloknoty';
+  const dataUrl = legacySection ? '/db/tovary.json' : `/db/pages/${isNotebook ? 'bloknoty' : 'sostavlenie-kollagey'}.json`;
 
   const element = (tag, className = '', text) => {
     const node = document.createElement(tag);
@@ -107,7 +109,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const load = async () => {
     root.setAttribute('aria-busy', 'true');
     try {
-      const response = await fetch(legacySection ? '/db/tovary.json' : '/db/pages/sostavlenie-kollagey.json', { cache: 'no-store' });
+      const response = await fetch(dataUrl, { cache: 'no-store' });
       if (!response.ok) throw new Error(`Collage prices: ${response.status}`);
       const data = await response.json();
       let cards;
@@ -117,12 +119,10 @@ window.addEventListener('DOMContentLoaded', () => {
           ...card,
           img: Array.isArray(card.img) ? card.img : [card.img],
           footer: String(card.descr || '').replace(/<br\s*\/?\s*>/gi, '\n').replace(/<[^>]*>/g, ''),
-          table: legacySection === 'bloknoty'
-            ? (card.table || []).flatMap((row) => Object.entries(row).map(([quantity, price]) => ({ 'Количество': quantity, 'Стоимость': price })))
-            : card.table,
         }));
       } else {
-        const sections = data.sections?.filter((item) => ['kollagi', 'restoration'].includes(item.id));
+        const sectionIds = isNotebook ? ['bloknoty'] : ['kollagi', 'restoration'];
+        const sections = data.sections?.filter((item) => sectionIds.includes(item.id));
         if (!sections?.length || sections.some((section) => !Array.isArray(section.cards))) throw new Error('Collage sections are missing');
         cards = sections.flatMap((section) => section.cards);
       }

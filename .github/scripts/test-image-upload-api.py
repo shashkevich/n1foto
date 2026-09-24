@@ -35,6 +35,8 @@ with tempfile.TemporaryDirectory(prefix='n1foto-upload-api-') as temporary:
     page.write_text(json.dumps({'sections': [{'id': 'shary', 'cards': [{'id': 'test-card', 'title': 'Test', 'img': ['old.jpg']}]}]}), encoding='utf-8')
     collage = site / 'db/pages/sostavlenie-kollagey.json'
     shutil.copyfile(repo / 'db/pages/sostavlenie-kollagey.json', collage)
+    notebooks = site / 'db/pages/bloknoty.json'
+    shutil.copyfile(repo / 'db/pages/bloknoty.json', notebooks)
     home = site / 'db/main-page-cards.json'
     home.write_text(json.dumps({'main': [{'content': [{'title': 'Home', 'img': 'old-home.jpg'}]}]}), encoding='utf-8')
     poly = site / 'db/poligrafy.json'
@@ -74,6 +76,22 @@ with tempfile.TemporaryDirectory(prefix='n1foto-upload-api-') as temporary:
             else:
                 raise RuntimeError('Temporary PHP server did not start')
             fields = {'page': 'shary', 'sectionId': 'shary', 'cardId': 'test-card'}
+            notebook_endpoint = base + '/api/page-json.php?page=bloknoty'
+            with opener.open(notebook_endpoint) as response:
+                notebook_data = json.loads(response.read())
+            notebook_card = notebook_data['sections'][0]['cards'][0]
+            notebook_card['title'] = 'Edited notebook'
+            notebook_card['table'][0]['Стоимость'] = '999 ₽'
+            notebook_card['archived'] = True
+            request = urllib.request.Request(notebook_endpoint, data=json.dumps(notebook_data).encode(), headers={'Content-Type': 'application/json'})
+            with opener.open(request) as response:
+                assert json.loads(response.read())['ok']
+            with opener.open(notebook_endpoint) as response:
+                assert json.loads(response.read()) == notebook_data
+            status, uploaded_notebook = upload('page-image.php', {'page': 'bloknoty', 'sectionId': 'bloknoty', 'cardId': notebook_card['id']})
+            assert status == 200 and uploaded_notebook['path'].startswith('img/bloknoty/uploads/'), uploaded_notebook
+            notebook_card['img'] = [uploaded_notebook['path']]
+            assert json.loads(notebooks.read_text(encoding='utf-8'))['sections'] == notebook_data['sections']
             endpoint = base + '/api/page-json.php?page=sostavlenie-kollagey'
             with opener.open(endpoint) as response:
                 collage_data = json.loads(response.read())

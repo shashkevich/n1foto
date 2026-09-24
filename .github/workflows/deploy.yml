@@ -77,6 +77,7 @@ jobs:
             db/pages/butylki.json
             db/pages/bage.json
             db/pages/insta-pechat.json
+            db/pages/bloknoty.json
             db/pages/sostavlenie-kollagey.json
             img/buklety/uploads/**
             img/listovki/uploads/**
@@ -99,6 +100,7 @@ jobs:
             img/butylki/uploads/**
             img/bages/uploads/**
             img/polaroid/uploads/**
+            img/bloknoty/uploads/**
             img/collages/uploads/**
 
   deploy-admin:

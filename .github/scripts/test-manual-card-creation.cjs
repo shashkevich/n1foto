@@ -78,7 +78,7 @@ async function editor(page, sections, product = true, initial = fixture(page)) {
   await restorationEditor.click('upload-page-image', 1, 0, { imageIndex: '0' });
   await restorationEditor.save();
   assert.deepEqual(restorationEditor.remote().sections[1].cards[0].img, ['img/test/uploads/photo-restoration-0.webp', 'img/test/uploads/photo-restoration-1.webp']);
-  for (const page of ['pechat-na-kruzhkah', 'sostavlenie-kollagey', 'tablichki']) {
+  for (const page of ['pechat-na-kruzhkah', 'sostavlenie-kollagey', 'tablichki', 'bloknoty']) {
     const original = fixture(page);
     const app = await editor(page, [], false, original);
     for (const [sectionIndex, section] of original.sections.entries()) {
@@ -109,6 +109,7 @@ async function editor(page, sections, product = true, initial = fixture(page)) {
 
   for (const [page, sections, product] of [
     ['pechat-na-kruzhkah', ['kruzhki'], true], ['shary', ['shary'], true],
+    ['bloknoty', ['bloknoty'], true],
     ['pechat-i-kopirovanie', ['copyandprint', 'chertezhy'], false]
   ]) {
     const original = fixture(page);

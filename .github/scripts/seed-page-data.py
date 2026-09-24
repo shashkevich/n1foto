@@ -24,6 +24,7 @@ PAGE_SEEDS = {
     "butylki.json": ["butylki"],
     "bage.json": ["bages"],
     "insta-pechat.json": ["polaroid"],
+    "bloknoty.json": ["bloknoty"],
     "sostavlenie-kollagey.json": ["kollagi", "restoration"],
 }
 # Existing calculator values and all other remote content remain authoritative.
