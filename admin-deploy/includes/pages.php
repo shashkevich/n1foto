@@ -401,6 +401,28 @@ function adminSitePages(): array
         ],
     ];
 
+    foreach ([
+        ['rollup', 'Мобильные стенды', 'rollup'],
+        ['vyshivka', 'Машинная вышивка', 'vyshivka'],
+        ['ruchki', 'Ручки', 'ruchki'],
+        ['shirokofrmatnaya-pechat', 'Широкоформатная печать', 'shirokofrmatnaya-pechat'],
+        ['pechat-na-bannere', 'Печать баннеров', 'banner'],
+        ['srochnoe-foto', 'Фото на документы', 'srochnoe-foto'],
+    ] as [$id, $title, $section]) {
+        $pages[] = [
+            'id' => $id, 'title' => $title, 'path' => '/' . $id . '.html',
+            'group' => $id === 'srochnoe-foto' ? 'Фотоуслуги' : 'Реклама и оформление',
+            'pageJson' => 'db/pages/' . $id . '.json',
+            'manualSections' => [$section],
+            'imageUpload' => ['directory' => 'img/' . $id . '/uploads', 'sections' => [$section]],
+            'data' => ['cards' => 'db/pages/' . $id . '.json', 'template' => $id . '.html'],
+            'modules' => [
+                ['id' => 'manual-copy-prices', 'title' => 'Карточки и содержимое', 'description' => 'Фото, заголовки, тексты, контакты и цены', 'status' => 'active'],
+                ['id' => 'preview', 'title' => 'Предпросмотр страницы', 'description' => 'Открыть страницу сайта', 'status' => 'active'],
+            ],
+        ];
+    }
+
     return array_merge($pages, adminProductSitePages());
 }
 

@@ -1,0 +1,10 @@
+.service-card-contacts { display: grid; justify-items: start; gap: 8px; margin-top: 12px; font-size: 13px; }
+.service-card-contacts__phone-row { display: flex; align-items: center; gap: 6px; }
+.service-card-contacts a { color: var(--bs-primary, #3d0075); text-decoration: none; }
+.service-card-contacts__icon { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; flex: 0 0 32px; border-radius: 6px; }
+.service-card-contacts svg { display: block; width: 22px; height: 22px; flex: 0 0 22px; }
+.service-card-contacts__number { white-space: nowrap; }
+.service-card-contacts .service-card-contacts__vk { display: inline-flex; align-items: center; gap: 8px; min-height: 32px; padding: 0 5px; border-radius: 6px; color: var(--bs-primary, #3d0075); }
+.service-card-contacts a:hover { background-color: #f1e8ff; }
+.service-card-contacts__number:hover, .service-card-contacts__vk:hover span { text-decoration: underline; }
+.service-card-contacts a:focus-visible { outline: 2px solid var(--bs-primary, #3d0075); outline-offset: 3px; }

@@ -1,9 +1,8 @@
 window.addEventListener('DOMContentLoaded', () => {
   const root = document.querySelector('.collage-catalog');
   if (!root) return;
-  const legacySection = root.dataset.cardSource === 'srochnoe-foto' ? 'srochnoe-foto' : '';
-  const isNotebook = root.dataset.cardSource === 'bloknoty';
-  const dataUrl = legacySection ? '/db/tovary.json' : `/db/pages/${isNotebook ? 'bloknoty' : 'sostavlenie-kollagey'}.json`;
+  const pageId = ['srochnoe-foto', 'bloknoty'].includes(root.dataset.cardSource) ? root.dataset.cardSource : 'sostavlenie-kollagey';
+  const dataUrl = `/db/pages/${pageId}.json`;
 
   const element = (tag, className = '', text) => {
     const node = document.createElement(tag);
@@ -112,20 +111,10 @@ window.addEventListener('DOMContentLoaded', () => {
       const response = await fetch(dataUrl, { cache: 'no-store' });
       if (!response.ok) throw new Error(`Collage prices: ${response.status}`);
       const data = await response.json();
-      let cards;
-      if (legacySection) {
-        if (!Array.isArray(data[legacySection])) throw new Error(`Cards are missing: ${legacySection}`);
-        cards = data[legacySection].map((card) => ({
-          ...card,
-          img: Array.isArray(card.img) ? card.img : [card.img],
-          footer: String(card.descr || '').replace(/<br\s*\/?\s*>/gi, '\n').replace(/<[^>]*>/g, ''),
-        }));
-      } else {
-        const sectionIds = isNotebook ? ['bloknoty'] : ['kollagi', 'restoration'];
-        const sections = data.sections?.filter((item) => sectionIds.includes(item.id));
-        if (!sections?.length || sections.some((section) => !Array.isArray(section.cards))) throw new Error('Collage sections are missing');
-        cards = sections.flatMap((section) => section.cards);
-      }
+      const sectionIds = pageId === 'sostavlenie-kollagey' ? ['kollagi', 'restoration'] : [pageId];
+      const sections = data.sections?.filter((item) => sectionIds.includes(item.id));
+      if (!sections?.length || sections.some((section) => !Array.isArray(section.cards))) throw new Error('Collage sections are missing');
+      const cards = sections.flatMap((section) => section.cards);
       root.replaceChildren(...cards.filter((card) => card.archived !== true).map(renderCard));
     } catch (error) {
       console.error(error);

@@ -28,7 +28,7 @@ async function render(respond = () => fixture(), cardSource = '') {
     document: { querySelector: () => root, createElement: tag => new Node(tag) },
     console: { error: error => errors.push(error) },
     fetch: async (url, options) => {
-      const expectedUrl = cardSource === 'srochnoe-foto' ? '/db/tovary.json' : `/db/pages/${cardSource === 'bloknoty' ? 'bloknoty' : 'sostavlenie-kollagey'}.json`;
+      const expectedUrl = `/db/pages/${cardSource || 'sostavlenie-kollagey'}.json`;
       assert.equal(url, expectedUrl); assert.equal(options.cache, 'no-store');
       return { ok: true, json: async () => respond(++requests) };
     }
@@ -71,17 +71,18 @@ async function render(respond = () => fixture(), cardSource = '') {
   assert.equal(find(failed.root, 'article').length, 2); assert.equal(failed.root.attributes['aria-busy'], 'false');
   find(root, 'img')[0].events.error(); assert.ok(root.textContent.includes('Фото временно недоступно'));
   assert.ok(root.textContent.includes('150 ₽'));
-  const documentData = JSON.parse(read('db/tovary.json'));
+  const legacyData = JSON.parse(read('db/tovary.json'));
+  const documentData = JSON.parse(read('db/pages/srochnoe-foto.json'));
   const original = JSON.stringify(documentData);
   const documentCards = await render(() => documentData, 'srochnoe-foto');
   assert.equal(documentCards.errors.length, 0);
-  assert.equal(find(documentCards.root, 'article').length, documentData['srochnoe-foto'].length);
-  const expected = documentData['srochnoe-foto'][0];
-  assert.equal(find(documentCards.root, 'img')[0].src, expected.img);
-  assert.equal(find(documentCards.root, 'img')[0].alt, expected.alt);
+  assert.equal(find(documentCards.root, 'article').length, documentData.sections[0].cards.length);
+  const expected = documentData.sections[0].cards[0];
+  assert.equal(find(documentCards.root, 'img')[0].src, expected.img[0]);
+  assert.equal(find(documentCards.root, 'img')[0].alt, expected.title);
   assert.equal(find(documentCards.root, 'tbody')[0].children.length, expected.table.length);
   for (const row of expected.table) for (const value of Object.values(row)) assert.ok(documentCards.root.textContent.includes(value));
-  assert.ok(documentCards.root.textContent.includes(expected.descr.replace(/<br\s*\/?\s*>/gi, '\n')));
+  assert.ok(documentCards.root.textContent.includes(expected.footer));
   assert.equal(JSON.stringify(documentData), original, 'Restyling keeps source content unchanged');
   const notebookData = JSON.parse(read('db/pages/bloknoty.json'));
   const notebookSnapshot = JSON.stringify(notebookData);
@@ -89,7 +90,7 @@ async function render(respond = () => fixture(), cardSource = '') {
   assert.equal(notebooks.errors.length, 0);
   const notebookCards = find(notebooks.root, 'article');
   assert.equal(notebookCards.length, 4);
-  for (const [index, notebook] of documentData.bloknoty.entries()) {
+  for (const [index, notebook] of legacyData.bloknoty.entries()) {
     const rendered = notebookCards[index];
     assert.equal(find(rendered, 'img')[0].src, notebook.img);
     for (const value of [notebook.title, notebook.descr, notebook.price_title]) assert.ok(rendered.textContent.includes(value));

@@ -10,6 +10,12 @@ import uuid
 
 REMOTE_DIRECTORY = "/n1foto.com/public_html/db/pages"
 PAGE_SEEDS = {
+    "vyshivka.json": ["vyshivka"],
+    "srochnoe-foto.json": ["srochnoe-foto"],
+    "pechat-na-bannere.json": ["banner"],
+    "shirokofrmatnaya-pechat.json": ["shirokofrmatnaya-pechat"],
+    "ruchki.json": ["ruchki"],
+    "rollup.json": ["rollup"],
     "shary.json": ["shary"],
     "magnity.json": ["magnity"],
     "pechat-na-podushkah.json": ["podushki"],
@@ -55,7 +61,7 @@ def read_seed(name):
             if card.get("cardType") == "restoration":
                 if len(card.get("img", [])) != 2 or not card.get("price_title"):
                     raise ValueError(f"{name}: restoration needs before/after images and a price note.")
-            elif product or not card.get("calculatorType"):
+            elif card.get("cardType") != "service" and (product or not card.get("calculatorType")):
                 rows = card.get("table", [])
                 if not rows:
                     raise ValueError(f"{name}: prices must not be empty.")

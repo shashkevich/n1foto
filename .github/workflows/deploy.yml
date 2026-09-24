@@ -57,6 +57,18 @@ jobs:
             **/node_modules/**
             **/*.scss
             admin-deploy/**
+            db/pages/rollup.json
+            img/rollup/uploads/**
+            db/pages/ruchki.json
+            img/ruchki/uploads/**
+            db/pages/shirokofrmatnaya-pechat.json
+            img/shirokofrmatnaya-pechat/uploads/**
+            db/pages/pechat-na-bannere.json
+            img/pechat-na-bannere/uploads/**
+            db/pages/srochnoe-foto.json
+            img/srochnoe-foto/uploads/**
+            db/pages/vyshivka.json
+            img/vyshivka/uploads/**
             db/main-page-cards.json
             db/poligrafy.json
             db/pages/vizitki.json

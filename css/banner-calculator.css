@@ -1,0 +1,12 @@
+/* Reuse the plastic calculator design; only adapt the banner column count. */
+.banner-calculator { margin-bottom: 24px; }
+.banner-calculator [hidden] { display: none; }
+@media (min-width: 992px) {
+  .banner-calculator .plastic-calculator__positions-head,
+  .banner-calculator .plastic-calculator__row {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) 82px 92px 32px;
+  }
+}
+@media (max-width: 991.98px) {
+  .banner-calculator .plastic-calculator__row { padding-top: 42px; }
+}

@@ -1,0 +1,36 @@
+/* Shared outer-card treatment, matching the canvas catalogue. */
+:root {
+  --site-card-radius: 24px;
+  --site-card-shadow: 4px 4px 10px #dad1e6, -4px -4px 10px #f9f9f9;
+  --site-card-hover-shadow: 0 9px 23px #b8aacb66, -4px -4px 14px #f9f9f9;
+}
+
+body :is(.card, .main-page-card, .product-card, .catalog-card, .catalog-table, .collage-card, .sticker-card, .plastic-calculator, .clothing-method-card) {
+  /* Override Bootstrap radius utilities and page-specific card shadows. */
+  border-radius: var(--site-card-radius) !important;
+  box-shadow: var(--site-card-shadow) !important;
+  overflow: hidden;
+  transition: box-shadow .2s ease, transform .2s ease;
+}
+
+@media (hover: hover) {
+  body :is(.card, .main-page-card, .product-card, .catalog-card, .catalog-table, .collage-card, .sticker-card, .plastic-calculator, .clothing-method-card):hover {
+    transform: translateY(-3px);
+    box-shadow: var(--site-card-hover-shadow) !important;
+  }
+}
+
+@media (hover: none) {
+  body :is(.card, .main-page-card, .product-card, .catalog-card, .catalog-table, .collage-card, .sticker-card, .plastic-calculator, .clothing-method-card):is(:hover, :focus-within) {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body :is(.card, .main-page-card, .product-card, .catalog-card, .catalog-table, .collage-card, .sticker-card, .plastic-calculator, .clothing-method-card) {
+    transition: none;
+  }
+  body :is(.card, .main-page-card, .product-card, .catalog-card, .catalog-table, .collage-card, .sticker-card, .plastic-calculator, .clothing-method-card):is(:hover, :focus-within) {
+    transform: none;
+  }
+}

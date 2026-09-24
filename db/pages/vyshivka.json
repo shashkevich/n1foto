@@ -1,0 +1,26 @@
+{
+  "meta": {
+    "page": "vyshivka"
+  },
+  "sections": [
+    {
+      "id": "vyshivka",
+      "title": "Машинная вышивка",
+      "cards": [
+        {
+          "id": "vyshivka-1",
+          "cardType": "service",
+          "title": "Машинная вышивка",
+          "img": [
+            "img/vyshivka/embroidery-machine.jpg"
+          ],
+          "description": "Вышивка на одежде, аксессуарах и ткани.",
+          "footer": "Машинная вышивка возможна практически на любом изделии из ткани или кожи. Стоимость зависит от количества стежков нити и рассчитывается индивидуально.\n\nКонсультация по вышивке:",
+          "contactPhone": "+7-916-645-71-61",
+          "contactTelegram": "",
+          "contactVk": ""
+        }
+      ]
+    }
+  ]
+}

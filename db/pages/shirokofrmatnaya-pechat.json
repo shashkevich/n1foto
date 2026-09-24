@@ -1,0 +1,26 @@
+{
+  "meta": {
+    "page": "shirokofrmatnaya-pechat"
+  },
+  "sections": [
+    {
+      "id": "shirokofrmatnaya-pechat",
+      "title": "Широкоформатная печать",
+      "cards": [
+        {
+          "id": "shirokofrmatnaya-pechat-1",
+          "cardType": "service",
+          "title": "Широкоформатная печать",
+          "img": [
+            "img/main-page/shirokoformatka-main.jpg"
+          ],
+          "description": "Используем УФ-печать, печать сольвентными и латексными чернилами.",
+          "footer": "Печатаем на фотобумаге, холсте, самоклеящейся плёнке, баннерной ткани, постерной бумаге и листовом ПВХ. При крупном заказе возможна закупка материала под заказ.\n\nДля расчёта стоимости пришлите макет, точные размеры и количество отпечатков.\n\nСвяжитесь с нами для расчёта стоимости:",
+          "contactPhone": "+7-926-062-10-08",
+          "contactTelegram": "serpfoto",
+          "contactVk": "serpfoto"
+        }
+      ]
+    }
+  ]
+}

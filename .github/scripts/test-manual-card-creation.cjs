@@ -68,6 +68,16 @@ async function editor(page, sections, product = true, initial = fixture(page)) {
 }
 
 (async () => {
+  for (const page of ['rollup', 'ruchki', 'shirokofrmatnaya-pechat', 'vyshivka']) {
+    const app = await editor(page, [], false);
+    assert.match(app.nodes.manualCards.innerHTML, /data-field="contactPhone"/);
+    assert.doesNotMatch(app.nodes.manualCards.innerHTML, /manual-edit-table/);
+    for (const [field, value] of Object.entries({title:'Новое имя',description:'Описание',footer:'Текст',contactPhone:'+7-900-123-45-67',contactTelegram:'new_name',contactVk:'new_vk'})) app.input(field,value,0,0);
+    await app.save(); await app.reload();
+    const saved=app.remote().sections[0].cards[0];
+    assert.equal(saved.contactPhone,'+7-900-123-45-67'); assert.equal(saved.contactTelegram,'new_name'); assert.equal(saved.contactVk,'new_vk');
+    assert.equal(saved.title,'Новое имя'); assert.equal(saved.footer,'Текст');
+  }
   const restorationEditor = await editor('sostavlenie-kollagey', [], false);
   assert.match(restorationEditor.nodes.manualCards.innerHTML, /Было — до реставрации/);
   assert.match(restorationEditor.nodes.manualCards.innerHTML, /Стало — после реставрации/);
@@ -78,7 +88,7 @@ async function editor(page, sections, product = true, initial = fixture(page)) {
   await restorationEditor.click('upload-page-image', 1, 0, { imageIndex: '0' });
   await restorationEditor.save();
   assert.deepEqual(restorationEditor.remote().sections[1].cards[0].img, ['img/test/uploads/photo-restoration-0.webp', 'img/test/uploads/photo-restoration-1.webp']);
-  for (const page of ['pechat-na-kruzhkah', 'sostavlenie-kollagey', 'tablichki', 'bloknoty']) {
+  for (const page of ['pechat-na-kruzhkah', 'sostavlenie-kollagey', 'tablichki', 'bloknoty', 'rollup', 'ruchki', 'shirokofrmatnaya-pechat', 'vyshivka', 'pechat-na-bannere', 'srochnoe-foto']) {
     const original = fixture(page);
     const app = await editor(page, [], false, original);
     for (const [sectionIndex, section] of original.sections.entries()) {

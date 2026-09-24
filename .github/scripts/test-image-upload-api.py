@@ -37,6 +37,12 @@ with tempfile.TemporaryDirectory(prefix='n1foto-upload-api-') as temporary:
     shutil.copyfile(repo / 'db/pages/sostavlenie-kollagey.json', collage)
     notebooks = site / 'db/pages/bloknoty.json'
     shutil.copyfile(repo / 'db/pages/bloknoty.json', notebooks)
+    editable_pages = ['rollup', 'ruchki', 'shirokofrmatnaya-pechat', 'vyshivka', 'pechat-na-bannere', 'srochnoe-foto']
+    for editable in editable_pages:
+        shutil.copyfile(repo / f'db/pages/{editable}.json', site / f'db/pages/{editable}.json')
+    (site / 'php/blocks').mkdir(parents=True)
+    for block in ['service-cards.php', 'service-card-contacts.php']:
+        shutil.copyfile(repo / 'php/blocks' / block, site / 'php/blocks' / block)
     home = site / 'db/main-page-cards.json'
     home.write_text(json.dumps({'main': [{'content': [{'title': 'Home', 'img': 'old-home.jpg'}]}]}), encoding='utf-8')
     poly = site / 'db/poligrafy.json'
@@ -76,6 +82,35 @@ with tempfile.TemporaryDirectory(prefix='n1foto-upload-api-') as temporary:
             else:
                 raise RuntimeError('Temporary PHP server did not start')
             fields = {'page': 'shary', 'sectionId': 'shary', 'cardId': 'test-card'}
+            for editable in editable_pages:
+                endpoint = base + '/api/page-json.php?page=' + editable
+                with opener.open(endpoint) as response:
+                    data = json.loads(response.read())
+                section = data['sections'][0]
+                card = section['cards'][0]
+                card.update(title='Edited title', description='Edited description', footer='Edited footer', archived=False)
+                if card.get('cardType') == 'service':
+                    card.update(contactPhone='+7-900-123-45-67', contactTelegram='edited_name', contactVk='edited_vk')
+                request = urllib.request.Request(endpoint, data=json.dumps(data).encode(), headers={'Content-Type': 'application/json'})
+                with opener.open(request) as response:
+                    assert json.loads(response.read())['ok']
+                with opener.open(endpoint) as response:
+                    assert json.loads(response.read()) == data
+                status, uploaded_card = upload('page-image.php', {'page': editable, 'sectionId': section['id'], 'cardId': card['id']})
+                assert status == 200 and uploaded_card['path'].startswith('img/' + editable + '/uploads/'), uploaded_card
+                saved_path = site / f'db/pages/{editable}.json'
+                saved = json.loads(saved_path.read_text(encoding='utf-8'))
+                assert saved['sections'][0]['cards'][0] == {**card, 'img': [uploaded_card['path']]}
+                if card.get('cardType') == 'service':
+                    php_code = f"$servicePageId='{editable}'; include 'php/blocks/service-cards.php';"
+                    html = subprocess.check_output([args.php, '-r', php_code], cwd=site).decode('utf-8')
+                    assert 'Edited title' in html and 'Edited footer' in html and uploaded_card['path'] in html
+                    assert 'tel:+79001234567' in html and 'https://wa.me/79001234567' in html
+                    assert 'https://t.me/edited_name' in html and 'https://vk.com/edited_vk' in html
+                    saved['sections'][0]['cards'][0]['archived'] = True
+                    saved_path.write_text(json.dumps(saved), encoding='utf-8')
+                    html = subprocess.check_output([args.php, '-r', php_code], cwd=site).decode('utf-8')
+                    assert '<article' not in html, 'Archived service remains visible'
             notebook_endpoint = base + '/api/page-json.php?page=bloknoty'
             with opener.open(notebook_endpoint) as response:
                 notebook_data = json.loads(response.read())

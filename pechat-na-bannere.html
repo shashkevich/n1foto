@@ -3,6 +3,9 @@
 
 <head>
 	<? include "php/blocks/head.php" ?>
+	<link rel="stylesheet" href="css/plastic-sign-calculator.css?v=20260923-7">
+	<link rel="stylesheet" href="css/product-cards.css?v=20260923-7">
+	<link rel="stylesheet" href="css/banner-calculator.css?v=20260924-4">
 </head>
 
 <body class="d-flex flex-column h-100">
@@ -12,8 +15,10 @@
 	<section class="py-4">
 		<div class="container mtb text-center" id="">
 			<h1 class="py-4"><?php echo $link['name'] ?></h1>
-            <div class="cardsField row justify-content-md-center row-cols-1 row-cols-md-1 row-cols-lg-1 row-cols-xl-2 my-3 text-center" id="banner" name="">
+            <div class="plastic-calculator-wrap banner-calculator my-3 pt-4" id="bannerCalculator" aria-busy="true">
+                <p role="status">Загружаем калькулятор…</p>
             </div>
+            <noscript><p>Для расчёта включите JavaScript или <a href="contact.html">свяжитесь с нами</a>.</p></noscript>
 			Баннерная ткань используется при печати любых изображений для билбордов и брандмауэров, а также для растяжек и небольших плакатов. "Баннеры" подходят для использования как внутри помещений, так и снаружи.
 Для удобства крепления баннерной ткани, может понадобиться установка люверсов.
 		</div>
@@ -21,7 +26,7 @@
 	</section>
 
 	<? include "php/blocks/footer.php" ?>
-	<script src="js/copy-service-tables-builder.js"></script>
+	<script src="js/banner-calculator.js?v=20260924-5"></script>
 </body>
 
 </html>

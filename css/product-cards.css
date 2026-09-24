@@ -64,8 +64,10 @@
 [data-product-page="tablichki"] .catalog-card__media { background: #fff; }
 [data-product-page="tablichki"] .catalog-card__image { padding: 0; mix-blend-mode: normal; }
 
-[data-product-page="pechat-na-podushkah"] .catalog-card__media { aspect-ratio: 1 / 1; }
-[data-product-page="pechat-na-podushkah"] .catalog-card__image { padding: 0; mix-blend-mode: normal; }
+[data-product-page="pechat-na-podushkah"] .catalog-card__media,
+[data-product-page="insta-pechat"] .catalog-card__media { aspect-ratio: 1 / 1; }
+[data-product-page="pechat-na-podushkah"] .catalog-card__image,
+[data-product-page="insta-pechat"] .catalog-card__image { padding: 0; mix-blend-mode: normal; }
 
 [data-product-page="magnity"] .catalog-card__image,
 [data-product-page="pazly"] .catalog-card__image,

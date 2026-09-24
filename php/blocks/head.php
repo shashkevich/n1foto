@@ -22,3 +22,5 @@ $link = $title_arr[$_SERVER["SCRIPT_NAME"]]?>
 <link rel="stylesheet" href="css/legacy-cards.css?v=20260923-7">
 <link rel="stylesheet" href="/css/service-links.css?v=20260922-7">
 <link rel="stylesheet" href="/css/responsive.css?v=20260922-2">
+
+<link rel="stylesheet" href="/css/card-style.css?v=20260924-1">

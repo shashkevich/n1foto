@@ -272,6 +272,8 @@
 
     if (input.dataset.field === 'archived') {
       card.archived = input.checked;
+    } else if (['contactPhone', 'contactTelegram', 'contactVk'].includes(input.dataset.field)) {
+      card[input.dataset.field] = value;
     } else if (input.dataset.field === 'title') {
       card.title = value;
     } else if (input.dataset.field === 'subtitle') {
@@ -698,7 +700,7 @@
 
           ${'description' in card ? `
             <label class="field">
-              <span>${pageId === 'sostavlenie-kollagey' ? 'Текст под заголовком' : (pageId === 'nakleyki' ? 'Краткое описание материала' : (isProductCard(card) ? 'Описание товара' : (section.id === 'canvas-standard' ? 'Описание таблицы' : 'Описание метода')))}</span>
+              <span>${card.cardType === 'service' || pageId === 'pechat-na-bannere' || pageId === 'sostavlenie-kollagey' ? 'Текст под заголовком' : (pageId === 'nakleyki' ? 'Краткое описание материала' : (isProductCard(card) ? 'Описание товара' : (section.id === 'canvas-standard' ? 'Описание таблицы' : 'Описание метода')))}</span>
               <textarea rows="${isProductCard(card) ? '2' : '4'}" data-field="description" data-section-index="${sectionIndex}" data-card-index="${cardIndex}">${escapeHtml(card.description || '')}</textarea>
             </label>
           ` : ''}
@@ -718,19 +720,20 @@
           ` : ''}
 
           <label class="field">
-            <span>${card.cardType === 'restoration' ? 'Текст о стоимости' : (isProductCard(card) ? 'Подпись к основной цене' : 'Подпись перед таблицей')}</span>
+            <span>${card.cardType === 'service' ? 'Дополнительный текст' : card.cardType === 'restoration' ? 'Текст о стоимости' : (isProductCard(card) ? 'Подпись к основной цене' : 'Подпись перед таблицей')}</span>
             <textarea rows="2" data-field="price_title" data-section-index="${sectionIndex}" data-card-index="${cardIndex}">${escapeHtml(card.price_title || '')}</textarea>
           </label>
 
           <label class="field">
-            <span>${isProductCard(card) ? 'Примечание к товару' : 'Примечание под таблицей'}</span>
+            <span>${card.cardType === 'service' ? 'Основной текст (пустая строка разделяет абзацы)' : isProductCard(card) ? 'Примечание к товару' : 'Примечание под таблицей'}</span>
             <textarea rows="${isProductCard(card) ? '2' : '4'}" data-field="footer" data-section-index="${sectionIndex}" data-card-index="${cardIndex}">${escapeHtml(card.footer || '')}</textarea>
           </label>
         </div>
 
+        ${card.cardType === 'service' ? `<div class="manual-card-grid">${[['contactPhone', 'Телефон и WhatsApp'], ['contactTelegram', 'Telegram: имя без @ (пусто — скрыть)'], ['contactVk', 'VK: имя страницы (пусто — скрыть)']].map(([field, label]) => `<label class="field"><span>${label}</span><input data-field="${field}" data-section-index="${sectionIndex}" data-card-index="${cardIndex}" value="${escapeHtml(card[field] || '')}"></label>`).join('')}</div>` : ''}
         ${renderExtrasEditor(sectionIndex, card, cardIndex)}
 
-        ${card.cardType === 'restoration' ? '' : renderTableEditor(section, sectionIndex, card, cardIndex)}
+        ${['restoration', 'service'].includes(card.cardType) ? '' : renderTableEditor(section, sectionIndex, card, cardIndex)}
       </article>
     `;
   };
