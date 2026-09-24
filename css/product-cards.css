@@ -67,6 +67,13 @@
 [data-product-page="pechat-na-podushkah"] .catalog-card__media { aspect-ratio: 1 / 1; }
 [data-product-page="pechat-na-podushkah"] .catalog-card__image { padding: 0; mix-blend-mode: normal; }
 
+[data-product-page="pazly"] .catalog-card__image,
+[data-product-page="pechat-na-sumkah"] .catalog-card__image,
+[data-product-page="kovriki"] .catalog-card__image,
+[data-product-page="bage"] .catalog-card__image,
+[data-product-page="ocifrovka-videokasset"] .catalog-card__image,
+[data-product-page="vlagostoykie-ramki"] .catalog-card__image { mix-blend-mode: normal; }
+
 .catalog-card__body {
   display: flex;
   flex-direction: column;

@@ -7,7 +7,7 @@ const read = file => fs.readFileSync(path.join(__dirname, '../..', file), 'utf8'
 const fixture = () => JSON.parse(read('db/pages/sostavlenie-kollagey.json'));
 class Node {
   constructor(tag) {
-    this.tag = tag; this.children = []; this.events = {}; this.attributes = {}; this.className = ''; this.value = '';
+    this.tag = tag; this.children = []; this.events = {}; this.attributes = {}; this.dataset = {}; this.className = ''; this.value = '';
     this.classList = { add: name => { this.className += ` ${name}`; } };
     this.style = { setProperty: (key, value) => { this.style[key] = value; } };
   }
@@ -20,14 +20,15 @@ class Node {
 }
 const find = (node, tag) => [node, ...node.children.flatMap(child => find(child, tag))].filter(node => node.tag === tag);
 const flush = () => new Promise(setImmediate);
-async function render(respond = () => fixture()) {
+async function render(respond = () => fixture(), cardSource = '') {
   const root = new Node('div'); const errors = []; let requests = 0;
+  root.dataset.cardSource = cardSource;
   vm.runInNewContext(read('js/collage-card.js'), {
     window: { addEventListener: (_, ready) => ready() },
     document: { querySelector: () => root, createElement: tag => new Node(tag) },
     console: { error: error => errors.push(error) },
     fetch: async (url, options) => {
-      assert.equal(url, '/db/pages/sostavlenie-kollagey.json'); assert.equal(options.cache, 'no-store');
+      assert.equal(url, cardSource === 'srochnoe-foto' ? '/db/tovary.json' : '/db/pages/sostavlenie-kollagey.json'); assert.equal(options.cache, 'no-store');
       return { ok: true, json: async () => respond(++requests) };
     }
   });
@@ -69,5 +70,20 @@ async function render(respond = () => fixture()) {
   assert.equal(find(failed.root, 'article').length, 2); assert.equal(failed.root.attributes['aria-busy'], 'false');
   find(root, 'img')[0].events.error(); assert.ok(root.textContent.includes('Фото временно недоступно'));
   assert.ok(root.textContent.includes('150 ₽'));
+  const documentData = JSON.parse(read('db/tovary.json'));
+  const original = JSON.stringify(documentData);
+  const documentCards = await render(() => documentData, 'srochnoe-foto');
+  assert.equal(documentCards.errors.length, 0);
+  assert.equal(find(documentCards.root, 'article').length, documentData['srochnoe-foto'].length);
+  const expected = documentData['srochnoe-foto'][0];
+  assert.equal(find(documentCards.root, 'img')[0].src, expected.img);
+  assert.equal(find(documentCards.root, 'img')[0].alt, expected.alt);
+  assert.equal(find(documentCards.root, 'tbody')[0].children.length, expected.table.length);
+  for (const row of expected.table) for (const value of Object.values(row)) assert.ok(documentCards.root.textContent.includes(value));
+  assert.ok(documentCards.root.textContent.includes(expected.descr.replace(/<br\s*\/?\s*>/gi, '\n')));
+  assert.equal(JSON.stringify(documentData), original, 'Restyling keeps source content unchanged');
+  const missingDocument = await render(() => ({}), 'srochnoe-foto');
+  assert.equal(missingDocument.errors.length, 1);
+  assert.ok(missingDocument.root.textContent.includes('Повторить загрузку'));
   console.log('PASS: collage image, all prices, editable fields, archive/restore, network retry and image fallback.');
 })().catch(error => { console.error(error); process.exitCode = 1; });
