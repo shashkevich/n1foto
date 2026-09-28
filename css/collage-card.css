@@ -111,3 +111,14 @@
 @media (min-width: 992px) {
   .collage-catalog--four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
+
+/* Centre incomplete rows while keeping each binding card one third wide. */
+.collage-catalog--third { display: flex; flex-wrap: wrap; justify-content: center; }
+.collage-catalog--third > .collage-card { flex: 0 1 100%; }
+.collage-catalog--third .price-cell { white-space: normal; }
+@media (min-width: 576px) {
+  .collage-catalog--third > .collage-card { flex-basis: calc((100% - 24px) / 2); }
+}
+@media (min-width: 992px) {
+  .collage-catalog--third > .collage-card { flex-basis: calc((100% - 48px) / 3); }
+}

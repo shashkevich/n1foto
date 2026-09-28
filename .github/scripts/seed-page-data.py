@@ -10,6 +10,7 @@ import uuid
 
 REMOTE_DIRECTORY = "/n1foto.com/public_html/db/pages"
 PAGE_SEEDS = {
+    "broshurovka.json": ["broshurovka"],
     "vyshivka.json": ["vyshivka"],
     "srochnoe-foto.json": ["srochnoe-foto"],
     "pechat-na-bannere.json": ["banner"],

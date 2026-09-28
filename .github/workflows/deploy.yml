@@ -90,6 +90,8 @@ jobs:
             db/pages/bage.json
             db/pages/insta-pechat.json
             db/pages/bloknoty.json
+            db/pages/broshurovka.json
+            img/broshurovka/uploads/**
             db/pages/sostavlenie-kollagey.json
             img/buklety/uploads/**
             img/listovki/uploads/**

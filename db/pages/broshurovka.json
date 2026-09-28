@@ -1,0 +1,58 @@
+{
+  "meta": {
+    "page": "broshurovka",
+    "source": "db/tovary.json#broshurovka"
+  },
+  "sections": [
+    {
+      "id": "broshurovka",
+      "title": "Брошюровка",
+      "cards": [
+        {
+          "id": "broshurovka-1",
+          "cardType": "product",
+          "title": "Пластиковая пружина",
+          "img": [
+            "img/broshurovka/broshurovka-plastic.jpg"
+          ],
+          "description": "",
+          "price_title": "",
+          "footer": "Прозрачная обложка сверху, пластиковая пружина и плотная бумажная обложка снизу",
+          "archived": false,
+          "table": [
+            {
+              "Формат": "А4",
+              "Цена": "200 ₽ работа + 1 ₽ за каждый лист."
+            },
+            {
+              "Формат": "А3",
+              "Цена": "300 ₽ работа + 1 ₽ за каждый лист."
+            }
+          ]
+        },
+        {
+          "id": "broshurovka-2",
+          "cardType": "product",
+          "title": "Металлическая пружина",
+          "img": [
+            "img/broshurovka/broshurovka-metal.jpg"
+          ],
+          "description": "",
+          "price_title": "",
+          "footer": "Прозрачная обложка сверху, металлическая пружина и плотная бумажная обложка снизу",
+          "archived": false,
+          "table": [
+            {
+              "Формат": "А4",
+              "Цена": "280 ₽ работа + 1 ₽ за каждый лист."
+            },
+            {
+              "Формат": "А3",
+              "Цена": "350 ₽ работа + 1 ₽ за каждый лист."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

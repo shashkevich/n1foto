@@ -165,7 +165,7 @@
       ...(pageId !== 'vizitki' ? { description: '' } : {}),
       price_title: '',
       footer: '',
-      table: [{ 'Условие': 'Цена за 1 шт.', 'Цена': '' }]
+      table: pageId === 'broshurovka' ? [{ 'Формат': 'А4', 'Цена': '' }] : [{ 'Условие': 'Цена за 1 шт.', 'Цена': '' }]
     };
     section.cards = Array.isArray(section.cards) ? section.cards : [];
     section.cards.push(card);

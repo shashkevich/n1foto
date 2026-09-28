@@ -116,6 +116,24 @@ async function render(respond = () => fixture(), cardSource = '') {
   assert.equal(find(changed.root, 'img')[0].src, edited.img[0]);
   notebookData.sections[0].cards[1].archived = false;
   assert.equal(find((await render(() => notebookData, 'bloknoty')).root, 'article').length, 4);
+  const bindingData = JSON.parse(read('db/pages/broshurovka.json'));
+  const binding = await render(() => bindingData, 'broshurovka');
+  assert.equal(binding.errors.length, 0);
+  assert.equal(find(binding.root, 'article').length, 2);
+  for (const [index, card] of bindingData.sections[0].cards.entries()) {
+    const rendered = find(binding.root, 'article')[index];
+    assert.equal(find(rendered, 'img')[0].src, legacyData.broshurovka[index].img);
+    assert.deepEqual(find(rendered, 'thead')[0].children[0].children.map(cell => cell.textContent), ['Формат', 'Цена']);
+    for (const [i, price] of [legacyData.broshurovka[index].price, legacyData.broshurovka[index].secondPrice].entries()) {
+      assert.equal(card.table[i]['Цена'], price.split('Цена: ')[1]);
+      assert.ok(rendered.textContent.includes(card.table[i]['Цена']));
+    }
+  }
+  bindingData.sections[0].cards[0].archived = true;
+  bindingData.sections[0].cards[1].table[0]['Цена'] = '999 ₽';
+  const editedBinding = await render(() => bindingData, 'broshurovka');
+  assert.equal(find(editedBinding.root, 'article').length, 1);
+  assert.ok(editedBinding.root.textContent.includes('999 ₽'));
   const missingDocument = await render(() => ({}), 'srochnoe-foto');
   assert.equal(missingDocument.errors.length, 1);
   assert.ok(missingDocument.root.textContent.includes('Повторить загрузку'));

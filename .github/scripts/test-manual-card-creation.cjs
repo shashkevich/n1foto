@@ -119,7 +119,7 @@ async function editor(page, sections, product = true, initial = fixture(page)) {
 
   for (const [page, sections, product] of [
     ['pechat-na-kruzhkah', ['kruzhki'], true], ['shary', ['shary'], true],
-    ['bloknoty', ['bloknoty'], true],
+    ['bloknoty', ['bloknoty'], true], ['broshurovka', ['broshurovka'], true],
     ['pechat-i-kopirovanie', ['copyandprint', 'chertezhy'], false]
   ]) {
     const original = fixture(page);
@@ -145,6 +145,7 @@ async function editor(page, sections, product = true, initial = fixture(page)) {
     assert.equal(app.writes.length, 1);
     const added = app.remote().sections[0].cards[count];
     assert.equal(added.title, 'Новая услуга');
+    if (page === 'broshurovka') assert.deepEqual(Object.keys(added.table[0]), ['Формат', 'Цена']);
     assert.equal(added.cardType === 'product', product);
     assert.match(added.id, /^[a-z0-9-]+$/);
     assert.deepEqual(app.remote().sections[0].cards.slice(0, count), original.sections[0].cards, 'Existing cards unchanged');

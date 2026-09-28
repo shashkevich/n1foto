@@ -37,7 +37,7 @@ with tempfile.TemporaryDirectory(prefix='n1foto-upload-api-') as temporary:
     shutil.copyfile(repo / 'db/pages/sostavlenie-kollagey.json', collage)
     notebooks = site / 'db/pages/bloknoty.json'
     shutil.copyfile(repo / 'db/pages/bloknoty.json', notebooks)
-    editable_pages = ['rollup', 'ruchki', 'shirokofrmatnaya-pechat', 'vyshivka', 'pechat-na-bannere', 'srochnoe-foto']
+    editable_pages = ['broshurovka', 'rollup', 'ruchki', 'shirokofrmatnaya-pechat', 'vyshivka', 'pechat-na-bannere', 'srochnoe-foto']
     for editable in editable_pages:
         shutil.copyfile(repo / f'db/pages/{editable}.json', site / f'db/pages/{editable}.json')
     (site / 'php/blocks').mkdir(parents=True)

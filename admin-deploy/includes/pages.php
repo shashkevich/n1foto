@@ -442,6 +442,7 @@ function adminProductSitePages(): array
         ['bage', 'Бейджи', 'Реклама и оформление', ['bages'], 'bages'],
         ['insta-pechat', 'Печать фото Polaroid', 'Фотоуслуги', ['polaroid'], 'polaroid'],
         ['bloknoty', 'Блокноты с фотографией', 'Сувениры', ['bloknoty'], 'bloknoty'],
+        ['broshurovka', 'Брошюровка', 'Полиграфия', ['broshurovka'], 'broshurovka'],
     ];
 
     return array_map(static function (array $definition): array {
