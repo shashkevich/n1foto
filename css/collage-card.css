@@ -122,3 +122,12 @@
 @media (min-width: 992px) {
   .collage-catalog--third > .collage-card { flex-basis: calc((100% - 48px) / 3); }
 }
+
+.collage-catalog--four.collage-catalog--centered { display: flex; flex-wrap: wrap; justify-content: center; }
+.collage-catalog--four.collage-catalog--centered > .collage-card { flex: 0 1 100%; }
+@media (min-width: 576px) {
+  .collage-catalog--four.collage-catalog--centered > .collage-card { flex-basis: calc((100% - 24px) / 2); }
+}
+@media (min-width: 992px) {
+  .collage-catalog--four.collage-catalog--centered > .collage-card { flex-basis: calc((100% - 72px) / 4); }
+}
