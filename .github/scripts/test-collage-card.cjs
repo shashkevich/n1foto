@@ -156,6 +156,35 @@ async function render(respond = () => fixture(), cardSource = '') {
   assert.equal(find(editedCalendars.root,'img')[0].src,'img/kalendari/uploads/new.webp');
   assert.ok(editedCalendars.root.textContent.includes('Новый календарь'));
   assert.ok(editedCalendars.root.textContent.includes('999 ₽'));
+  const businessData = JSON.parse(read('db/pages/vizitki.json'));
+  const businessOriginal = JSON.stringify(businessData);
+  const business = await render(() => businessData, 'vizitki');
+  assert.equal(business.errors.length, 0);
+  const businessCards = find(business.root, 'article');
+  const businessSource = businessData.sections.flatMap(section => section.cards);
+  assert.equal(businessCards.length, businessSource.length);
+  for (const [index, source] of businessSource.entries()) {
+    const rendered = businessCards[index];
+    const quantities = Object.keys(source.table[0]).slice(1);
+    const rows = find(rendered, 'tbody')[0].children;
+    assert.equal(rows.length, quantities.length);
+    for (const [i, quantity] of quantities.entries()) {
+      assert.equal(rows[i].children[0].textContent, quantity);
+      source.table.forEach((priceRow, j) => assert.equal(rows[i].children[j + 1].textContent, priceRow[quantity]));
+    }
+    assert.ok(rendered.textContent.includes(source.footer.replace(/<br\s*\/?\s*>/gi, '\n')));
+    assert.ok(!rendered.textContent.includes('<br>'));
+  }
+  assert.equal(JSON.stringify(businessData), businessOriginal, 'Display must not transpose saved admin tables');
+  businessData.sections[0].cards[0].archived = true;
+  businessData.sections[1].cards[0].title = 'Изменено в админке';
+  businessData.sections[1].cards[0].img = ['img/vizitki/custom.jpg'];
+  businessData.sections[1].cards[0].table[0]['500 шт'] = '777 ₽';
+  const editedBusiness = await render(() => businessData, 'vizitki');
+  assert.equal(find(editedBusiness.root, 'article').length, 2);
+  assert.ok(editedBusiness.root.textContent.includes('Изменено в админке'));
+  assert.ok(editedBusiness.root.textContent.includes('777 ₽'));
+  assert.equal(find(editedBusiness.root, 'img').at(-1).src, 'img/vizitki/custom.jpg');
   const missingDocument = await render(() => ({}), 'srochnoe-foto');
   assert.equal(missingDocument.errors.length, 1);
   assert.ok(missingDocument.root.textContent.includes('Повторить загрузку'));

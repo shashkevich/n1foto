@@ -27,7 +27,7 @@ with tempfile.TemporaryDirectory(prefix='n1foto-upload-api-') as temporary:
     (site / 'db/pages').mkdir(parents=True)
     for name in ['page-image.php', 'poligrafy-image.php', 'site-image.php', 'page-json.php']:
         shutil.copyfile(repo / 'admin-deploy/api' / name, admin / 'api' / name)
-    for name in ['site-storage.php', 'pages.php', 'image-upload.php']:
+    for name in ['site-storage.php', 'pages.php', 'page-card-ids.php', 'image-upload.php']:
         shutil.copyfile(repo / 'admin-deploy/includes' / name, admin / 'includes' / name)
     # Authentication is outside this test; only the temporary server gets this stub.
     (admin / 'includes/auth.php').write_text('<?php function adminRequireLogin(): void {}', encoding='utf-8')
@@ -37,7 +37,7 @@ with tempfile.TemporaryDirectory(prefix='n1foto-upload-api-') as temporary:
     shutil.copyfile(repo / 'db/pages/sostavlenie-kollagey.json', collage)
     notebooks = site / 'db/pages/bloknoty.json'
     shutil.copyfile(repo / 'db/pages/bloknoty.json', notebooks)
-    editable_pages = ['kalendari', 'broshurovka', 'rollup', 'ruchki', 'shirokofrmatnaya-pechat', 'vyshivka', 'pechat-na-bannere', 'srochnoe-foto']
+    editable_pages = ['vizitki', 'kalendari', 'broshurovka', 'rollup', 'ruchki', 'shirokofrmatnaya-pechat', 'vyshivka', 'pechat-na-bannere', 'srochnoe-foto']
     for editable in editable_pages:
         shutil.copyfile(repo / f'db/pages/{editable}.json', site / f'db/pages/{editable}.json')
     (site / 'php/blocks').mkdir(parents=True)
@@ -111,6 +111,33 @@ with tempfile.TemporaryDirectory(prefix='n1foto-upload-api-') as temporary:
                     saved_path.write_text(json.dumps(saved), encoding='utf-8')
                     html = subprocess.check_output([args.php, '-r', php_code], cwd=site).decode('utf-8')
                     assert '<article' not in html, 'Archived service remains visible'
+            # Existing ID-less business cards accept direct image uploads without a manual save.
+            business_path = site / 'db/pages/vizitki.json'
+            original_business = json.loads((repo / 'db/pages/vizitki.json').read_text(encoding='utf-8'))
+            business_path.write_text(json.dumps(original_business), encoding='utf-8')
+            before = business_path.read_bytes()
+            business_endpoint = base + '/api/page-json.php?page=vizitki'
+            with opener.open(business_endpoint) as response:
+                loaded = json.loads(response.read())
+            with opener.open(business_endpoint) as response:
+                assert json.loads(response.read()) == loaded, 'Legacy IDs must be stable'
+            assert business_path.read_bytes() == before, 'Reading must not publish changes'
+            for section_index, section in enumerate(loaded['sections']):
+                for card_index, card in enumerate(section['cards']):
+                    status, uploaded = upload('page-image.php', {'page':'vizitki', 'sectionId':section['id'], 'cardId':card['id']})
+                    assert status == 200 and uploaded['path'].startswith('img/vizitki/uploads/'), uploaded
+                    loaded['sections'][section_index]['cards'][card_index]['img'] = [uploaded['path']]
+                    saved = json.loads(business_path.read_text(encoding='utf-8'))
+                    assert saved['sections'] == loaded['sections'], 'Upload must preserve prices, notes and other cards'
+            # Reject a stale legacy target if its content changed after loading.
+            business_path.write_text(json.dumps(original_business), encoding='utf-8')
+            with opener.open(business_endpoint) as response:
+                stale = json.loads(response.read())['sections'][0]['cards'][0]['id']
+            original_business['sections'][0]['cards'][0]['title'] = 'Changed by another editor'
+            business_path.write_text(json.dumps(original_business), encoding='utf-8')
+            before = business_path.read_bytes()
+            status, rejected = upload('page-image.php', {'page':'vizitki', 'sectionId':'vizitki-cifra', 'cardId':stale})
+            assert status == 404 and business_path.read_bytes() == before
             notebook_endpoint = base + '/api/page-json.php?page=bloknoty'
             with opener.open(notebook_endpoint) as response:
                 notebook_data = json.loads(response.read())

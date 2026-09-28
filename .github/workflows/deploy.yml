@@ -95,6 +95,7 @@ jobs:
             img/kalendari/uploads/**
             img/broshurovka/uploads/**
             db/pages/sostavlenie-kollagey.json
+            img/vizitki/uploads/**
             img/buklety/uploads/**
             img/listovki/uploads/**
             img/odezhda/uploads/**

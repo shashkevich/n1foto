@@ -120,6 +120,10 @@ function adminSitePages(): array
             'group' => 'Полиграфия',
             'pageJson' => 'db/pages/vizitki.json',
             'manualSections' => ['vizitki-cifra', 'vizitki-offset'],
+            'imageUpload' => [
+                'directory' => 'img/vizitki/uploads',
+                'sections' => ['vizitki-cifra', 'vizitki-offset'],
+            ],
             'data' => [
                 'prices' => 'db/pages/vizitki.json',
                 'seo' => 'php/seo.php#/vizitki.html',

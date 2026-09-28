@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 require dirname(__DIR__) . '/includes/auth.php';
 require dirname(__DIR__) . '/includes/pages.php';
+require dirname(__DIR__) . '/includes/page-card-ids.php';
 require dirname(__DIR__) . '/includes/site-storage.php';
 adminRequireLogin();
 
@@ -36,7 +37,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         adminPageJsonResponse(['ok' => false, 'error' => 'Не удалось прочитать файл страницы.'], 500);
     }
 
-    echo $content;
+    if ($pageId === 'vizitki') {
+        $data = json_decode($content, true);
+        if (!is_array($data)) adminPageJsonResponse(['ok' => false, 'error' => 'Не удалось прочитать карточки.'], 500);
+        echo json_encode(adminEnsurePageCardIds($pageId, $data), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    } else {
+        echo $content;
+    }
     exit;
 }
 
@@ -50,6 +57,7 @@ if (!is_array($data)) {
     adminPageJsonResponse(['ok' => false, 'error' => 'Передан некорректный JSON.'], 400);
 }
 
+$data = adminEnsurePageCardIds($pageId, $data);
 $encoded = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
 
 if ($encoded === false) {

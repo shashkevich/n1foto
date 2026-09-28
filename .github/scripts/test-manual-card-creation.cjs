@@ -78,6 +78,17 @@ async function editor(page, sections, product = true, initial = fixture(page)) {
     assert.equal(saved.contactPhone,'+7-900-123-45-67'); assert.equal(saved.contactTelegram,'new_name'); assert.equal(saved.contactVk,'new_vk');
     assert.equal(saved.title,'Новое имя'); assert.equal(saved.footer,'Текст');
   }
+  const businessEditor = await editor('vizitki', [], false);
+  businessEditor.input('title', 'Обновлённые визитки', 0, 0);
+  businessEditor.input('images', 'img/vizitki/custom.jpg', 0, 0);
+  businessEditor.input('footer', 'Новое примечание', 0, 0);
+  businessEditor.input('cell', '777 ₽', 0, 0, {rowIndex: 0, header: '50 шт'});
+  await businessEditor.save(); await businessEditor.reload();
+  const savedBusiness = businessEditor.remote().sections[0].cards[0];
+  assert.equal(savedBusiness.title, 'Обновлённые визитки');
+  assert.deepEqual(savedBusiness.img, ['img/vizitki/custom.jpg']);
+  assert.equal(savedBusiness.footer, 'Новое примечание');
+  assert.equal(savedBusiness.table[0]['50 шт'], '777 ₽');
   const restorationEditor = await editor('sostavlenie-kollagey', [], false);
   assert.match(restorationEditor.nodes.manualCards.innerHTML, /Было — до реставрации/);
   assert.match(restorationEditor.nodes.manualCards.innerHTML, /Стало — после реставрации/);

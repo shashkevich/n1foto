@@ -1,7 +1,7 @@
 window.addEventListener('DOMContentLoaded', () => {
   const root = document.querySelector('.collage-catalog');
   if (!root) return;
-  const pageId = ['srochnoe-foto', 'bloknoty', 'broshurovka', 'kalendari'].includes(root.dataset.cardSource) ? root.dataset.cardSource : 'sostavlenie-kollagey';
+  const pageId = ['srochnoe-foto', 'bloknoty', 'broshurovka', 'kalendari', 'vizitki'].includes(root.dataset.cardSource) ? root.dataset.cardSource : 'sostavlenie-kollagey';
   const dataUrl = `/db/pages/${pageId}.json`;
 
   const element = (tag, className = '', text) => {
@@ -43,6 +43,27 @@ window.addEventListener('DOMContentLoaded', () => {
     update();
     frame.append(after, before, element('span', 'restoration-comparison__label restoration-comparison__label--before', 'Было'), element('span', 'restoration-comparison__label restoration-comparison__label--after', 'Стало'), handle, slider);
     return frame;
+  };
+
+  const normalizeBusinessCard = (data) => {
+    const text = value => String(value ?? '').replace(/<br\s*\/?\s*>/gi, '\n').replace(/<[^>]*>/g, '');
+    const rows = Array.isArray(data.table) ? data.table : [];
+    const headers = Object.keys(rows[0] || {});
+    const labelHeader = headers[0];
+    const labels = rows.map(row => text(row[labelHeader]));
+    let table = rows;
+    // Keep saved admin data intact; turn wide quantity columns into compact rows.
+    if (headers.length > 2 && headers.slice(1).every(header => /шт/i.test(header)) && new Set(labels).size === labels.length) {
+      table = headers.slice(1).map(quantity => {
+        const row = { 'Тираж': quantity };
+        rows.forEach((item, index) => {
+          const label = labels[index] === 'Односторонние' ? '1 сторона' : labels[index] === 'Двухсторонние' ? '2 стороны' : labels[index];
+          row[label] = item[quantity];
+        });
+        return row;
+      });
+    }
+    return { ...data, title: text(data.title), description: text(data.description), price_title: text(data.price_title), footer: text(data.footer), table };
   };
 
   const renderCard = (data) => {
@@ -111,10 +132,10 @@ window.addEventListener('DOMContentLoaded', () => {
       const response = await fetch(dataUrl, { cache: 'no-store' });
       if (!response.ok) throw new Error(`Collage prices: ${response.status}`);
       const data = await response.json();
-      const sectionIds = pageId === 'sostavlenie-kollagey' ? ['kollagi', 'restoration'] : [pageId];
+      const sectionIds = pageId === 'sostavlenie-kollagey' ? ['kollagi', 'restoration'] : pageId === 'vizitki' ? ['vizitki-cifra', 'vizitki-offset'] : [pageId];
       const sections = data.sections?.filter((item) => sectionIds.includes(item.id));
       if (!sections?.length || sections.some((section) => !Array.isArray(section.cards))) throw new Error('Collage sections are missing');
-      const cards = sections.flatMap((section) => section.cards);
+      const cards = sections.flatMap((section) => section.cards).map(card => pageId === 'vizitki' ? normalizeBusinessCard(card) : card);
       root.replaceChildren(...cards.filter((card) => card.archived !== true).map(renderCard));
     } catch (error) {
       console.error(error);

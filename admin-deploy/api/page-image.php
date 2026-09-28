@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 require dirname(__DIR__) . '/includes/auth.php';
 require dirname(__DIR__) . '/includes/pages.php';
+require dirname(__DIR__) . '/includes/page-card-ids.php';
 require dirname(__DIR__) . '/includes/site-storage.php';
 require dirname(__DIR__) . '/includes/image-upload.php';
 adminRequireLogin();
@@ -64,6 +65,7 @@ if ($relativeDirectory === '' || (!is_dir($targetDirectory) && !mkdir($targetDir
 $relativeJsonPath = ltrim((string) $sitePage['pageJson'], '/');
 $jsonPath = adminSiteFilePath($relativeJsonPath);
 $data = json_decode((string) @file_get_contents($jsonPath), true);
+if (is_array($data)) $data = adminEnsurePageCardIds($pageId, $data);
 $hasStandardSections = is_array($data) && isset($data['sections']) && is_array($data['sections']);
 $hasHomeSections = $pageId === 'home' && is_array($data) && isset($data['main']) && is_array($data['main']);
 
