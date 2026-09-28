@@ -1,0 +1,79 @@
+{
+  "meta": {
+    "page": "kalendari",
+    "source": "db/tovary.json#kalendari"
+  },
+  "sections": [
+    {
+      "id": "kalendari",
+      "title": "Календари",
+      "cards": [
+        {
+          "id": "kalendari-1",
+          "cardType": "product",
+          "title": "Календарь перекидной Премиум",
+          "alt": "Календарь перекидной",
+          "img": [
+            "img/kalendari/perekidnoy-premium.jpg"
+          ],
+          "description": "",
+          "price_title": "",
+          "footer": "Срок изготовления 7 - 15 дней",
+          "archived": false,
+          "table": [
+            {
+              "Условие": "Формат А2",
+              "Цена": "3500 ₽"
+            },
+            {
+              "Условие": "Формат А3",
+              "Цена": "2000 ₽"
+            },
+            {
+              "Условие": "Дизайн",
+              "Цена": "от 800 ₽"
+            }
+          ]
+        },
+        {
+          "id": "kalendari-2",
+          "cardType": "product",
+          "title": "Календарь перекидной Стандарт",
+          "alt": "Календарь перекидной",
+          "img": [
+            "img/kalendari/perekidnoy-standart.jpg"
+          ],
+          "description": "",
+          "price_title": "",
+          "footer": "Срок изготовления 7 - 15 дней",
+          "archived": false,
+          "table": [
+            {
+              "Условие": "От 50 шт",
+              "Цена": "цены по запросу"
+            }
+          ]
+        },
+        {
+          "id": "kalendari-3",
+          "cardType": "product",
+          "title": "Календари \"ТРИО\" Эконом, Стандарт",
+          "alt": "Календари \"ТРИО\"",
+          "img": [
+            "img/kalendari/kalendar-trio.jpg"
+          ],
+          "description": "",
+          "price_title": "",
+          "footer": "Срок изготовления 2 - 7 дней",
+          "archived": false,
+          "table": [
+            {
+              "Условие": "От 1 шт",
+              "Цена": "цены по запросу"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

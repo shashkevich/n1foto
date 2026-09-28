@@ -91,6 +91,8 @@ jobs:
             db/pages/insta-pechat.json
             db/pages/bloknoty.json
             db/pages/broshurovka.json
+            db/pages/kalendari.json
+            img/kalendari/uploads/**
             img/broshurovka/uploads/**
             db/pages/sostavlenie-kollagey.json
             img/buklety/uploads/**

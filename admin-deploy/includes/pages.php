@@ -443,6 +443,7 @@ function adminProductSitePages(): array
         ['insta-pechat', 'Печать фото Polaroid', 'Фотоуслуги', ['polaroid'], 'polaroid'],
         ['bloknoty', 'Блокноты с фотографией', 'Сувениры', ['bloknoty'], 'bloknoty'],
         ['broshurovka', 'Брошюровка', 'Полиграфия', ['broshurovka'], 'broshurovka'],
+        ['kalendari', 'Календари', 'Полиграфия', ['kalendari'], 'kalendari'],
     ];
 
     return array_map(static function (array $definition): array {

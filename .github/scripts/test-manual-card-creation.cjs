@@ -119,7 +119,7 @@ async function editor(page, sections, product = true, initial = fixture(page)) {
 
   for (const [page, sections, product] of [
     ['pechat-na-kruzhkah', ['kruzhki'], true], ['shary', ['shary'], true],
-    ['bloknoty', ['bloknoty'], true], ['broshurovka', ['broshurovka'], true],
+    ['bloknoty', ['bloknoty'], true], ['broshurovka', ['broshurovka'], true], ['kalendari', ['kalendari'], true],
     ['pechat-i-kopirovanie', ['copyandprint', 'chertezhy'], false]
   ]) {
     const original = fixture(page);

@@ -1,7 +1,7 @@
 window.addEventListener('DOMContentLoaded', () => {
   const root = document.querySelector('.collage-catalog');
   if (!root) return;
-  const pageId = ['srochnoe-foto', 'bloknoty', 'broshurovka'].includes(root.dataset.cardSource) ? root.dataset.cardSource : 'sostavlenie-kollagey';
+  const pageId = ['srochnoe-foto', 'bloknoty', 'broshurovka', 'kalendari'].includes(root.dataset.cardSource) ? root.dataset.cardSource : 'sostavlenie-kollagey';
   const dataUrl = `/db/pages/${pageId}.json`;
 
   const element = (tag, className = '', text) => {

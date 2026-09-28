@@ -134,6 +134,28 @@ async function render(respond = () => fixture(), cardSource = '') {
   const editedBinding = await render(() => bindingData, 'broshurovka');
   assert.equal(find(editedBinding.root, 'article').length, 1);
   assert.ok(editedBinding.root.textContent.includes('999 ₽'));
+  const calendarData = JSON.parse(read('db/pages/kalendari.json'));
+  const calendars = await render(() => calendarData, 'kalendari');
+  assert.equal(calendars.errors.length, 0);
+  assert.equal(find(calendars.root, 'article').length, 3);
+  for (const [index, card] of calendarData.sections[0].cards.entries()) {
+    const original = legacyData.kalendari[index];
+    const rendered = find(calendars.root, 'article')[index];
+    assert.equal(find(rendered, 'img')[0].src, original.img);
+    assert.ok(rendered.textContent.includes(original.title));
+    assert.ok(rendered.textContent.includes(original.descr));
+    assert.deepEqual(card.table.map(row => row['Условие'] + ' - ' + row['Цена']), [original.price,original.secondPrice,original.thirdPrice].filter(Boolean));
+    for (const row of card.table) for (const value of Object.values(row)) assert.ok(rendered.textContent.includes(value));
+  }
+  calendarData.sections[0].cards[0].archived=true;
+  calendarData.sections[0].cards[1].title='Новый календарь';
+  calendarData.sections[0].cards[1].img=['img/kalendari/uploads/new.webp'];
+  calendarData.sections[0].cards[1].table[0]['Цена']='999 ₽';
+  const editedCalendars=await render(()=>calendarData,'kalendari');
+  assert.equal(find(editedCalendars.root,'article').length,2);
+  assert.equal(find(editedCalendars.root,'img')[0].src,'img/kalendari/uploads/new.webp');
+  assert.ok(editedCalendars.root.textContent.includes('Новый календарь'));
+  assert.ok(editedCalendars.root.textContent.includes('999 ₽'));
   const missingDocument = await render(() => ({}), 'srochnoe-foto');
   assert.equal(missingDocument.errors.length, 1);
   assert.ok(missingDocument.root.textContent.includes('Повторить загрузку'));
