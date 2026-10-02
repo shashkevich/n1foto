@@ -10,7 +10,7 @@ function adminRenderManualCardsEditor(array $sitePage): void
     $hasProductCards = $sitePage['id'] === 'shary' || !empty($sitePage['productCards']);
     $createSections = $hasProductCards
         ? array_values(array_diff($sections, ['plastic-sign', 'canvas-standard']))
-        : (in_array($sitePage['id'], ['vizitki', 'pechat-i-kopirovanie'], true) ? $sections : []);
+        : (in_array($sitePage['id'], ['vizitki', 'pechat-i-kopirovanie', 'nakleyki'], true) ? $sections : []);
     $isProduction = adminPublicSiteBaseUrl() === 'https://n1foto.com';
     $publishButtonLabel = $isProduction ? 'Опубликовать на n1foto.com' : 'Сохранить на тестовый сайт';
     ?>
@@ -55,6 +55,6 @@ function adminRenderManualCardsEditor(array $sitePage): void
 
       <div id="manualCards" class="manual-cards"></div>
     </section>
-    <script src="/assets/manual-cards-admin.js?v=20260928-1"></script>
+    <script src="/assets/manual-cards-admin.js?v=20261002-1"></script>
     <?php
 }

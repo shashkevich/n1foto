@@ -18,10 +18,11 @@ async function editor(page, sections, product = true, initial = fixture(page)) {
   let remote = clone(initial);
   const writes = [];
   const state = { failSave: false, focusCount: 0, confirmDelete: false, confirmations: 0,
-    fileSize: 2500000, uploadRequests: 0, failUpload: false };
+    stickerType: 'sheet-stickers', fileSize: 2500000, uploadRequests: 0, failUpload: false };
   nodes.uploadError = { hidden: true, textContent: '' };
   nodes.manualCards.querySelector = (selector) => selector.startsWith('[data-field="title"]')
     ? { focus() { state.focusCount++; } }
+    : selector.startsWith('[data-new-sticker-type]') ? { value: state.stickerType }
     : selector.startsWith('[data-upload-error]') ? nodes.uploadError
     : { files: [{ name: 'photo.webp', size: state.fileSize }] };
   class Form { constructor() { this.values = new Map(); } append(key, value) { this.values.set(key, value); } }
@@ -78,6 +79,77 @@ async function editor(page, sections, product = true, initial = fixture(page)) {
     assert.equal(saved.contactPhone,'+7-900-123-45-67'); assert.equal(saved.contactTelegram,'new_name'); assert.equal(saved.contactVk,'new_vk');
     assert.equal(saved.title,'Новое имя'); assert.equal(saved.footer,'Текст');
   }
+
+  const stickers = await editor('nakleyki', ['stickers'], false);
+  const originalStickers = fixture('nakleyki').sections[0].cards;
+  assert.match(stickers.nodes.manualCards.innerHTML, /Тип новой карточки/);
+  await stickers.click('move-card-down', 0, 0);
+  assert.equal(stickers.writes.length, 0, 'Reordering waits for save');
+  await stickers.save(); await stickers.reload();
+  assert.deepEqual(stickers.remote().sections[0].cards, [originalStickers[1], originalStickers[0], ...originalStickers.slice(2)]);
+  await stickers.click('move-card-up', 0, 1);
+  await stickers.save();
+  assert.deepEqual(stickers.remote().sections[0].cards, originalStickers, 'Reordering preserves all calculator data and IDs');
+  const templates = [
+    ['sheet-stickers', [{ 'Вариант': 'Одним листом, А4', '1 шт.': '100', '2+': '90', '11+': '80', '51+': '70', '100+': '60' }]],
+    ['area-stickers', [{ 'Услуга': 'Печать', 'Цена, ₽/м²': '900' }, { 'Услуга': 'Контурная резка', 'Цена, ₽/м²': '600' }, { 'Услуга': 'Ламинация', 'Цена, ₽/м²': '600' }]],
+    ['plotter-stickers', [{ 'Цвет': 'Белая, матовая или глянцевая', 'До 1 м²': '2000', 'От 1 до 5 м²': '1500', 'От 5 до 10 м²': '1000', 'Минимум, ₽': '350' }]]
+  ];
+  for (const [type, rows] of templates) {
+    stickers.state.stickerType = type;
+    const count = stickers.remote().sections[0].cards.length;
+    const writes = stickers.writes.length;
+    await stickers.click('add-card');
+    stickers.input('title', type, 0, count);
+    await stickers.save();
+    assert.equal(stickers.writes.length, writes, 'Blank calculator prices cannot be saved');
+    rows.forEach((row, rowIndex) => Object.entries(row).forEach(([header, value]) => stickers.input('cell', value, 0, count, { rowIndex, header })));
+    await stickers.save(); await stickers.reload();
+    const card = stickers.remote().sections[0].cards[count];
+    assert.equal(card.calculatorType, type);
+    assert.deepEqual(card.table, rows);
+    assert.equal(card.cardType, undefined);
+    if (type === 'area-stickers') assert.equal(card.minimumOrder, 0);
+    if (type === 'plotter-stickers') assert.deepEqual(card.extras, [{ id: 'complex-selection', label: 'Сложная выборка', percent: 50 }]);
+    await stickers.click('upload-page-image', 0, count);
+    await stickers.click('move-card-up', 0, count);
+    await stickers.save(); await stickers.reload();
+    assert.equal(stickers.remote().sections[0].cards[count - 1].id, card.id);
+    assert.match(stickers.remote().sections[0].cards[count - 1].img[0], /\.webp$/);
+  }
+  const stickerData = clone(stickers.remote());
+  const publicSource = fs.readFileSync(path.join(__dirname, '../../js/sticker-calculators.js'), 'utf8');
+  async function renderStickers(cardId = '') {
+    const root = { dataset: { cardId }, replaceChildren(fragment) { this.cards = fragment.cards; } };
+    vm.runInNewContext(publicSource, {
+      fetch: async () => ({ ok: true, json: async () => clone(stickerData) }),
+      document: {
+        getElementById: () => root,
+        createDocumentFragment: () => ({ cards: [], append(card) { this.cards.push(card); } }),
+        createElement: () => ({
+          fields: {}, addEventListener() {}, querySelectorAll: () => [],
+          querySelector(selector) {
+            const role = selector.match(/data-role="([^"]+)"/)[1];
+            return this.fields[role] ||= { value: { quantity: 2, width: 50, height: 50 }[role] ?? 0, checked: false };
+          }
+        })
+      }
+    });
+    await flush();
+    assert.equal(root.innerHTML, undefined, 'Public rendering must not produce an error');
+    return root.cards;
+  }
+  const rendered = await renderStickers();
+  const savedCards = stickerData.sections[0].cards;
+  assert.equal(rendered.length, savedCards.length, 'Every added calculator renders publicly');
+  savedCards.forEach((card, index) => assert.ok(rendered[index].innerHTML.includes('<h2>' + card.title + '</h2>'), 'Public order matches saved order'));
+  for (const [type, expected] of [['sheet-stickers', 180], ['area-stickers', 450], ['plotter-stickers', 1000]]) {
+    const index = savedCards.findIndex(card => card.title === type);
+    assert.equal(rendered[index].fields['total-price'].textContent, expected.toLocaleString('ru-RU') + ' ₽');
+  }
+  const plotterOnly = await renderStickers('vinyl-plotter-cutting');
+  assert.equal(plotterOnly.length, 1, 'Dedicated plotter page still finds the original card after reordering');
+
   const businessEditor = await editor('vizitki', [], false);
   businessEditor.input('title', 'Обновлённые визитки', 0, 0);
   businessEditor.input('images', 'img/vizitki/custom.jpg', 0, 0);

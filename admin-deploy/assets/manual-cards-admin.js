@@ -148,9 +148,34 @@
 
   const getHeaders = (rows) => Object.keys(rows[0] || {});
 
+  const stickerTemplates = {
+    'sheet-stickers': {
+      label: 'По листам',
+      table: [{ 'Вариант': 'Одним листом, А4', '1 шт.': '', '2+': '', '11+': '', '51+': '', '100+': '' }]
+    },
+    'area-stickers': {
+      label: 'По площади',
+      minimumOrder: 0,
+      table: [
+        { 'Услуга': 'Печать', 'Цена, ₽/м²': '' },
+        { 'Услуга': 'Контурная резка', 'Цена, ₽/м²': '' },
+        { 'Услуга': 'Ламинация', 'Цена, ₽/м²': '' }
+      ]
+    },
+    'plotter-stickers': {
+      label: 'Плоттерная резка',
+      extras: [{ id: 'complex-selection', label: 'Сложная выборка', percent: 50 }],
+      table: [{ 'Цвет': 'Белая, матовая или глянцевая', 'До 1 м²': '', 'От 1 до 5 м²': '', 'От 5 до 10 м²': '', 'Минимум, ₽': '' }]
+    }
+  };
+
   const addCard = (sectionIndex) => {
     const section = pageData.sections?.[sectionIndex];
     if (!section || !createSections.includes(section.id)) return;
+    const calculatorType = pageId === 'nakleyki'
+      ? cardsRoot.querySelector(`[data-new-sticker-type][data-section-index="${sectionIndex}"]`)?.value || 'sheet-stickers'
+      : '';
+    if (calculatorType && !Object.hasOwn(stickerTemplates, calculatorType)) return;
     const ids = new Set(pageData.sections.flatMap((item) => (item.cards || []).map((card) => card.id)));
     let id;
     do {
@@ -167,6 +192,10 @@
       footer: '',
       table: pageId === 'broshurovka' ? [{ 'Формат': 'А4', 'Цена': '' }] : [{ 'Условие': 'Цена за 1 шт.', 'Цена': '' }]
     };
+    if (calculatorType) {
+      const { label, ...template } = stickerTemplates[calculatorType];
+      Object.assign(card, JSON.parse(JSON.stringify(template)), { calculatorType, subtitle: '' });
+    }
     section.cards = Array.isArray(section.cards) ? section.cards : [];
     section.cards.push(card);
     newCardIds.add(id);
@@ -823,7 +852,15 @@
               <h2>${escapeHtml(section.title || section.id)}</h2>
               <p>${escapeHtml(section.id)}</p>
             </div>
-            ${createSections.includes(section.id) ? `<button class="button button-primary" type="button" data-action="add-card" data-section-index="${sectionIndex}">Добавить карточку</button>` : ''}
+            ${createSections.includes(section.id) ? `<div class="action-row">
+              ${pageId === 'nakleyki' ? `<label class="field">
+                <span>Тип новой карточки</span>
+                <select data-new-sticker-type data-section-index="${sectionIndex}">
+                  ${Object.entries(stickerTemplates).map(([type, template]) => `<option value="${type}">${escapeHtml(template.label)}</option>`).join('')}
+                </select>
+              </label>` : ''}
+              <button class="button button-primary" type="button" data-action="add-card" data-section-index="${sectionIndex}">Добавить карточку</button>
+            </div>` : ''}
           </div>
           ${(section.cards || []).map((card, cardIndex) => renderCard(section, sectionIndex, card, cardIndex)).join('') || '<p class="notice notice-muted">В разделе пока нет карточек.</p>'}
         </section>
