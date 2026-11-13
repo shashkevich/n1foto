@@ -55,9 +55,6 @@
                         <li class="nav-item">
                             <a class="nav-link" href="/contact.html">Контакты</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/proverka-pdf.html">Проверка PDF</a>
-                        </li>
                     </ul>
                     <div class="notformobile text-light">
                         <a class="nav-link px-1 mx-1 py-2" href="https://vk.com/serpfoto" target="_blank" rel="noopener">

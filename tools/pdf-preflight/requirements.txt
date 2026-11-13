@@ -1,1 +1,0 @@
-print-color-preflight @ https://github.com/loganpendragonmultiverse/print-color-preflight/releases/download/v2.0.0/print_color_preflight-2.0.0-py3-none-any.whl
