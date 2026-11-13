@@ -1,0 +1,18 @@
+.pdf-preflight {
+    max-width: 960px;
+}
+
+.pdf-drop {
+    border: 2px dashed rgba(var(--bs-primary-rgb), .45);
+    background-color: rgba(var(--bs-primary-rgb), .04);
+}
+
+.pdf-drop.is-dragging {
+    border-color: var(--bs-primary);
+    background-color: rgba(var(--bs-primary-rgb), .12);
+}
+
+#pdf-summary,
+#pdf-details {
+    overflow-wrap: anywhere;
+}
