@@ -1,3 +1,183 @@
+.shirt-card {
+  display: grid;
+  align-items: start;
+  gap: 16px clamp(16px, 2.5vw, 32px);
+  margin-top: 24px;
+  padding: clamp(16px, 3vw, 32px);
+  border-radius: var(--site-card-radius, 24px);
+  background: var(--bs-body-bg, #fff);
+  box-shadow: var(--site-card-shadow);
+  text-align: left;
+}
+
+.shirt-card__title {
+  margin: 0;
+  font-size: clamp(1.25rem, 2vw, 1.5rem);
+  font-weight: 700;
+}
+
+.shirt-card__availability {
+  margin: 4px 0 0;
+  color: var(--bs-secondary-color, #5f5865);
+  font-size: .8125rem;
+}
+
+.shirt-card__reference {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+  gap: clamp(12px, 2vw, 24px);
+  align-items: center;
+  width: 100%;
+  max-width: 390px;
+}
+
+.shirt-card__photos {
+  display: grid;
+  gap: 10px;
+  max-width: 136px;
+}
+
+.shirt-card figure {
+  margin: 0;
+}
+
+.shirt-card__photos img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.shirt-card__photos figcaption {
+  margin-top: 6px;
+  font-size: .875rem;
+  text-align: center;
+}
+
+.shirt-card__sizes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px clamp(10px, 2vw, 24px);
+  min-width: 0;
+}
+
+.shirt-card__sizes > :is(.shirt-card__intro, .shirt-card__note) {
+  grid-column: 1 / -1;
+  text-align: center;
+}
+
+.shirt-card__group {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 2px 6px;
+  margin-bottom: 8px;
+}
+
+.shirt-card__group h3 {
+  margin: 0;
+  font-size: clamp(1rem, 1.5vw, 1.25rem);
+  font-weight: 700;
+}
+
+.shirt-card__group strong {
+  white-space: nowrap;
+}
+
+.shirt-card__measurements {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  color: var(--bs-secondary-color, #5f5865);
+  font-size: .8125rem;
+}
+
+.shirt-card__measurements svg {
+  display: block;
+  width: min(100%, 174px);
+  color: var(--bs-body-color, #3d0075);
+  font-family: system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  fill: currentColor;
+}
+
+.shirt-card__measurements figcaption span {
+  display: inline-block;
+  margin-top: 6px;
+}
+
+.shirt-card__outline {
+  fill: var(--bs-tertiary-bg, #f8f4fc);
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+
+.shirt-card__arrows {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-dasharray: 4 2;
+}
+
+.shirt-card__panel {
+  min-width: 0;
+}
+
+.shirt-card__table {
+  width: 100%;
+  table-layout: fixed;
+  font-size: .875rem;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.shirt-card__table :is(th, td) {
+  padding: 3px 2px;
+  border-bottom: 1px solid var(--bs-border-color, #eee6f5);
+}
+
+.shirt-card__table thead th:first-child {
+  width: 40%;
+}
+
+.shirt-card__table thead {
+  color: #302839;
+}
+
+#shirt-table-adult thead {
+  background: #f5edf9;
+}
+
+#shirt-table-child thead {
+  background: #fff8df;
+}
+
+.shirt-card__table tbody th {
+  font-weight: 500;
+}
+
+.shirt-card__note {
+  margin: 0;
+  color: var(--bs-secondary-color, #5f5865);
+  font-size: .8125rem;
+}
+
+@media (min-width: 768px) {
+  .shirt-card {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  }
+}
+
+@media (max-width: 399px) {
+  .shirt-card__group {
+    flex-direction: column;
+  }
+}
+
 .clothing-methods-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
