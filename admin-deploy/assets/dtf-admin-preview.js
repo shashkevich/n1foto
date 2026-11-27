@@ -135,6 +135,7 @@
 
     preview.calculator = window.createClothingDtfCalculator(() => preview.card, {
       autoCalculate: true,
+      includeDelivery: true,
       previewLength,
       validateCard,
       onClear: () => showStatus('Укажите размеры и количество для каждого формата.'),

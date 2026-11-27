@@ -204,8 +204,7 @@
 }
 
 .clothing-method-card__image {
-  width: min(100%, 210px);
-  aspect-ratio: 1;
+  width: 100%;
   margin: 0 auto 18px;
   overflow: hidden;
   border-radius: 8px;
@@ -215,16 +214,6 @@
 .clothing-method-card__image img {
   display: block;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.clothing-method-card--dtf .clothing-method-card__image {
-  width: 100%;
-  aspect-ratio: auto;
-}
-
-.clothing-method-card--dtf .clothing-method-card__image img {
   height: auto;
   aspect-ratio: auto 1 / 1;
 }

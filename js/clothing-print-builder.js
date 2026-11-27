@@ -66,7 +66,7 @@
     return summary;
   };
 
-  const renderOrderSummary = (summary, items, total, note = '', delivery) => {
+  const renderOrderSummary = (summary, items, total, { note = '', delivery, maximumFractionDigits = 0 } = {}) => {
     const body = summary.querySelector('tbody');
     body.replaceChildren(...items.map((item) => {
       const row = document.createElement('tr');
@@ -80,7 +80,7 @@
         format.append(details);
       }
       quantity.textContent = `${item.qty} шт`;
-      cost.textContent = item.total === null ? 'по запросу' : formatMoney(item.total);
+      cost.textContent = item.total === null ? 'по запросу' : formatMoney(item.total, maximumFractionDigits);
       row.append(format, quantity, cost);
       return row;
     }));
@@ -90,7 +90,7 @@
     }
     summary.querySelector('.print-order-summary__total strong').textContent = total === null
       ? 'по запросу'
-      : formatMoney(total, delivery === undefined ? 0 : 2);
+      : formatMoney(total, maximumFractionDigits);
     const noteElement = summary.querySelector('.print-order-summary__note');
     noteElement.textContent = note;
     noteElement.hidden = !note;
@@ -262,7 +262,7 @@
         : `Цена рассчитана по общему количеству нанесений: ${totalQty} шт.`];
       if (minimumApplied) notes.push(`Применена минимальная стоимость заказа — ${formatMoney(minimumOrder)}.`);
       const note = notes.join(' ');
-      renderOrderSummary(summary, items, total, note);
+      renderOrderSummary(summary, items, total, { note });
     });
 
     calculator.append(list, actions, summary);
@@ -467,8 +467,18 @@
     return row;
   };
 
+  const distributeDtfTotal = (items, totalQty, totalKopecks) => {
+    const perPrint = Math.floor(totalKopecks / totalQty);
+    let remainder = totalKopecks - perPrint * totalQty;
+    return items.map(({ name, qty }) => {
+      const extra = Math.min(qty, remainder);
+      remainder -= extra;
+      return { name, qty, total: (perPrint * qty + extra) / 100 };
+    });
+  };
+
   const createDtfCalculator = (getCard, {
-    autoCalculate = false, previewLength = 0, validateCard, onClear, onError, onCalculate
+    autoCalculate = false, includeDelivery = false, previewLength = 0, validateCard, onClear, onError, onCalculate
   } = {}) => {
     const calculator = document.createElement('form');
     calculator.className = 'clothing-calculator clothing-calculator--multi';
@@ -488,7 +498,7 @@
     actions.append(add);
     if (!autoCalculate) actions.append(calculate);
 
-    const summary = makeOrderSummary(true);
+    const summary = makeOrderSummary(includeDelivery);
     let calculationTimer;
 
     const refresh = () => {
@@ -566,13 +576,14 @@
       const calculatedTotal = printTotal + rates.delivery;
       const total = Math.max(calculatedTotal, rates.minimum);
 
-      const summaryItems = items.map((item) => ({
-        name: item.name,
-        qty: item.qty,
-        total: unitPrice * item.qty
-      }));
+      const totalKopecks = Math.round(total * 100);
+      const summaryItems = includeDelivery
+        ? items.map(({ name, qty }) => ({ name, qty, total: unitPrice * qty }))
+        : distributeDtfTotal(items, totalQty, totalKopecks);
       const note = calculatedTotal < rates.minimum ? `Применена минимальная стоимость заказа — ${formatMoney(rates.minimum, 2)}.` : '';
-      renderOrderSummary(summary, summaryItems, total, note, rates.delivery);
+      renderOrderSummary(summary, summaryItems, includeDelivery ? total : totalKopecks / 100, {
+        note, delivery: includeDelivery ? rates.delivery : undefined, maximumFractionDigits: 2
+      });
       onCalculate?.({
         items, totalQty, lengthCm, placements, savedLengthCm, maxPrintWidth: rates.maxPrintWidth,
         costDetails: {
