@@ -21,7 +21,47 @@
   const isProductCard = (card) => card.cardType === 'product' || pageId === 'shary';
   const createSections = String(root.dataset.createSections || '').split(',').filter(Boolean);
   const newCardIds = new Set();
+  const dtfPreviews = new Map();
   const imageInputLimit = 10 * 1024 * 1024;
+  const dtfWidthParameter = 'Максимальная ширина материала';
+  const dtfDefaultWidth = 57.5;
+  const dtfRollWidth = 58;
+  const dtfTariffParameters = ['Материал', 'Нанесение'];
+  const dtfLabels = {
+    Материал: 'Материал, пог. м',
+    Нанесение: 'Нанесение, шт.',
+    Доставка: 'Доставка, ₽',
+    Наценка: 'Наценка на печать (множитель)',
+    'Минимальный заказ': 'Минимальный заказ, ₽',
+    [dtfWidthParameter]: 'Макс. ширина материала, см'
+  };
+  const getDtfParameter = (row) => Object.keys(dtfLabels).find((name) =>
+    name.toLowerCase() === String(row?.['Параметр'] || '').toLowerCase());
+  const getDtfWidthRow = (card) => card.table.find((row) => getDtfParameter(row) === dtfWidthParameter);
+  const readDtfNumber = (value) => {
+    const normalized = String(value ?? '').trim().replace(',', '.');
+    return /^(?:\d+(?:\.\d+)?|\.\d+)$/.test(normalized) ? Number(normalized) : NaN;
+  };
+
+  const validateDtfTable = (card) => {
+    const width = readDtfNumber(getDtfWidthRow(card)?.['Значение']);
+    if (!Number.isFinite(width) || width < 1 || width > dtfRollWidth) {
+      throw new Error(`Укажите максимальную ширину материала для DTF от 1 до ${dtfRollWidth} см.`);
+    }
+
+    for (const parameter of dtfTariffParameters) {
+      const tiers = card.table.filter((row) => getDtfParameter(row) === parameter);
+      const upperBounds = tiers.map((row) => String(row['До'] ?? '').trim()).filter(Boolean).map(readDtfNumber);
+      if (upperBounds.some((limit) => !Number.isFinite(limit) || limit <= 0 || (parameter === 'Нанесение' && !Number.isInteger(limit)))
+        || new Set(upperBounds).size !== upperBounds.length
+        || tiers.length - upperBounds.length > 1) {
+        throw new Error(`DTF, «${parameter}»: укажите разные положительные пороги. Пустой порог можно оставить у одного тарифа.`);
+      }
+      if (tiers.some((row) => !String(row['Значение'] ?? '').trim())) {
+        throw new Error(`DTF, «${parameter}»: заполните цену в каждой строке.`);
+      }
+    }
+  };
 
   const showImageError = (element, message) => {
     setStatus(message, 'danger');
@@ -110,6 +150,12 @@
             percent: 50
           }];
         }
+        if (card.calculatorType === 'dtf') {
+          card.table = Array.isArray(card.table) ? card.table : [];
+          if (!getDtfWidthRow(card)) {
+            card.table.push({ 'Параметр': dtfWidthParameter, 'До': '', 'Значение': String(dtfDefaultWidth) });
+          }
+        }
       });
     });
   };
@@ -117,6 +163,7 @@
   const savePageData = async () => {
     for (const section of pageData.sections || []) {
       for (const card of section.cards || []) {
+        if (card.calculatorType === 'dtf') validateDtfTable(card);
         if (!newCardIds.has(card.id)) continue;
         if (!String(card.title || '').trim()) throw new Error('Укажите название новой карточки.');
         if (!card.table?.length || card.table.some((row) => Object.keys(row).length < 2
@@ -341,7 +388,10 @@
     } else if (input.dataset.field === 'cell') {
       const row = card.table[Number(input.dataset.rowIndex)];
       const header = input.dataset.header;
+      if (card.calculatorType === 'dtf' && (header !== 'Значение'
+        && (header !== 'До' || !dtfTariffParameters.includes(getDtfParameter(row))))) return;
       row[header] = value;
+      if (card.calculatorType === 'dtf') dtfPreviews.get(card.id)?.calculator.refresh();
     }
 
     saveButton.disabled = false;
@@ -349,6 +399,7 @@
 
   const renameHeader = (sectionIndex, cardIndex, oldHeader, newHeader) => {
     const card = pageData.sections[sectionIndex].cards[cardIndex];
+    if (card.calculatorType === 'dtf') return;
     const normalizedNewHeader = newHeader.trim();
 
     if (!normalizedNewHeader || normalizedNewHeader === oldHeader) {
@@ -370,16 +421,18 @@
     render();
   };
 
-  const addRow = (sectionIndex, cardIndex) => {
+  const addRow = (sectionIndex, cardIndex, dtfParameter) => {
     const card = pageData.sections[sectionIndex].cards[cardIndex];
-    const headers = getHeaders(card.table || []);
-    const row = {};
+    if (card.calculatorType === 'dtf') {
+      if (!dtfTariffParameters.includes(dtfParameter)) return;
+      const openTier = card.table.findIndex((row) => getDtfParameter(row) === dtfParameter && !String(row['До'] ?? '').trim());
+      const index = openTier >= 0 ? openTier : card.table.length;
+      card.table.splice(index, 0, { 'Параметр': dtfParameter, 'До': '', 'Значение': '' });
+    } else {
+      const headers = getHeaders(card.table || []);
+      card.table.push(Object.fromEntries(headers.map((header) => [header, ''])));
+    }
 
-    headers.forEach((header) => {
-      row[header] = '';
-    });
-
-    card.table.push(row);
     saveButton.disabled = false;
     render();
   };
@@ -387,6 +440,7 @@
   const removeRow = (sectionIndex, cardIndex, rowIndex) => {
     const card = pageData.sections[sectionIndex].cards[cardIndex];
     if (isProductCard(card) && card.table.length <= 1) return;
+    if (card.calculatorType === 'dtf' && !dtfTariffParameters.includes(getDtfParameter(card.table[rowIndex]))) return;
     card.table.splice(rowIndex, 1);
     saveButton.disabled = false;
     render();
@@ -394,6 +448,7 @@
 
   const addColumn = (sectionIndex, cardIndex) => {
     const card = pageData.sections[sectionIndex].cards[cardIndex];
+    if (card.calculatorType === 'dtf') return;
     const header = `Новая колонка ${getHeaders(card.table || []).length + 1}`;
 
     card.table.forEach((row) => {
@@ -406,6 +461,7 @@
 
   const removeColumn = (sectionIndex, cardIndex, header) => {
     const card = pageData.sections[sectionIndex].cards[cardIndex];
+    if (card.calculatorType === 'dtf') return;
 
     card.table.forEach((row) => {
       delete row[header];
@@ -434,7 +490,50 @@
     render();
   };
 
+  const renderDtfTableEditor = (sectionIndex, card, cardIndex) => {
+    const location = `data-section-index="${sectionIndex}" data-card-index="${cardIndex}"`;
+    return `
+      <div class="manual-dtf-editor">
+        <div class="manual-dtf-settings">
+          <p class="manual-dtf-help">Порог для материала указывается в погонных метрах, для нанесения — в штуках. Пустое «До» у последнего тарифа означает «выше предыдущего порога».</p>
+          <div class="manual-table-tools">
+            <button class="button button-soft" type="button" data-action="add-row" data-dtf-parameter="Материал" ${location}>Добавить тариф материала</button>
+            <button class="button button-soft" type="button" data-action="add-row" data-dtf-parameter="Нанесение" ${location}>Добавить тариф нанесения</button>
+          </div>
+          <div class="table-wrap manual-card-table-wrap" style="--price-columns: 3">
+            <table class="manual-edit-table manual-edit-table--card manual-dtf-table" aria-label="Тарифы и настройки DTF">
+              <thead><tr><th scope="col">Параметр</th><th scope="col">До, <small>включительно</small></th><th scope="col">Значение</th><th></th></tr></thead>
+              <tbody>
+                ${card.table.map((row, rowIndex) => {
+                  const parameter = getDtfParameter(row);
+                  const label = escapeHtml(dtfLabels[parameter] || row['Параметр']);
+                  const isTariff = dtfTariffParameters.includes(parameter);
+                  const cell = (header, ariaLabel, inputmode) => `<input value="${escapeHtml(row[header])}" data-field="cell" ${location} data-row-index="${rowIndex}" data-header="${header}" inputmode="${inputmode}" aria-label="${ariaLabel}">`;
+                  return `<tr>
+                    <th scope="row">${label}</th>
+                    <td>${isTariff ? cell('До', `${label}: до, включительно`, parameter === 'Нанесение' ? 'numeric' : 'decimal') : '—'}</td>
+                    <td>${cell('Значение', parameter === dtfWidthParameter ? 'Макс. ширина материала, см' : `${label}: значение`, 'decimal')}</td>
+                    <td>${isTariff ? `<button class="icon-text-button manual-dtf-remove" type="button" data-action="remove-row" ${location} data-row-index="${rowIndex}" title="Удалить тариф" aria-label="Удалить тариф">×</button>` : ''}</td>
+                  </tr>`;
+                }).join('')}
+              </tbody>
+            </table>
+          </div>
+          <p class="manual-dtf-help manual-dtf-help--width">Максимальная ширина материала ограничивает короткую сторону принта. Можно указать от 1 до ${dtfRollWidth} см, например 57,5.</p>
+        </div>
+        <section class="manual-dtf-preview" data-dtf-preview ${location}>
+          <h4>Проверка калькулятора DTF</h4>
+          <p class="manual-dtf-help">Расчёт использует текущие тарифы, включая несохранённые изменения.</p>
+          <div data-dtf-preview-content>
+            <p class="notice notice-muted">Калькулятор недоступен. Попробуйте обновить страницу.</p>
+          </div>
+        </section>
+      </div>
+    `;
+  };
+
   const renderTableEditor = (section, sectionIndex, card, cardIndex) => {
+    if (card.calculatorType === 'dtf') return renderDtfTableEditor(sectionIndex, card, cardIndex);
     const rows = card.table || [];
     const headers = getHeaders(rows);
     const isQuantityPricing = isProductCard(card);
@@ -448,13 +547,13 @@
         <button class="button button-soft" type="button" data-action="add-row" data-section-index="${sectionIndex}" data-card-index="${cardIndex}">Добавить строку</button>
         ${isQuantityPricing ? '' : `<button class="button button-soft" type="button" data-action="add-column" data-section-index="${sectionIndex}" data-card-index="${cardIndex}">Добавить колонку</button>`}
       </div>
-      <div class="table-wrap">
-        <table class="manual-edit-table">
+      <div class="table-wrap manual-card-table-wrap" style="--price-columns: ${headers.length}">
+        <table class="manual-edit-table manual-edit-table--card">
           <thead>
             <tr>
               ${headers.map((header) => `
                 <th>
-                  ${isQuantityPricing ? escapeHtml(header) : `<input class="manual-header-input" value="${escapeHtml(header)}" data-action="rename-header" data-section-index="${sectionIndex}" data-card-index="${cardIndex}" data-header="${escapeHtml(header)}">`}
+                  ${isQuantityPricing ? escapeHtml(header) : `<input class="manual-header-input" value="${escapeHtml(header)}" title="${escapeHtml(header)}" data-action="rename-header" data-section-index="${sectionIndex}" data-card-index="${cardIndex}" data-header="${escapeHtml(header)}">`}
                   ${isQuantityPricing ? '' : `<button class="icon-text-button" type="button" data-action="remove-column" data-section-index="${sectionIndex}" data-card-index="${cardIndex}" data-header="${escapeHtml(header)}">Удалить</button>`}
                 </th>
               `).join('')}
@@ -832,6 +931,22 @@
     `;
   };
 
+  const mountDtfPreviews = () => {
+    if (!window.createAdminDtfPreview || !window.createClothingDtfCalculator) return;
+    for (const section of cardsRoot.querySelectorAll('[data-dtf-preview]')) {
+      const card = pageData.sections[Number(section.dataset.sectionIndex)].cards[Number(section.dataset.cardIndex)];
+      let preview = dtfPreviews.get(card.id);
+      if (!preview) {
+        preview = window.createAdminDtfPreview(card, validateDtfTable);
+        dtfPreviews.set(card.id, preview);
+      } else {
+        preview.card = card;
+        preview.calculator.refresh();
+      }
+      section.querySelector('[data-dtf-preview-content]').replaceChildren(preview.content);
+    }
+  };
+
   const render = () => {
     if (isHomePage) {
       renderHomePage();
@@ -867,6 +982,7 @@
       `;
     }).join('');
 
+    mountDtfPreviews();
     renderDigitalLeafletImage();
   };
 
@@ -990,7 +1106,7 @@
     } else if (button.dataset.action === 'remove-extra') {
       removeExtra(sectionIndex, cardIndex, Number(button.dataset.extraIndex));
     } else if (button.dataset.action === 'add-row') {
-      addRow(sectionIndex, cardIndex);
+      addRow(sectionIndex, cardIndex, button.dataset.dtfParameter);
     } else if (button.dataset.action === 'remove-row') {
       removeRow(sectionIndex, cardIndex, Number(button.dataset.rowIndex));
     } else if (button.dataset.action === 'add-column') {

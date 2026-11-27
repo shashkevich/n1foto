@@ -326,6 +326,7 @@ p {
 
 .manual-editor {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 14px;
 }
 
@@ -340,6 +341,7 @@ p {
 .manual-cards,
 .manual-section {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 16px;
 }
 
@@ -611,6 +613,314 @@ textarea:focus {
 .manual-edit-table input {
   min-width: 140px;
   padding: 8px;
+}
+
+.manual-card-table-wrap {
+  max-width: calc(var(--price-columns) * 165px + 68px);
+}
+
+.manual-edit-table--card {
+  min-width: calc(var(--price-columns) * 58px + 68px);
+  table-layout: fixed;
+}
+
+.manual-edit-table--card :is(th, td) {
+  padding: 6px;
+  overflow-wrap: anywhere;
+}
+
+.manual-edit-table--card thead th:last-child {
+  width: 68px;
+}
+
+.manual-edit-table--card input {
+  min-width: 0;
+  padding: 6px;
+}
+
+.manual-edit-table--card td:last-child .icon-text-button {
+  padding-inline: 5px;
+  white-space: nowrap;
+}
+
+.manual-dtf-table {
+  min-width: 0;
+  text-align: left;
+}
+
+.manual-dtf-table thead th:first-child {
+  width: 38%;
+}
+
+.manual-dtf-table thead th:last-child {
+  width: 40px;
+}
+
+.manual-dtf-table tbody th {
+  font-weight: 500;
+}
+
+.manual-dtf-table .manual-dtf-remove {
+  width: 28px;
+  min-height: 28px;
+  padding-block: 0;
+  font-size: 17px;
+}
+
+@media (max-width: 440px) {
+  .manual-dtf-table :is(th, td) {
+    padding-inline: 4px;
+    font-size: 12px;
+  }
+
+  .manual-dtf-table thead th:first-child {
+    width: 35%;
+  }
+}
+
+.manual-dtf-help {
+  max-width: 620px;
+  margin-bottom: 10px;
+  font-size: 13px;
+}
+
+.manual-dtf-help--width {
+  margin: 8px 0 0;
+}
+
+.manual-dtf-editor {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 326px), 1fr));
+  align-items: start;
+  gap: 24px;
+}
+
+.manual-dtf-preview {
+  min-width: 0;
+  padding: clamp(12px, 2vw, 20px);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #f8fafc;
+}
+
+.manual-dtf-preview h4 {
+  margin: 0 0 6px;
+  font-size: 17px;
+}
+
+.manual-dtf-preview .clothing-calculator,
+.manual-dtf-preview .print-format-list {
+  display: grid;
+  gap: 10px;
+}
+
+.manual-dtf-preview .dtf-format-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) 32px;
+  align-items: end;
+  gap: 6px;
+}
+
+.manual-dtf-preview .dtf-format-row label {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.manual-dtf-preview .dtf-format-row label:first-child {
+  grid-column: 1 / -1;
+}
+
+.manual-dtf-preview :is(input, select) {
+  min-width: 0;
+  min-height: 34px;
+  padding: 6px;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.manual-dtf-preview .print-format-remove {
+  width: 32px;
+  height: 34px;
+  min-height: 34px;
+  padding: 0;
+  border-radius: 7px;
+  color: var(--danger);
+  background: #fff0f1;
+  font-size: 17px;
+}
+
+.manual-dtf-preview .print-calculator-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.manual-dtf-preview-status {
+  margin-top: 12px;
+  padding: 8px 10px;
+  font-size: 13px;
+}
+
+.manual-dtf-preview .print-order-summary__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  text-align: left;
+}
+
+.manual-dtf-preview .print-order-summary__table :is(th, td) {
+  padding: 6px 4px;
+  border-bottom: 1px solid var(--line);
+}
+
+.manual-dtf-preview .print-order-summary__table :is(th, td):last-child {
+  text-align: right;
+}
+
+.manual-dtf-preview .print-order-summary__total {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+
+.manual-dtf-preview .print-order-summary__note {
+  margin-top: 4px;
+  font-size: 12px;
+}
+
+.manual-dtf-pricing {
+  margin-top: 14px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: #fff;
+}
+
+.manual-dtf-pricing summary {
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.manual-dtf-pricing dl {
+  display: grid;
+  gap: 6px;
+  margin: 10px 0 0;
+  font-size: 13px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.manual-dtf-pricing__row {
+  display: grid;
+  grid-template-columns: minmax(0, min(33%, 9rem)) minmax(0, 1fr);
+  column-gap: 12px;
+}
+
+.manual-dtf-pricing__row--cost {
+  margin-inline: -6px;
+  padding: 5px 6px;
+  border-radius: 6px;
+  background: #fff2d2;
+}
+
+.manual-dtf-pricing dt {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.manual-dtf-pricing dd {
+  margin: 0;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.manual-dtf-pricing dd strong {
+  color: #111;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.manual-dtf-pricing__total {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  color: #111;
+  background: #e7f6ec;
+  font-size: 16px;
+  font-variant-numeric: tabular-nums;
+}
+
+.manual-dtf-pricing__total span {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+@media (max-width: 440px) {
+  .manual-dtf-pricing__row {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 2px;
+  }
+}
+
+.manual-dtf-layout {
+  margin: 14px 0 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.manual-dtf-layout figcaption p,
+.manual-dtf-layout-limit {
+  margin-top: 4px;
+  font-size: 12px;
+}
+
+.manual-dtf-roll {
+  width: min(100%, 330px);
+  max-height: 390px;
+  margin-top: 8px;
+  overflow: auto;
+  border: 1px dashed var(--line-strong);
+  border-radius: 6px;
+  background: white;
+}
+
+.manual-dtf-roll svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.manual-dtf-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 12px;
+}
+
+.manual-dtf-legend li {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.manual-dtf-legend__swatch {
+  display: inline-grid;
+  place-items: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 2px;
+  border-radius: 3px;
+  font-size: 11px;
 }
 
 .manual-header-input {

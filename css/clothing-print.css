@@ -219,6 +219,16 @@
   object-fit: cover;
 }
 
+.clothing-method-card--dtf .clothing-method-card__image {
+  width: 100%;
+  aspect-ratio: auto;
+}
+
+.clothing-method-card--dtf .clothing-method-card__image img {
+  height: auto;
+  aspect-ratio: auto 1 / 1;
+}
+
 .clothing-method-card__notice {
   margin: 0 0 18px;
   padding: 10px 12px;

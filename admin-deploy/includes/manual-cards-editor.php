@@ -55,6 +55,10 @@ function adminRenderManualCardsEditor(array $sitePage): void
 
       <div id="manualCards" class="manual-cards"></div>
     </section>
-    <script src="/assets/manual-cards-admin.js?v=20261002-1"></script>
+    <?php if ($sitePage['id'] === 'pechat-na-odezhde'): ?>
+      <script src="/api/dtf-calculator-script.php"></script>
+      <script src="/assets/dtf-admin-preview.js?v=20261127-9"></script>
+    <?php endif; ?>
+    <script src="/assets/manual-cards-admin.js?v=20261127-3"></script>
     <?php
 }

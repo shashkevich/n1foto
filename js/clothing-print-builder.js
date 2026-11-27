@@ -1,10 +1,6 @@
-window.addEventListener('DOMContentLoaded', () => {
-  const root = document.getElementById('print-method');
-
-  if (!root) {
-    return;
-  }
-
+(() => {
+  const dtfDefaultWidth = 57.5;
+  const dtfRollWidth = 58;
   const formatOptions = [
     { name: 'A7 (7×10 см)', width: 7, height: 10 },
     { name: 'A6 (10×15 см)', width: 10, height: 15 },
@@ -38,9 +34,12 @@ window.addEventListener('DOMContentLoaded', () => {
     return wrap;
   };
 
-  const formatMoney = (value) => `${Math.round(value).toLocaleString('ru-RU')} ₽`;
+  const formatMoney = (value, maximumFractionDigits = 0) => {
+    const amount = maximumFractionDigits ? value : Math.round(value);
+    return `${amount.toLocaleString('ru-RU', { maximumFractionDigits })} ₽`;
+  };
 
-  const makeOrderSummary = () => {
+  const makeOrderSummary = (includeDelivery = false) => {
     const summary = document.createElement('div');
     summary.className = 'print-order-summary';
     summary.hidden = true;
@@ -55,6 +54,7 @@ window.addEventListener('DOMContentLoaded', () => {
             </tr>
           </thead>
           <tbody></tbody>
+          ${includeDelivery ? '<tfoot><tr><td colspan="2">Доставка</td><td></td></tr></tfoot>' : ''}
         </table>
       </div>
       <div class="print-order-summary__total">
@@ -66,7 +66,7 @@ window.addEventListener('DOMContentLoaded', () => {
     return summary;
   };
 
-  const renderOrderSummary = (summary, items, total, note = '') => {
+  const renderOrderSummary = (summary, items, total, note = '', delivery) => {
     const body = summary.querySelector('tbody');
     body.replaceChildren(...items.map((item) => {
       const row = document.createElement('tr');
@@ -85,16 +85,19 @@ window.addEventListener('DOMContentLoaded', () => {
       return row;
     }));
 
+    if (delivery !== undefined) {
+      summary.querySelector('tfoot td:last-child').textContent = formatMoney(delivery, 2);
+    }
     summary.querySelector('.print-order-summary__total strong').textContent = total === null
       ? 'по запросу'
-      : formatMoney(total);
+      : formatMoney(total, delivery === undefined ? 0 : 2);
     const noteElement = summary.querySelector('.print-order-summary__note');
     noteElement.textContent = note;
     noteElement.hidden = !note;
     summary.hidden = false;
   };
 
-  const makeRemoveButton = (list, row) => {
+  const makeRemoveButton = (list, row, onRemove) => {
     const remove = document.createElement('button');
     remove.className = 'print-format-remove';
     remove.type = 'button';
@@ -104,6 +107,7 @@ window.addEventListener('DOMContentLoaded', () => {
     remove.addEventListener('click', () => {
       if (list.children.length > 1) {
         row.remove();
+        onRemove?.();
       }
     });
     return remove;
@@ -291,12 +295,14 @@ window.addEventListener('DOMContentLoaded', () => {
       return row ? parseNumber(row['Значение'], fallback) : fallback;
     };
 
+    const configuredWidth = getValue('Максимальная ширина материала', dtfDefaultWidth);
     return {
       material: getTiers('Материал'),
       application: getTiers('Нанесение'),
       delivery: getValue('Доставка', 350),
       markup: getValue('Наценка', 1.4),
-      minimum: getValue('Минимальный заказ', 1800)
+      minimum: getValue('Минимальный заказ', 1800),
+      maxPrintWidth: configuredWidth >= 1 && configuredWidth <= dtfRollWidth ? configuredWidth : dtfDefaultWidth
     };
   };
 
@@ -305,41 +311,118 @@ window.addEventListener('DOMContentLoaded', () => {
     return tier ? tier.value : fallback;
   };
 
-  const calculateMaterialLength = (items) => {
-    const rollWidth = 58;
-    const spacing = 0.3;
-    const pieces = [];
+  const dtfSpacing = 0.3;
+  const dtfTolerance = 1e-9;
+  const dtfPreviewPieceLimit = 600;
+  const dtfOptimizationPieceLimit = 1000;
 
-    items.forEach((item) => {
-      for (let index = 0; index < item.qty; index += 1) {
-        const canRotate = item.height <= rollWidth;
-        const normal = { width: item.width + spacing, height: item.height + spacing };
-        const rotated = { width: item.height + spacing, height: item.width + spacing };
-        pieces.push(canRotate && rotated.height < normal.height ? rotated : normal);
-      }
-    });
-
-    pieces.sort((left, right) => right.height - left.height);
+  const packDtfShelves = (pieces, maxPrintWidth, previewLength) => {
     const rows = [];
+    const placements = [];
+    let lengthCm = 0;
 
     pieces.forEach((piece) => {
-      const target = rows.find((row) => row.width + piece.width <= rollWidth);
-
+      const target = rows.find((row) => row.width + dtfSpacing + piece.width <= maxPrintWidth + dtfTolerance);
+      const x = target ? target.width + dtfSpacing : 0;
+      const y = target ? target.y : lengthCm;
       if (target) {
-        target.width += piece.width;
-        target.height = Math.max(target.height, piece.height);
+        target.width += dtfSpacing + piece.width;
       } else {
-        rows.push({ width: piece.width, height: piece.height });
+        rows.push({ width: piece.width, y });
+        lengthCm += piece.height + dtfSpacing;
+      }
+      if (y < previewLength && placements.length < dtfPreviewPieceLimit) {
+        placements.push({ ...piece, x, y });
       }
     });
 
-    return rows.reduce((sum, row) => sum + row.height, 0) / 100;
+    return { lengthCm, placements };
   };
 
-  const makeDtfFormatRow = (list, rowId) => {
+  const splitDtfSpace = (space, used) => {
+    if (used.x >= space.right - dtfTolerance || used.right <= space.x + dtfTolerance
+      || used.y >= space.bottom - dtfTolerance || used.bottom <= space.y + dtfTolerance) return [space];
+
+    const parts = [];
+    if (used.x > space.x + dtfTolerance) parts.push({ ...space, right: used.x });
+    if (used.right < space.right - dtfTolerance) parts.push({ ...space, x: used.right });
+    if (used.y > space.y + dtfTolerance) parts.push({ ...space, bottom: used.y });
+    if (used.bottom < space.bottom - dtfTolerance) parts.push({ ...space, y: used.bottom });
+    return parts;
+  };
+
+  const containsDtfSpace = (outer, inner) => outer.x <= inner.x && outer.y <= inner.y
+    && outer.right >= inner.right && outer.bottom >= inner.bottom;
+
+  const packDtfGaps = (pieces, maxPrintWidth, maxLength) => {
+    // Reserve a gap after each print. The extra virtual width lets a print finish flush with the roll edge.
+    let spaces = [{ x: 0, y: 0, right: maxPrintWidth + dtfSpacing, bottom: maxLength }];
+    let remainingChecks = 400000;
+    const placements = [];
+    let lengthCm = 0;
+
+    for (const piece of pieces) {
+      const orientations = piece.width === piece.height ? [piece] : [piece, { ...piece, width: piece.height, height: piece.width }];
+      let best = null;
+      for (const space of spaces) {
+        for (const orientation of orientations) {
+          const right = space.x + orientation.width + dtfSpacing;
+          const bottom = space.y + orientation.height + dtfSpacing;
+          if (right > space.right + dtfTolerance || bottom > space.bottom + dtfTolerance) continue;
+          if (!best || bottom < best.bottom || (bottom === best.bottom && space.x < best.x)) {
+            best = { ...orientation, x: space.x, y: space.y, right, bottom };
+          }
+        }
+      }
+      if (!best) return null;
+
+      const { x, y, width, height, itemIndex, bottom } = best;
+      placements.push({ x, y, width, height, itemIndex });
+      lengthCm = Math.max(lengthCm, bottom);
+      const freeParts = spaces.flatMap((space) => splitDtfSpace(space, best));
+      remainingChecks -= freeParts.length ** 2;
+      if (remainingChecks < 0) return null;
+
+      // Keep maximal free rectangles, removing duplicates as well as contained areas.
+      spaces = freeParts.filter((space, index) => !freeParts.some((other, otherIndex) => otherIndex !== index
+        && containsDtfSpace(other, space) && (otherIndex < index || !containsDtfSpace(space, other))));
+    }
+
+    return { lengthCm, placements };
+  };
+
+  const calculateMaterialLayout = (items, maxPrintWidth, previewLength) => {
+    const pieces = items.flatMap((item, itemIndex) => {
+      const shortSide = Math.min(item.width, item.height);
+      const longSide = Math.max(item.width, item.height);
+      const fitsAcross = longSide <= maxPrintWidth;
+      const piece = {
+        width: fitsAcross ? longSide : shortSide,
+        height: fitsAcross ? shortSide : longSide,
+        itemIndex
+      };
+      return Array(item.qty).fill(piece);
+    });
+    pieces.sort((left, right) => right.height - left.height);
+    const shelves = packDtfShelves(pieces, maxPrintWidth, previewLength);
+    if (pieces.length < 2 || pieces.length > dtfOptimizationPieceLimit) return shelves;
+
+    const byArea = [...pieces].sort((left, right) => right.width * right.height - left.width * left.height);
+    const byLongestSide = [...pieces].sort((left, right) => Math.max(right.width, right.height) - Math.max(left.width, left.height));
+    let best = shelves;
+    for (const order of [byArea, byLongestSide]) {
+      const candidate = packDtfGaps(order, maxPrintWidth, best.lengthCm);
+      if (candidate && candidate.lengthCm < best.lengthCm - dtfTolerance) best = candidate;
+    }
+
+    if (best === shelves) return shelves;
+    const placements = best.placements.filter(({ y }) => y < previewLength).slice(0, dtfPreviewPieceLimit);
+    return { lengthCm: best.lengthCm, placements, savedLengthCm: shelves.lengthCm - best.lengthCm };
+  };
+
+  const makeDtfFormatRow = (list, onChange) => {
     const row = document.createElement('div');
     row.className = 'dtf-format-row';
-    row.dataset.rowId = String(rowId);
 
     const formatLabel = document.createElement('label');
     formatLabel.textContent = 'Формат';
@@ -353,7 +436,7 @@ window.addEventListener('DOMContentLoaded', () => {
     });
     formatLabel.append(select);
 
-    const makeNumberField = (labelText, name, value, min) => {
+    const makeNumberField = (labelText, name, value, step = '1') => {
       const label = document.createElement('label');
       label.textContent = labelText;
       const input = document.createElement('input');
@@ -361,33 +444,36 @@ window.addEventListener('DOMContentLoaded', () => {
       input.type = 'number';
       input.name = name;
       input.value = String(value);
-      input.min = String(min);
+      input.min = '1';
+      input.step = step;
       input.required = true;
       label.append(input);
       return label;
     };
 
-    const widthField = makeNumberField('Ширина, см', 'width', 7, 1);
-    const heightField = makeNumberField('Высота, см', 'height', 10, 1);
-    const qtyField = makeNumberField('Количество', 'qty', 1, 1);
+    const widthField = makeNumberField('Ширина, см', 'width', 7, 'any');
+    const heightField = makeNumberField('Высота, см', 'height', 10, 'any');
+    const qtyField = makeNumberField('Количество', 'qty', 1);
+    const widthInput = widthField.querySelector('input');
+    const heightInput = heightField.querySelector('input');
     select.addEventListener('change', () => {
       const [width, height] = select.value.split(',');
-      widthField.querySelector('input').value = width;
-      heightField.querySelector('input').value = height;
+      widthInput.value = width;
+      heightInput.value = height;
+      onChange();
     });
 
-    row.append(formatLabel, widthField, heightField, qtyField, makeRemoveButton(list, row));
+    row.append(formatLabel, widthField, heightField, qtyField, makeRemoveButton(list, row, onChange));
     return row;
   };
 
-  const makeDtfCalculator = (card) => {
-    const rates = getDtfRates(card);
+  const createDtfCalculator = (getCard, {
+    autoCalculate = false, previewLength = 0, validateCard, onClear, onError, onCalculate
+  } = {}) => {
     const calculator = document.createElement('form');
     calculator.className = 'clothing-calculator clothing-calculator--multi';
     const list = document.createElement('div');
     list.className = 'print-format-list dtf-format-list';
-    let rowId = 0;
-    list.append(makeDtfFormatRow(list, rowId));
 
     const actions = document.createElement('div');
     actions.className = 'print-calculator-actions';
@@ -399,28 +485,66 @@ window.addEventListener('DOMContentLoaded', () => {
     calculate.className = 'btn btn-primary';
     calculate.type = 'submit';
     calculate.textContent = 'Рассчитать';
-    actions.append(add, calculate);
+    actions.append(add);
+    if (!autoCalculate) actions.append(calculate);
 
-    const summary = makeOrderSummary();
+    const summary = makeOrderSummary(true);
+    let calculationTimer;
 
-    add.addEventListener('click', () => {
-      rowId += 1;
-      list.append(makeDtfFormatRow(list, rowId));
-    });
+    const refresh = () => {
+      const { maxPrintWidth } = getDtfRates(getCard());
+      for (const row of list.children) {
+        const width = row.querySelector('[name="width"]');
+        const height = row.querySelector('[name="height"]');
+        width.setCustomValidity(Math.min(width.valueAsNumber, height.valueAsNumber) > maxPrintWidth
+          ? `Короткая сторона принта должна быть не больше ${maxPrintWidth.toLocaleString('ru-RU', { maximumFractionDigits: 20 })} см.`
+          : '');
+      }
+      if (autoCalculate) {
+        // Coalesce edits to sizes and quantities while the user is typing.
+        clearTimeout(calculationTimer);
+        calculationTimer = setTimeout(calculateOrder, 100);
+      } else {
+        summary.hidden = true;
+        onClear?.();
+      }
+    };
 
-    calculator.addEventListener('submit', (event) => {
-      event.preventDefault();
+    const addFormat = () => {
+      list.append(makeDtfFormatRow(list, refresh));
+      refresh();
+    };
+    list.addEventListener('input', refresh);
+    add.addEventListener('click', addFormat);
+
+    const calculateOrder = () => {
+      const invalidField = list.querySelector('input:invalid');
+      if (invalidField) {
+        summary.hidden = true;
+        if (invalidField.validity.valueMissing) onClear?.();
+        else onError?.(invalidField.validationMessage);
+        return;
+      }
+      const card = getCard();
+      try {
+        validateCard?.(card);
+      } catch (error) {
+        summary.hidden = true;
+        onError?.(error.message);
+        return;
+      }
+      const rates = getDtfRates(card);
       const items = [...list.querySelectorAll('.dtf-format-row')].map((row) => {
-        const width = parseNumber(row.querySelector('[name="width"]').value);
-        const height = parseNumber(row.querySelector('[name="height"]').value);
+        const width = row.querySelector('[name="width"]').valueAsNumber;
+        const height = row.querySelector('[name="height"]').valueAsNumber;
         const qty = Math.max(1, Math.round(parseNumber(row.querySelector('[name="qty"]').value, 1)));
-        const selectedName = row.querySelector('select').selectedOptions[0]?.textContent || '';
+        const format = formatOptions[row.querySelector('select').selectedIndex];
 
         return {
           width,
           height,
           qty,
-          name: selectedName === 'Свой формат' ? `${width}×${height} см` : selectedName
+          name: format?.width === width && format.height === height ? format.name : `${width}×${height} см`
         };
       }).filter((item) => item.width > 0 && item.height > 0);
       const totalQty = items.reduce((sum, item) => sum + item.qty, 0);
@@ -429,13 +553,17 @@ window.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      const length = calculateMaterialLength(items);
+      const { lengthCm, placements, savedLengthCm = 0 } = calculateMaterialLayout(items, rates.maxPrintWidth, previewLength);
+      const length = lengthCm / 100;
       const materialRate = getTierValue(rates.material, length, 850);
       const applicationRate = getTierValue(rates.application, totalQty, 40);
-      const materialCost = Math.ceil(length * materialRate);
-      const costPerUnit = (materialCost + rates.delivery) / totalQty;
-      const unitPrice = Math.ceil((costPerUnit * rates.markup + applicationRate) / 10) * 10;
-      const calculatedTotal = unitPrice * totalQty;
+      const rawMaterialCost = length * materialRate;
+      const materialCost = Math.ceil(rawMaterialCost);
+      const markedUpCost = materialCost * rates.markup;
+      const unroundedUnitPrice = markedUpCost / totalQty + applicationRate;
+      const unitPrice = Math.ceil(unroundedUnitPrice / 10) * 10;
+      const printTotal = unitPrice * totalQty;
+      const calculatedTotal = printTotal + rates.delivery;
       const total = Math.max(calculatedTotal, rates.minimum);
 
       const summaryItems = items.map((item) => ({
@@ -443,12 +571,29 @@ window.addEventListener('DOMContentLoaded', () => {
         qty: item.qty,
         total: unitPrice * item.qty
       }));
-      const note = calculatedTotal < rates.minimum ? `Применена минимальная стоимость заказа — ${formatMoney(rates.minimum)}.` : '';
-      renderOrderSummary(summary, summaryItems, total, note);
+      const note = calculatedTotal < rates.minimum ? `Применена минимальная стоимость заказа — ${formatMoney(rates.minimum, 2)}.` : '';
+      renderOrderSummary(summary, summaryItems, total, note, rates.delivery);
+      onCalculate?.({
+        items, totalQty, lengthCm, placements, savedLengthCm, maxPrintWidth: rates.maxPrintWidth,
+        costDetails: {
+          length, materialRate, rawMaterialCost, materialCost,
+          applicationRate, applicationCost: applicationRate * totalQty,
+          delivery: rates.delivery, markup: rates.markup, markedUpCost,
+          unroundedUnitPrice, unitPrice, printTotal, calculatedTotal, minimum: rates.minimum, total,
+          displayTotal: formatMoney(total, 2)
+        }
+      });
+    };
+
+    calculator.addEventListener('submit', (event) => {
+      event.preventDefault();
+      clearTimeout(calculationTimer);
+      calculateOrder();
     });
 
     calculator.append(list, actions, summary);
-    return calculator;
+    addFormat();
+    return { element: calculator, refresh };
   };
 
   const renderCard = (card) => {
@@ -486,7 +631,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     article.append(card.calculatorType === 'dtf'
-      ? makeDtfCalculator(card)
+      ? createDtfCalculator(() => card).element
       : makeMatrixCalculator(card));
 
     if (card.footer) {
@@ -499,21 +644,28 @@ window.addEventListener('DOMContentLoaded', () => {
     return article;
   };
 
-  fetch('/db/pages/pechat-na-odezhde.json', { cache: 'no-store' })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(`Could not fetch clothing prices, status: ${response.status}`);
-      }
-      return response.json();
-    })
-    .then((data) => {
-      const section = (data.sections || []).find((item) => item.id === 'print-methods');
-      const cards = section && Array.isArray(section.cards) ? section.cards : [];
-      root.classList.add('clothing-methods-grid');
-      root.replaceChildren(...cards.filter((card) => card.archived !== true).map(renderCard));
-    })
-    .catch((error) => {
-      console.error(error);
-      root.textContent = 'Не удалось загрузить цены. Обновите страницу позже.';
-    });
-});
+  window.createClothingDtfCalculator = createDtfCalculator;
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const root = document.getElementById('print-method');
+    if (!root) return;
+
+    fetch('/db/pages/pechat-na-odezhde.json', { cache: 'no-store' })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Could not fetch clothing prices, status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        const section = (data.sections || []).find((item) => item.id === 'print-methods');
+        const cards = section && Array.isArray(section.cards) ? section.cards : [];
+        root.classList.add('clothing-methods-grid');
+        root.replaceChildren(...cards.filter((card) => card.archived !== true).map(renderCard));
+      })
+      .catch((error) => {
+        console.error(error);
+        root.textContent = 'Не удалось загрузить цены. Обновите страницу позже.';
+      });
+  });
+})();
